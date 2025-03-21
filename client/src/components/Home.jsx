@@ -18,6 +18,8 @@ export default function Home() {
   let [categoryList, setCategoryList] = useState([]);
   let [productList, setProductList] = useState([]);
   let [selectedList, setSelectedList] = useState([]);
+  let [sortedField, setSortedField] = useState("");
+  let [direction, setDirection] = useState("");
   let entityDisplayNames = entities.map((e, index) => e.displayName);
   // useEffect(()=>{
   //   if(selectedEntityIndex!=-1)
@@ -193,6 +195,20 @@ export default function Home() {
     setSelectedList(list);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
+    // Minimum 1 field should be shown
+    let cnt = 0;
+    selectedEntity.attributes.forEach((e, index) => {
+      if (e.showInList) {
+        cnt++;
+      }
+    });
+    if (cnt == 1 && !checked) {
+      setMessage("Minimum 1 field should be selected.");
+      window.setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      return;
+    }
     let sEntity = { ...selectedEntity };
     let att = [...sEntity.attributes];
     let a = att.map((e, index) => {
@@ -207,6 +223,48 @@ export default function Home() {
     sEntity.attributes = a;
     setSelectedEntity(sEntity);
     // setRequiredLists(rList);
+  }
+  function handleHeaderClick(index) {
+    console.log(selectedEntity.attributes[index].label);
+    let field = selectedEntity.attributes[index].id;
+    console.log(field);
+    let d = false;
+    if (field === sortedField) {
+      // same button clicked twice
+      d = !direction;
+    } else {
+      // different field
+      d = false;
+    }
+    let list = [...selectedList];
+    setDirection(d);
+    if (d == false) {
+      //in ascending order
+      console.log(list.length);
+
+      list.sort((a, b) => {
+        if (a[field] > b[field]) {
+          return 1;
+        }
+        if (a[field] < b[field]) {
+          return -1;
+        }
+        return 0;
+      });
+    } else {
+      //in descending order
+      list.sort((a, b) => {
+        if (a[field] < b[field]) {
+          return 1;
+        }
+        if (a[field] > b[field]) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+    setSelectedList(list);
+    setSortedField(field);
   }
   if (loadFlag) {
     return <div>Wait...</div>;
@@ -234,11 +292,14 @@ export default function Home() {
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
             onListCheckBoxClick={handleListCheckBoxClick}
+            onHeaderClick={handleHeaderClick}
             selectedEntity={selectedEntity}
             selectedEntityIndex={selectedEntityIndex}
             formData={formData}
             itemToBeEdited={itemToBeEdited}
             requiredLists={requiredLists}
+            sortedField={sortedField}
+            direction={direction}
           />
         )}
       </div>

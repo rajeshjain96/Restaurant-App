@@ -1,5 +1,4 @@
-*
-{
+* {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
@@ -22,13 +21,14 @@
 .text-small {
   font-size: 0.9rem;
 }
-.text-bold
-{
+.text-bold {
   font-weight: bold;
 }
-.container-sidebar
-{
+.container-sidebar {
   /* height: 100vh; */
+}
+a {
+  text-decoration: none;
 }
 .logo {
   height: 6em;

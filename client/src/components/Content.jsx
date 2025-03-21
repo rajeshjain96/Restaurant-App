@@ -13,10 +13,9 @@ export default function Content(props) {
   let { selectedList } = props;
   let { action } = props;
   let { message } = props;
+  let { sortedField } = props;
+  let { direction } = props;
   // let [attributes, setAttributes] = useState("");
-  console.log("&&&&");
-  console.log(selectedEntity);
-  console.log(selectedEntityIndex);
   useEffect(() => {
     // let a = props.selectedEntity.attributes.map((e, index) => {
     //   if (index < 4) {
@@ -48,6 +47,9 @@ export default function Content(props) {
   }
   function handleListCheckBoxClick(checked, index) {
     props.onListCheckBoxClick(checked, index);
+  }
+  function handleHeaderClick(index) {
+    props.onHeaderClick(index);
   }
   return (
     <>
@@ -108,8 +110,23 @@ export default function Content(props) {
           ].map(
             (e, index) =>
               selectedEntity.attributes[index].showInList && (
-                <div className="col-2" key={index}>
-                  {selectedEntity.attributes[index].label}
+                <div className={"col-2 "} key={index}>
+                  <a
+                    href="#"
+                    className={
+                      sortedField == selectedEntity.attributes[index].id &&
+                      " text-large text-danger"
+                    }
+                    onClick={() => {
+                      handleHeaderClick(index);
+                    }}
+                  >
+                    {selectedEntity.attributes[index].label}{" "}
+                    {sortedField == selectedEntity.attributes[index].id &&
+                      direction && <i class="bi bi-arrow-down"></i>}
+                    {sortedField == selectedEntity.attributes[index].id &&
+                      !direction && <i class="bi bi-arrow-up"></i>}
+                  </a>
                 </div>
               )
           )}

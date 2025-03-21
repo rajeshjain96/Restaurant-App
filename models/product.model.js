@@ -3,7 +3,7 @@ let productSchema = new mongoose.Schema(
   {
     name: String,
     price: String,
-    isAvailable: Boolean,
+    isAvailable: String,
     categoryId: String,
   },
   { timestamps: true }

@@ -47,8 +47,10 @@ export let entities = [
       {
         id: "isAvailable",
         label: "Available",
-        type: "checkbox",
-        value: false,
+        // type: "checkbox",
+        type: "radio",
+        options: ["Yes", "No"],
+        value: "db.products",
       },
       {
         id: "categoryId",
@@ -88,8 +90,10 @@ export let entities = [
       {
         id: "isAvailable",
         label: "Available",
-        type: "checkbox",
-        value: false,
+        // type: "checkbox",
+        type: "radio",
+        options: ["Yes", "No"],
+        value: "Yes",
       },
       {
         id: "shippingMethod",
