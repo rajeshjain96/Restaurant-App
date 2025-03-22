@@ -11,13 +11,10 @@ export default function AnItem(props) {
     props.onDeleteButtonClick(item);
   }
   function getNameFromId(id, index) {
-    console.log(id+"  "+index);
-    console.log(selectedEntity.attributes[index].optionList);
     
     let obj = selectedEntity.attributes[index].optionList.find(
       (e, i) => e._id == id
     );
-    console.log(obj);
     
     return obj.name;
   }

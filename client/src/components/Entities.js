@@ -36,6 +36,7 @@ export let entities = [
         type: "text",
         placeholder: "Enter product name",
         value: "",
+        validations: { message: "", mxLen: 80, mnLen: 3, onlyDigits: false },
       },
       {
         id: "price",
@@ -43,6 +44,7 @@ export let entities = [
         type: "number",
         placeholder: "Enter product price",
         value: "",
+        validations: { message: "", mxLen: 80, mnLen: 3, onlyDigits: false },
       },
       {
         id: "isAvailable",
@@ -50,14 +52,14 @@ export let entities = [
         // type: "checkbox",
         type: "radio",
         options: ["Yes", "No"],
-        value: "db.products",
+        value: "No",
       },
       {
         id: "categoryId",
         label: "Category",
         type: "dropdown",
         options: "categoryList",
-        value: "",
+        value: "Fruits",
       },
     ],
   },
@@ -71,7 +73,7 @@ export let entities = [
         label: "Product Name",
         type: "text",
         placeholder: "Enter product name",
-        value: "",
+        value: "kaka mala wachwa",
       },
       {
         id: "price",
@@ -93,7 +95,7 @@ export let entities = [
         // type: "checkbox",
         type: "radio",
         options: ["Yes", "No"],
-        value: "Yes",
+        value: "No",
       },
       {
         id: "shippingMethod",

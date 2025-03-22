@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
 export default function AddEditForm(props) {
   let [loadFlag, setLoadFlag] = useState(false);
@@ -6,12 +7,16 @@ export default function AddEditForm(props) {
   let { action } = props;
   let { itemToBeEdited } = props;
   let { selectedEntity } = props;
-  const [formData, setFormData] = useState("");
+  let { emptyValidationsArray } = props;
+
+  const [formData, setFormData] = useState(props.emptyEntityObject);
 
   useEffect(() => {
-    if (action == "add") {
-      setFormData(props.formData);
-    } else {
+    console.log("Form .. useEffect called");
+
+    if (props.action == "add") {
+      setFormData(props.emptyEntityObject);
+    } else if (props.action == "edit") {
       setFormData(itemToBeEdited);
     }
   }, []);
@@ -24,11 +29,13 @@ export default function AddEditForm(props) {
         ...prevData,
         [name]: checked,
       }));
-    } else if (type === "radio") {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+    } else if (type === "radio" && checked) {
+      // setFormData((prevData) => ({
+      //   ...prevData,
+      //   [name]: value,
+      // }));
+
+      setFormData({ ...formData, [name]: value });
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -36,6 +43,22 @@ export default function AddEditForm(props) {
       }));
     }
   };
+  function handleTextChange(e, index) {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    let message = fieldValidate(
+      e,
+      selectedEntity.attributes[index].validations
+    );
+    // console.log(selectedEntity.attributes[index].validations);
+    // console.log(message);
+    props.handleFormTextChangeValidations(message, index);
+
+    // let errProduct = { ...errorProduct };
+    // errProduct[name].message = message;
+    // setErrorProduct(errProduct);
+    // checkAllErrors(errProduct);
+  }
   const handleCheckboxGroupChange = (e) => {
     const { name, value, checked } = e.target;
     setFormData((prevData) => {
@@ -46,7 +69,6 @@ export default function AddEditForm(props) {
     });
   };
   const handleDropdownChange = (e) => {
-    console.log(e.target.optionList);
     // get corresponding id from the data
     setFormData((prevData) => ({
       ...prevData,
@@ -56,8 +78,6 @@ export default function AddEditForm(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // for dropdown, data is to be modified
-    console.log(">>>><<<<");
-    console.log(formData);
     props.onSubmit(formData);
   };
   function handleFormCloseClick() {
@@ -75,7 +95,7 @@ export default function AddEditForm(props) {
           className="add-form-form row align-items-start`"
           onSubmit={handleSubmit}
         >
-          {selectedEntity.attributes.map((field) => (
+          {selectedEntity.attributes.map((field, field_index) => (
             <div key={field.id} className="col-6 my-1">
               <div className="my-1 text-bold">
                 <label htmlFor={field.id}>{field.label}</label>
@@ -111,8 +131,12 @@ export default function AddEditForm(props) {
                         id={`${field.id}-${option}`}
                         name={field.id}
                         value={option}
-                        checked={formData[field.id] === option}
+                        // value={formData[`${field.id}`]}
+                        // value={formData[field.id]}
+                        checked={formData[`${field.id}`] == option}
+                        // checked={true}
                         onChange={handleChange}
+                        onClick={handleChange}
                       />
                       <label htmlFor={`${field.id}-${option}`}>{option}</label>
                     </div>
@@ -149,17 +173,26 @@ export default function AddEditForm(props) {
                   </select>
                 )}
                 {(field.type === "text" || field.type === "number") && (
-                  <input
-                    className="add-form-else-ele"
-                    type={field.type}
-                    id={field.id}
-                    // size="50"
-                    name={field.id}
-                    value={formData[field.id]}
-                    onChange={handleChange}
-                    placeholder={field.placeholder}
-                    required
-                  />
+                  <>
+                    <input
+                      className="add-form-else-ele"
+                      type={field.type}
+                      id={field.id}
+                      // size="50"
+                      name={field.id}
+                      value={formData[field.id]}
+                      onChange={(e) => {
+                        handleTextChange(e, field_index);
+                      }}
+                      placeholder={field.placeholder}
+                      required
+                    />
+                    {emptyValidationsArray[field_index].message && (
+                      <div className="text-danger">
+                        {emptyValidationsArray[field_index].message}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

@@ -1,7 +1,6 @@
 export default function SideBar(props) {
   let { entityDisplayNames } = props;
   function handleSideBarOptionClick(index) {
-    console.log("Entity clicked");
     
     props.onEntityClick(index);
   }

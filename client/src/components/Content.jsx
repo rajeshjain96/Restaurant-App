@@ -10,6 +10,8 @@ export default function Content(props) {
   let { requiredLists } = props;
   let { itemToBeEdited } = props;
   let { formData } = props;
+  let { emptyEntityObject } = props;
+  let { emptyValidationsArray } = props;
   let { selectedList } = props;
   let { action } = props;
   let { message } = props;
@@ -51,6 +53,9 @@ export default function Content(props) {
   function handleHeaderClick(index) {
     props.onHeaderClick(index);
   }
+  function handleFormTextChangeValidations(message, index) {
+    props.onFormTextChangeValidations(message, index);
+  }
   return (
     <>
       <CommonUtilityBar
@@ -66,11 +71,14 @@ export default function Content(props) {
             // attributes={selectedEntity.attributes}
             selectedEntity={selectedEntity}
             formData={formData}
+            emptyEntityObject={emptyEntityObject}
+            emptyValidationsArray={emptyValidationsArray}
             itemToBeEdited={itemToBeEdited}
             action={action}
             requiredLists={requiredLists}
             onSubmit={handleSubmit}
             onFormCloseClick={handleFormCloseClick}
+            handleFormTextChangeValidations={handleFormTextChangeValidations}
           />
         </div>
       )}
@@ -114,8 +122,9 @@ export default function Content(props) {
                   <a
                     href="#"
                     className={
-                      sortedField == selectedEntity.attributes[index].id &&
-                      " text-large text-danger"
+                      sortedField == selectedEntity.attributes[index].id
+                        ? " text-large text-danger"
+                        : ""
                     }
                     onClick={() => {
                       handleHeaderClick(index);
@@ -123,9 +132,9 @@ export default function Content(props) {
                   >
                     {selectedEntity.attributes[index].label}{" "}
                     {sortedField == selectedEntity.attributes[index].id &&
-                      direction && <i class="bi bi-arrow-down"></i>}
+                      direction && <i className="bi bi-arrow-down"></i>}
                     {sortedField == selectedEntity.attributes[index].id &&
-                      !direction && <i class="bi bi-arrow-up"></i>}
+                      !direction && <i className="bi bi-arrow-up"></i>}
                   </a>
                 </div>
               )

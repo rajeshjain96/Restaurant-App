@@ -3,13 +3,13 @@ import Content from "./Content";
 import SideBar from "./SideBar";
 import { entities } from "./Entities.js";
 import axios from "axios";
-
 export default function Home() {
   let [loadFlag, setLoadFlag] = useState(false);
-
   let [selectedEntity, setSelectedEntity] = useState("");
   let [selectedEntityName, setSelectedEntityName] = useState("");
   let [formData, setFormData] = useState("");
+  let [emptyEntityObject, setEmptyEntityObject] = useState("");
+  let [emptyValidationsArray, setEmptyValidationsArray] = useState("");
   let [requiredLists, setRequiredLists] = useState("");
   let [selectedEntityIndex, setSelectedEntityIndex] = useState(-1);
   let [action, setAction] = useState("add");
@@ -31,11 +31,12 @@ export default function Home() {
     setLoadFlag(true);
 
     let sEntity = entities[selectedIndex];
-    if (entities[selectedIndex].dbCollection == "categories") {
-      getCategoriesFromBackEnd();
-    } else if (entities[selectedIndex].dbCollection == "products") {
-      getProductsFromBackEnd();
-    }
+    getListFromBackEnd(entities[selectedIndex].dbCollection);
+    // if (entities[selectedIndex].dbCollection == "categories") {
+    //   getCategoriesFromBackEnd();
+    // } else if (entities[selectedIndex].dbCollection == "products") {
+    //   getProductsFromBackEnd();
+    // }
     getRequiredLists(sEntity);
     // if (sEntity.requiredLists.length != 0) {
     //   // data is to be fetched
@@ -43,12 +44,15 @@ export default function Home() {
     // } else {
     //   setSelectedEntity(sEntity);
     // }
-    let fd = sEntity.attributes.map((e, index) => {
-      let obj = {};
-      obj[e.id] = e.value;
-      return obj;
+    let emptyObj = {};
+    let emptyVArray = [];
+    sEntity.attributes.forEach((e, index) => {
+      emptyObj[e.id] = e.value;
+      emptyVArray.push(e.validations);
     });
-    setFormData(fd);
+    //This is empty object for ADD form
+    setEmptyEntityObject(emptyObj);
+    setEmptyValidationsArray(emptyVArray);
     setAction("list");
     setSelectedEntityIndex(selectedIndex);
     setSelectedEntityName(entities[selectedIndex].dbCollection);
@@ -66,9 +70,7 @@ export default function Home() {
       rList[listName] = list;
     } //for
     // search for the fields whose type is dropdown.
-    // let sEntity = { ...selectedEntity };
     let att = [...sEntity.attributes];
-    // console.log(att[3].options);
     let a = att.map((e, index) => {
       let p = { ...e };
       if (index < 4) {
@@ -83,32 +85,21 @@ export default function Home() {
       }
       return p;
     });
-    // console.log(att[3].options);
     sEntity.attributes = a;
     console.log(sEntity);
-    // console.log();
     setSelectedEntity({ ...sEntity, attributes: a });
     setRequiredLists(rList);
   }
-  // setSelectedEntity(entities[selectedIndex]);
-  // setSelectedEntityIndex(selectedIndex);
-  // }
-  async function getCategoriesFromBackEnd() {
-    // setLoadFlag(true);
-    let response = await axios("http://localhost:3000/categories");
+  async function getListFromBackEnd(collectionName) {
+    let response = await axios("http://localhost:3000/" + collectionName);
     let list = response.data;
-    setCategoryList(list);
-    // setSelectedList(list);
     setSelectedList(list);
-    // setLoadFlag(false);
   }
   async function getProductsFromBackEnd() {
-    // setLoadFlag(true);
     let response = await axios("http://localhost:3000/products");
     let list = response.data;
     setProductList(list);
     setSelectedList(list);
-    // setLoadFlag(false);
   }
   function handleAddEntityClick() {
     setAction("add");
@@ -222,12 +213,23 @@ export default function Home() {
     });
     sEntity.attributes = a;
     setSelectedEntity(sEntity);
-    // setRequiredLists(rList);
+  }
+  function handleFormTextChangeValidations(message, selectedIndex) {
+    // we have to set the error message, if any for the particular field (index is available)
+    let a = emptyValidationsArray.map((e, index) => {
+      if (index == selectedIndex) {
+        let obj = { ...e };
+        obj.message = message;
+        return obj;
+      } else {
+        return e;
+      }
+    });
+    setEmptyValidationsArray(a);
   }
   function handleHeaderClick(index) {
     console.log(selectedEntity.attributes[index].label);
     let field = selectedEntity.attributes[index].id;
-    console.log(field);
     let d = false;
     if (field === sortedField) {
       // same button clicked twice
@@ -240,7 +242,6 @@ export default function Home() {
     setDirection(d);
     if (d == false) {
       //in ascending order
-      console.log(list.length);
 
       list.sort((a, b) => {
         if (a[field] > b[field]) {
@@ -293,9 +294,12 @@ export default function Home() {
             onDeleteButtonClick={handleDeleteButtonClick}
             onListCheckBoxClick={handleListCheckBoxClick}
             onHeaderClick={handleHeaderClick}
+            onFormTextChangeValidations={handleFormTextChangeValidations}
             selectedEntity={selectedEntity}
             selectedEntityIndex={selectedEntityIndex}
             formData={formData}
+            emptyEntityObject={emptyEntityObject}
+            emptyValidationsArray={emptyValidationsArray}
             itemToBeEdited={itemToBeEdited}
             requiredLists={requiredLists}
             sortedField={sortedField}

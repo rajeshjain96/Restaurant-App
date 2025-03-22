@@ -2,8 +2,6 @@ const Category = require("../models/category.model.js");
 const db = require("../index.js");
 async function getAllCategories() {
   let list = await Category.find();
-  console.log(list.length);
-  console.log(list);
 
   return list;
 }
