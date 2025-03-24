@@ -112,59 +112,78 @@ export default function Home() {
     }
   }
   async function handleAddSubmitForm(obj) {
-    if (selectedEntityName == "categories") {
-      let response = await axios.post("http://localhost:3000/categories", obj);
-      obj = response.data;
-      //update the list
-      let cList = [...categoryList];
-      cList.push(obj);
-      setCategoryList(cList);
-      setSelectedList(cList);
-    } else if (selectedEntityName == "products") {
-      let response = await axios.post("http://localhost:3000/products", obj);
-      obj = response.data;
-      //update the list
-      let pList = [...productList];
-      pList.push(obj);
-      setProductList(pList);
-      setSelectedList(pList);
-    }
-    setMessage(selectedEntity.btnLabel + " added successfully");
-    window.setTimeout(() => {
-      setMessage("");
-    }, 3000);
+    let response = await axios.post(
+      "http://localhost:3000/" + selectedEntity.dbCollection,
+      obj
+    );
+    // id is reurned back
+    obj._id = response.data.insertedId;
+    //update the list
+    let list = [...selectedList];
+    list.push(obj);
+    // setCategoryList(cList);
+    setSelectedList(list);
+    // if (selectedEntityName == "categories") {
+    //   let response = await axios.post("http://localhost:3000/categories", obj);
+    //   obj = response.data;
+    //   //update the list
+    //   let cList = [...categoryList];
+    //   cList.push(obj);
+    //   setCategoryList(cList);
+    //   setSelectedList(cList);
+    // } else if (selectedEntityName == "products") {
+    //   let response = await axios.post("http://localhost:3000/products", obj);
+    //   obj = response.data;
+    //   //update the list
+    //   let pList = [...productList];
+    //   pList.push(obj);
+    //   setProductList(pList);
+    //   setSelectedList(pList);
+    // }
+    showMessage(selectedEntity.btnLabel + " added successfully");
   }
   async function handleEditSubmitForm(obj) {
-    if (selectedEntityName == "categories") {
-      let response = await axios.put("http://localhost:3000/categories", obj);
-      let obj1 = response.data;
-      //update the list
-      let cList = categoryList.map((e, index) => {
-        if (e._id == obj._id) {
-          return obj;
-        }
-        return e;
-      });
-      setCategoryList(cList);
-      setSelectedList(cList);
-    } else if (selectedEntityName == "products") {
-      let response = await axios.put("http://localhost:3000/products", obj);
-      obj = response.data;
-      //update the list
-      let pList = productList.map((e, index) => {
-        if (e._id == obj._id) {
-          return obj;
-        }
-        return e;
-      });
-      setProductList(pList);
-      setSelectedList(pList);
-    }
-    setMessage(selectedEntity.btnLabel + " updated successfully");
+    let response = await axios.put(
+      "http://localhost:3000/" + selectedEntity.dbCollection,
+      obj
+    );
+    let obj1 = response.data;
+    //update the list
+    let list = selectedList.map((e, index) => {
+      if (e._id == obj._id) {
+        return obj;
+      }
+      return e;
+    });
+    // setCategoryList(cList);
+    setSelectedList(list);
+    // if (selectedEntityName == "categories") {
+    //   let response = await axios.put("http://localhost:3000/categories", obj);
+    //   let obj1 = response.data;
+    //   //update the list
+    //   let cList = categoryList.map((e, index) => {
+    //     if (e._id == obj._id) {
+    //       return obj;
+    //     }
+    //     return e;
+    //   });
+    //   setCategoryList(cList);
+    //   setSelectedList(cList);
+    // } else if (selectedEntityName == "products") {
+    //   let response = await axios.put("http://localhost:3000/products", obj);
+    //   obj = response.data;
+    //   //update the list
+    //   let pList = productList.map((e, index) => {
+    //     if (e._id == obj._id) {
+    //       return obj;
+    //     }
+    //     return e;
+    //   });
+    //   setProductList(pList);
+    //   setSelectedList(pList);
+    // }
+    showMessage(selectedEntity.btnLabel + " updated successfully");
     setAction("list");
-    window.setTimeout(() => {
-      setMessage("");
-    }, 3000);
   }
   function handleFormCloseClick() {
     // setSelectedEntityIndex(-1);
@@ -176,7 +195,11 @@ export default function Home() {
     setAction("edit");
     setItemToBeEdited(item);
   }
-  async function handleDeleteButtonClick(item) {
+  async function handleDeleteButtonClick(ans, item) {
+    if (ans == "No") {
+      showMessage("Delete operation cancelled");
+      return;
+    }
     let response = await axios.delete(
       "http://localhost:3000/" + selectedEntityName + "/" + item._id
     );
@@ -184,6 +207,7 @@ export default function Home() {
     //update the list
     let list = selectedList.filter((e, index) => e._id != item._id);
     setSelectedList(list);
+    showMessage("Data of " + item.name + " deleted successfullly");
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -194,10 +218,8 @@ export default function Home() {
       }
     });
     if (cnt == 1 && !checked) {
-      setMessage("Minimum 1 field should be selected.");
-      window.setTimeout(() => {
-        setMessage("");
-      }, 3000);
+      showMessage("Minimum 1 field should be selected.");
+
       return;
     }
     let sEntity = { ...selectedEntity };
@@ -220,6 +242,8 @@ export default function Home() {
       if (index == selectedIndex) {
         let obj = { ...e };
         obj.message = message;
+        console.log("eee " + message);
+
         return obj;
       } else {
         return e;
@@ -266,6 +290,12 @@ export default function Home() {
     }
     setSelectedList(list);
     setSortedField(field);
+  }
+  function showMessage(m) {
+    setMessage(m);
+    window.setTimeout(() => {
+      setMessage("");
+    }, 3000);
   }
   if (loadFlag) {
     return <div>Wait...</div>;

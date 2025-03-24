@@ -1,6 +1,4 @@
 export default function fieldValidate(event, errorEntity) {
-  console.log("Kara Form validations");
-  
   let i,
     flag,
     name,
@@ -30,6 +28,9 @@ export default function fieldValidate(event, errorEntity) {
     // noSymbols = errorEntity[`${name}`].noSymbols;
     if (value.length === 0) {
       message = name + requiredMessage;
+    } else if (value.length < mnLen && mxLen == mnLen) {
+      if (!onlyDigits) message = mnLen + " characters required";
+      else message = mnLen + " digits required";
     } else if (value.length < mnLen) {
       if (!onlyDigits) message = "Min " + mnLen + " characters required";
       else message = "Min " + mnLen + " digits required";

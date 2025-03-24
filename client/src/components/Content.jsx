@@ -44,8 +44,9 @@ export default function Content(props) {
   function handleEditButtonClick(item) {
     props.onEditButtonClick(item);
   }
-  function handleDeleteButtonClick(item) {
-    props.onDeleteButtonClick(item);
+  function handleDeleteButtonClick(ans, item) {
+    console.log("Kara re " + ans + item);
+    props.onDeleteButtonClick(ans, item);
   }
   function handleListCheckBoxClick(checked, index) {
     props.onListCheckBoxClick(checked, index);

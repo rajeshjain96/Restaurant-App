@@ -27,6 +27,24 @@
 .container-sidebar {
   /* height: 100vh; */
 }
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  max-width: 30rem;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  /* padding: 20px; */
+  border-radius: 10px;
+}
+.modal-wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-color: rgba(189, 189, 189, 0.9);
+}
 a {
   text-decoration: none;
 }
