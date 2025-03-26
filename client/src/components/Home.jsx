@@ -132,9 +132,19 @@ export default function Home() {
     }
   }
   async function handleAddSubmitForm(obj) {
+    // if files are there, add them also
+    let cnt = 0;
+
+    selectedEntity.attributes.map((e, index) => {
+      if (e.type == "file") {
+        cnt++;
+        obj[e.id + "_file"] = e.file;
+      }
+    });
     let response = await axios.post(
       "http://localhost:3000/" + selectedEntity.dbCollection,
-      obj
+      obj,
+      { headers: { "Content-type": "multipart/form-data" } }
     );
     // id is reurned back
     obj._id = response.data.insertedId;
@@ -277,14 +287,27 @@ export default function Home() {
       if (index == selectedIndex) {
         let obj = { ...e };
         obj.message = message;
-        console.log("eee " + message);
-
         return obj;
       } else {
         return e;
       }
     });
     setEmptyValidationsArray(a);
+  }
+  function handleFileUploadChange(file, selectedIndex) {
+    let sEntity = { ...selectedEntity };
+    let att = [...sEntity.attributes];
+    let a = att.map((e, index) => {
+      let p = { ...e };
+      if (index == selectedIndex) {
+        p.preview = URL.createObjectURL(file);
+        p.size = file.size;
+        p.file = file;
+      }
+      return p;
+    });
+    sEntity.attributes = a;
+    setSelectedEntity(sEntity);
   }
   function handleSrNoClick() {
     // let field = selectedEntity.attributes[index].id;
@@ -454,9 +477,10 @@ export default function Home() {
             onDeleteButtonClick={handleDeleteButtonClick}
             onListCheckBoxClick={handleListCheckBoxClick}
             onHeaderClick={handleHeaderClick}
-            onFormTextChangeValidations={handleFormTextChangeValidations}
             onSearchKeyUp={handleSearchKeyUp}
             onSrNoClick={handleSrNoClick}
+            onFormTextChangeValidations={handleFormTextChangeValidations}
+            onFileUploadChange={handleFileUploadChange}
           />
         )}
       </div>

@@ -51,14 +51,37 @@ export default function AddEditForm(props) {
       e,
       selectedEntity.attributes[index].validations
     );
-    // console.log(selectedEntity.attributes[index].validations);
-    // console.log(message);
-    props.handleFormTextChangeValidations(message, index);
+    props.onFormTextChangeValidations(message, index);
+  }
+  function handleFileChange(e, index) {
+    // formData.append('image', $('input[type=file]')[0].files[0]);
+    const file = e.target.files[0];
 
-    // let errProduct = { ...errorProduct };
-    // errProduct[name].message = message;
-    // setErrorProduct(errProduct);
-    // checkAllErrors(errProduct);
+    // if (e.target.files.length > 1) {
+    //   props.onFormTextChangeValidations("Only one image is required", index);
+    //   return;
+    // }
+    if (!file) {
+      props.onFormTextChangeValidations("No file selected", index);
+      return;
+    }
+    let fileType = file.type.substring(0, file.type.indexOf("/"));
+    if (fileType != "image") {
+      props.onFormTextChangeValidations("Select image file", index);
+      return;
+      // setFile("");
+    } else {
+      setFormData({ ...formData, [e.target.name]: file.name });
+      props.onFormTextChangeValidations("", index);
+      props.onFileUploadChange(file, index);
+    }
+
+    // setFormData({ ...formData, [e.target.name]: filePath });
+    // let message = fieldValidate(
+    //   e,
+    //   selectedEntity.attributes[index].validations
+    // );
+    // props.handleFormTextChangeValidations(message, index);
   }
   const handleCheckboxGroupChange = (e) => {
     const { name, value, checked } = e.target;
@@ -111,7 +134,6 @@ export default function AddEditForm(props) {
                     onChange={handleChange}
                     placeholder={field.placeholder}
                     rows="4"
-                    required
                   />
                 )}
                 {field.type === "checkbox" && (
@@ -163,7 +185,6 @@ export default function AddEditForm(props) {
                     name={field.id}
                     value={formData[field.id]}
                     onChange={handleDropdownChange}
-                    required
                   >
                     <option value="">Select an option</option>
                     {field.optionList.map((option, index) => (
@@ -186,12 +207,44 @@ export default function AddEditForm(props) {
                         handleTextChange(e, field_index);
                       }}
                       placeholder={field.placeholder}
-                      required
                     />
                     {emptyValidationsArray[field_index].message && (
                       <div className="text-danger">
                         {emptyValidationsArray[field_index].message}
                       </div>
+                    )}
+                  </>
+                )}
+                {field.type === "file" && (
+                  <>
+                    <input
+                      // className="add-form-else-ele"
+                      type={field.type}
+                      id={field.id}
+                      // size="50"
+                      name={field.id}
+                      // value={formData[field.id]}
+                      onChange={(e) => {
+                        handleFileChange(e, field_index);
+                      }}
+                      // placeholder={field.placeholder}
+                    />
+                    {emptyValidationsArray[field_index].message && (
+                      <div className="text-danger">
+                        {emptyValidationsArray[field_index].message}
+                      </div>
+                    )}
+                    {field.preview && (
+                      <div>
+                        <img
+                          className="col-3 my-2"
+                          src={field.preview}
+                          alt=""
+                        />
+                      </div>
+                    )}
+                    {field.size && (
+                      <div>{(field.size / (1024 * 1024)).toFixed(2)} MB </div>
                     )}
                   </>
                 )}

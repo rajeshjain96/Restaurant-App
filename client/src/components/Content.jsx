@@ -61,6 +61,9 @@ export default function Content(props) {
   function handleFormTextChangeValidations(message, index) {
     props.onFormTextChangeValidations(message, index);
   }
+  function handleFileUploadChange(file, index) {
+    props.onFileUploadChange(file, index);
+  }
   function handleSearchKeyUp(event) {
     props.onSearchKeyUp(event);
   }
@@ -93,7 +96,8 @@ export default function Content(props) {
             requiredLists={requiredLists}
             onSubmit={handleSubmit}
             onFormCloseClick={handleFormCloseClick}
-            handleFormTextChangeValidations={handleFormTextChangeValidations}
+            onFormTextChangeValidations={handleFormTextChangeValidations}
+            onFileUploadChange={handleFileUploadChange}
             flagFormInvalid={flagFormInvalid}
           />
         </div>

@@ -4,9 +4,11 @@ var cors = require("cors");
 const categoryRouter = require("./routers/category.router.js");
 const customerRouter = require("./routers/customer.router.js");
 const productRouter = require("./routers/product.router.js");
+
 app.use(cors());
 app.use(express.json());
-app.use("/categories", categoryRouter );
+app.use(express.urlencoded({ extended: false }));
+app.use("/categories", categoryRouter);
 app.use("/customers", customerRouter);
 app.use("/products", productRouter);
 // connectToDatabase();

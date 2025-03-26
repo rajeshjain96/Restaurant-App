@@ -93,6 +93,16 @@ export let entities = [
         value: "",
         validations: { message: "", mxLen: 80, mnLen: 10, onlyDigits: false },
       },
+      {
+        id: "image",
+        label: "Image",
+        type: "file",
+        // placeholder: "Upload image file",
+        value: "",
+        preview: "",
+        file:"",
+        validations: { message: "", mxLen: 80, mnLen: 10, onlyDigits: false },
+      },
       // {
       //   id: "categoryId",
       //   label: "Category",
