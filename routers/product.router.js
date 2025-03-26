@@ -4,8 +4,6 @@ const ProductService = require("../services/product.service");
 
 router.get("/", async (req, res) => {
   let list = await ProductService.getAllProducts();
-  console.log("check.." + list.length);
-
   res.status(200).json(list);
 });
 router.get("/:id", async (req, res) => {
@@ -14,13 +12,16 @@ router.get("/:id", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   let obj = req.body;
+  obj.addDate = new Date();
+  obj.updateDate = new Date();
   obj = await ProductService.addProduct(obj);
-  res.json(obj);
+  res.status(201).json(obj);
 });
 router.put("/", async (req, res) => {
   let obj = req.body;
+  obj.updateDate = new Date();
   obj = await ProductService.updateProduct(obj);
-  res.json(obj);
+  res.status(200).json(obj);
 });
 router.delete("/:id", async (req, res) => {
   let id = req.params.id;

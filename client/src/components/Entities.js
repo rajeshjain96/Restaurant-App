@@ -1,7 +1,6 @@
 // import { collection } from "../../../models/category.model";
 
 export let entities = [
-  { displayName: "DashBoard" },
   {
     displayName: "Customers",
     dbCollection: "customers",
@@ -59,7 +58,8 @@ export let entities = [
     displayName: "Products",
     dbCollection: "products",
     btnLabel: "Product",
-    requiredLists: [{ dbRoute: "categories", listName: "categoryList" }],
+    // requiredLists: [{ dbRoute: "categories", listName: "categoryList" }],
+    requiredLists: [],
     attributes: [
       {
         id: "name",
@@ -80,18 +80,26 @@ export let entities = [
       {
         id: "isAvailable",
         label: "Available",
-        // type: "checkbox",
         type: "radio",
         options: ["Yes", "No"],
         value: "No",
+        validations: { message: "", mxLen: 80, mnLen: 3, onlyDigits: false },
       },
       {
-        id: "categoryId",
-        label: "Category",
-        type: "dropdown",
-        options: "categoryList",
-        value: "Fruits",
+        id: "description",
+        label: "Description",
+        type: "textarea",
+        placeholder: "Enter product details",
+        value: "",
+        validations: { message: "", mxLen: 80, mnLen: 10, onlyDigits: false },
       },
+      // {
+      //   id: "categoryId",
+      //   label: "Category",
+      //   type: "dropdown",
+      //   options: "categoryList",
+      //   value: "Category A",
+      // },
     ],
   },
   {

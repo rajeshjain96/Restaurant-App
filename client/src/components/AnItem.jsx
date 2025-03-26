@@ -4,9 +4,12 @@ import Modal from "./modal";
 export default function AnItem(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
   let { item } = props;
+  let { sortedField } = props;
+  let { direction } = props;
   let { index } = props;
   let { attributes } = props;
   let { selectedEntity } = props;
+  let { listSize } = props;
   function handleEditButtonClick() {
     props.onEditButtonClick(item);
   }
@@ -19,7 +22,6 @@ export default function AnItem(props) {
   }
   function handleModalButtonClick(event) {
     let ans = event.target.innerHTML;
-    console.log(ans + ",,,,");
 
     setFlagDeleteButtonPressed(false);
 
@@ -34,29 +36,38 @@ export default function AnItem(props) {
   }
   return (
     <>
-      <div className="row my-2 mx-auto border border-2 border-secondary p-1">
-        <div className="col-1">{index + 1}.</div>
+      <div className="row justify-content-between my-2 mx-auto border border-2 border-secondary p-1">
+        <div className="col-1">
+          {sortedField == "updateDate" && !direction
+            ? index + 1
+            : listSize - index}
+          .
+        </div>
         {attributes.map(
           (e, index) =>
             e.showInList && (
               <div key={index} className="col-2">
                 {e.type != "dropdown"
-                  ? item[e.id]
+                  ? String(item[e.id]).length <= 20
+                    ? item[e.id]
+                    : item[e.id].slice(0, 20) + "..."
                   : getNameFromId(item[e.id], index)}
               </div>
             )
         )}
 
         <div className="col-1">
-          <button className="btn btn-primary" onClick={handleEditButtonClick}>
+          <span onClick={handleEditButtonClick}>
             <i className="bi bi-pencil-square"></i>
-          </button>
-        </div>
-        <div className="col-1">
-          <button className="btn btn-danger" onClick={handleDeleteButtonClick}>
+          </span>
+          &nbsp;{" "}
+          <span onClick={handleDeleteButtonClick}>
             <i className="bi bi-trash3-fill"></i>
-          </button>
+          </span>
+          {/* <button className="btn btn-primary"></button>
+          <button className="btn btn-danger"></button> */}
         </div>
+        {/* <div className="col-1"></div> */}
       </div>
       {flagDeleteButtonPressed && (
         <Modal

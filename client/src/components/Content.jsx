@@ -13,10 +13,12 @@ export default function Content(props) {
   let { emptyEntityObject } = props;
   let { emptyValidationsArray } = props;
   let { selectedList } = props;
+  let { filteredList } = props;
   let { action } = props;
   let { message } = props;
   let { sortedField } = props;
   let { direction } = props;
+  let { flagFormInvalid } = props;
   // let [attributes, setAttributes] = useState("");
   useEffect(() => {
     // let a = props.selectedEntity.attributes.map((e, index) => {
@@ -45,7 +47,6 @@ export default function Content(props) {
     props.onEditButtonClick(item);
   }
   function handleDeleteButtonClick(ans, item) {
-    console.log("Kara re " + ans + item);
     props.onDeleteButtonClick(ans, item);
   }
   function handleListCheckBoxClick(checked, index) {
@@ -54,8 +55,14 @@ export default function Content(props) {
   function handleHeaderClick(index) {
     props.onHeaderClick(index);
   }
+  function handleSrNoClick() {
+    props.onSrNoClick();
+  }
   function handleFormTextChangeValidations(message, index) {
     props.onFormTextChangeValidations(message, index);
+  }
+  function handleSearchKeyUp(event) {
+    props.onSearchKeyUp(event);
   }
   return (
     <>
@@ -64,8 +71,15 @@ export default function Content(props) {
         message={message}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
+        onSearchKeyUp={handleSearchKeyUp}
+        listLength={selectedList.length}
       />
-
+      {filteredList.length == 0 && selectedList.length != 0 && (
+        <div className="text-center">Nothing to show</div>
+      )}
+      {selectedList.length == 0 && (
+        <div className="text-center">List is empty</div>
+      )}
       {(action == "add" || action == "edit") && (
         <div className="row">
           <AddEditForm
@@ -80,10 +94,11 @@ export default function Content(props) {
             onSubmit={handleSubmit}
             onFormCloseClick={handleFormCloseClick}
             handleFormTextChangeValidations={handleFormTextChangeValidations}
+            flagFormInvalid={flagFormInvalid}
           />
         </div>
       )}
-      {action == "list" && (
+      {action == "list" && filteredList.length != 0 && (
         <div className="row my-2 mx-auto border border-2 border-secondary p-1">
           {[
             ...Array(
@@ -107,9 +122,30 @@ export default function Content(props) {
           ))}
         </div>
       )}
-      {action == "list" && (
-        <div className="row my-2 mx-auto  p-1">
-          <div className="col-1">Sr.No.</div>
+      {action == "list" && filteredList.length != 0 && (
+        <div className="row justify-content-between my-2 mx-auto  p-1">
+          {/* <div className="col-1">Sr.No.</div> */}
+          <div className="col-1">
+            <a
+              href="#"
+              // className={
+              //   sortedField == selectedEntity.attributes[index].id
+              //     ? " text-large text-danger"
+              //     : ""
+              // }
+              onClick={() => {
+                handleSrNoClick();
+              }}
+            >
+              S N.{" "}
+              {sortedField == "updateDate" && direction && (
+                <i className="bi bi-arrow-up"></i>
+              )}
+              {sortedField == "updateDate" && !direction && (
+                <i className="bi bi-arrow-down"></i>
+              )}
+            </a>
+          </div>
           {[
             ...Array(
               selectedEntity.attributes.length > 4
@@ -133,22 +169,26 @@ export default function Content(props) {
                   >
                     {selectedEntity.attributes[index].label}{" "}
                     {sortedField == selectedEntity.attributes[index].id &&
-                      direction && <i className="bi bi-arrow-down"></i>}
+                      direction && <i className="bi bi-arrow-up"></i>}
                     {sortedField == selectedEntity.attributes[index].id &&
-                      !direction && <i className="bi bi-arrow-up"></i>}
+                      !direction && <i className="bi bi-arrow-down"></i>}
                   </a>
                 </div>
               )
           )}
+          <div className="col-1">&nbsp;</div>
         </div>
       )}
 
       {action == "list" &&
-        selectedList.map((e, index) => (
+        filteredList.map((e, index) => (
           <AnItem
             item={e}
             key={index + 1}
             index={index}
+            sortedField={sortedField}
+            direction={direction}
+            listSize={filteredList.length}
             selectedEntity={selectedEntity}
             attributes={selectedEntity.attributes}
             onEditButtonClick={handleEditButtonClick}

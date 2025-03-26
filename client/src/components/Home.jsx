@@ -18,9 +18,13 @@ export default function Home() {
   let [categoryList, setCategoryList] = useState([]);
   let [productList, setProductList] = useState([]);
   let [selectedList, setSelectedList] = useState([]);
+  let [filteredList, setFilteredList] = useState([]);
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
+  let [searchText, setSearchText] = useState("");
+  let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let entityDisplayNames = entities.map((e, index) => e.displayName);
+
   // useEffect(()=>{
   //   if(selectedEntityIndex!=-1)
   //   {
@@ -29,6 +33,7 @@ export default function Home() {
   // },[selectedEntityIndex]);
   function handleEntityClick(selectedIndex) {
     setLoadFlag(true);
+    setSortedField("");
 
     let sEntity = entities[selectedIndex];
     getListFromBackEnd(entities[selectedIndex].dbCollection);
@@ -93,18 +98,33 @@ export default function Home() {
   async function getListFromBackEnd(collectionName) {
     let response = await axios("http://localhost:3000/" + collectionName);
     let list = response.data;
+    // sort the list by date of update
+    list.sort(function (a, b) {
+      var c = new Date(a.updateDate);
+      var d = new Date(b.updateDate);
+      return d - c;
+      // return b.updateDate - a.updateDate;
+    });
     setSelectedList(list);
+    setFilteredList(list);
   }
-  async function getProductsFromBackEnd() {
-    let response = await axios("http://localhost:3000/products");
-    let list = response.data;
-    setProductList(list);
-    setSelectedList(list);
-  }
+
   function handleAddEntityClick() {
     setAction("add");
   }
   function handleSubmit(obj) {
+    // check for form validations
+    let flag = false;
+    emptyValidationsArray.forEach((e, index) => {
+      if (e.message) {
+        flag = true;
+      }
+    });
+    if (flag) {
+      setFlagFormInvalid(true);
+      return;
+    }
+    setFlagFormInvalid(false);
     if (action == "add") {
       handleAddSubmitForm(obj);
     } else if (action == "edit") {
@@ -120,9 +140,15 @@ export default function Home() {
     obj._id = response.data.insertedId;
     //update the list
     let list = [...selectedList];
-    list.push(obj);
+    let fList = [...filteredList];
+    list.unshift(obj);
+    fList.unshift(obj);
+    // list.push(obj);
+    // fList.push(obj);
     // setCategoryList(cList);
     setSelectedList(list);
+    setFilteredList(fList);
+
     // if (selectedEntityName == "categories") {
     //   let response = await axios.post("http://localhost:3000/categories", obj);
     //   obj = response.data;
@@ -141,6 +167,7 @@ export default function Home() {
     //   setSelectedList(pList);
     // }
     showMessage(selectedEntity.btnLabel + " added successfully");
+    setAction("list");
   }
   async function handleEditSubmitForm(obj) {
     let response = await axios.put(
@@ -155,8 +182,14 @@ export default function Home() {
       }
       return e;
     });
-    // setCategoryList(cList);
+    let fList = filteredList.map((e, index) => {
+      if (e._id == obj._id) {
+        return obj;
+      }
+      return e;
+    });
     setSelectedList(list);
+    setFilteredList(fList);
     // if (selectedEntityName == "categories") {
     //   let response = await axios.put("http://localhost:3000/categories", obj);
     //   let obj1 = response.data;
@@ -206,7 +239,9 @@ export default function Home() {
     let obj1 = response.data;
     //update the list
     let list = selectedList.filter((e, index) => e._id != item._id);
+    let fList = filteredList.filter((e, index) => e._id != item._id);
     setSelectedList(list);
+    setFilteredList(fList);
     showMessage("Data of " + item.name + " deleted successfullly");
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
@@ -251,8 +286,45 @@ export default function Home() {
     });
     setEmptyValidationsArray(a);
   }
+  function handleSrNoClick() {
+    // let field = selectedEntity.attributes[index].id;
+    let d = false;
+    if (sortedField === "updateDate") {
+      d = !direction;
+    } else {
+      d = false;
+    }
+
+    let list = [...filteredList];
+    setDirection(!direction);
+    if (d == false) {
+      //in ascending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    } else {
+      //in descending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+    // setSelectedList(list);
+    setFilteredList(list);
+    setSortedField("updateDate");
+  }
   function handleHeaderClick(index) {
-    console.log(selectedEntity.attributes[index].label);
     let field = selectedEntity.attributes[index].id;
     let d = false;
     if (field === sortedField) {
@@ -262,7 +334,7 @@ export default function Home() {
       // different field
       d = false;
     }
-    let list = [...selectedList];
+    let list = [...filteredList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -288,7 +360,8 @@ export default function Home() {
         return 0;
       });
     }
-    setSelectedList(list);
+    // setSelectedList(list);
+    setFilteredList(list);
     setSortedField(field);
   }
   function showMessage(m) {
@@ -296,6 +369,54 @@ export default function Home() {
     window.setTimeout(() => {
       setMessage("");
     }, 3000);
+  }
+  function handleSearchKeyUp(event) {
+    let searchText = event.target.value;
+    setSearchText(searchText);
+    performSearchOperation(searchText);
+  }
+  function performSearchOperation(searchText) {
+    let query = searchText.trim();
+    if (query.length == 0) {
+      setFilteredList(selectedList);
+      return;
+    }
+    let searchedProducts = [];
+    // searchedProducts = filterByName(query);
+    searchedProducts = filterByShowInListParameters(query);
+    setFilteredList(searchedProducts);
+  }
+  function filterByName(query) {
+    let fList = [];
+    // console.log(selectedEntity.attributes[0].showInList);
+
+    for (let i = 0; i < selectedList.length; i++) {
+      if (selectedList[i].name.toLowerCase().includes(query.toLowerCase())) {
+        fList.push(selectedList[i]);
+      }
+    } //for
+    return fList;
+  }
+  function filterByShowInListParameters(query) {
+    let fList = [];
+    // console.log(selectedEntity.attributes[0].showInList);
+
+    for (let i = 0; i < selectedList.length; i++) {
+      for (let j = 0; j < selectedEntity.attributes.length; j++) {
+        if (selectedEntity.attributes[j].showInList) {
+          let parameterName = selectedEntity.attributes[j].id;
+          if (
+            selectedList[i][parameterName]
+              .toLowerCase()
+              .includes(query.toLowerCase())
+          ) {
+            fList.push(selectedList[i]);
+            break;
+          }
+        }
+      } //inner for
+    } //outer for
+    return fList;
   }
   if (loadFlag) {
     return <div>Wait...</div>;
@@ -313,18 +434,8 @@ export default function Home() {
           <Content
             message={message}
             action={action}
-            categoryList={categoryList}
-            productList={productList}
             selectedList={selectedList}
-            onListClick={handleListClick}
-            onSubmit={handleSubmit}
-            onFormCloseClick={handleFormCloseClick}
-            onAddEntityClick={handleAddEntityClick}
-            onEditButtonClick={handleEditButtonClick}
-            onDeleteButtonClick={handleDeleteButtonClick}
-            onListCheckBoxClick={handleListCheckBoxClick}
-            onHeaderClick={handleHeaderClick}
-            onFormTextChangeValidations={handleFormTextChangeValidations}
+            filteredList={filteredList}
             selectedEntity={selectedEntity}
             selectedEntityIndex={selectedEntityIndex}
             formData={formData}
@@ -334,6 +445,18 @@ export default function Home() {
             requiredLists={requiredLists}
             sortedField={sortedField}
             direction={direction}
+            flagFormInvalid={flagFormInvalid}
+            onListClick={handleListClick}
+            onSubmit={handleSubmit}
+            onFormCloseClick={handleFormCloseClick}
+            onAddEntityClick={handleAddEntityClick}
+            onEditButtonClick={handleEditButtonClick}
+            onDeleteButtonClick={handleDeleteButtonClick}
+            onListCheckBoxClick={handleListCheckBoxClick}
+            onHeaderClick={handleHeaderClick}
+            onFormTextChangeValidations={handleFormTextChangeValidations}
+            onSearchKeyUp={handleSearchKeyUp}
+            onSrNoClick={handleSrNoClick}
           />
         )}
       </div>

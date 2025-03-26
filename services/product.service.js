@@ -1,9 +1,13 @@
-const Product = require("../models/product.model.js");
+const { app } = require("../init.js");
+const { ObjectId } = require("mongodb");
 
 async function getAllProducts() {
-  let list = await Product.find();
-  console.log(list.length);
-  console.log(list);
+  const db = app.locals.db;
+
+  const collection = db.collection("products");
+
+  let list = await collection.find().toArray();
+
   return list;
 }
 async function getProductById(id) {
@@ -11,19 +15,31 @@ async function getProductById(id) {
   return obj;
 }
 async function addProduct(obj) {
-  obj = await Product.create(obj);
-  console.log("Added");
-  console.log(obj);
+  const db = app.locals.db;
+  const collection = db.collection("products");
+  obj = await collection.insertOne(obj);
   return obj;
 }
 async function updateProduct(obj) {
-  obj = await Product.findByIdAndUpdate(obj._id, obj, { new: true });
+  const db = app.locals.db;
+  const collection = db.collection("products");
+  let id = obj._id;
+  delete obj._id;
+  obj = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    { $set: obj }
+  );
   console.log("Updated");
   console.log(obj);
   return obj;
 }
-async function deleteCategory(id) {
-  obj = await Category.findByIdAndDelete(id);
+async function deleteProduct(id) {
+  // obj = await Product.findByIdAndDelete(id);
+  const db = app.locals.db;
+  const collection = db.collection("products");
+  let obj = await collection.deleteOne({
+    _id: ObjectId.createFromHexString(id),
+  });
   console.log("Deleted");
   console.log(obj);
   return obj;
@@ -33,5 +49,5 @@ module.exports = ProductService = {
   getProductById,
   addProduct,
   updateProduct,
-  deleteCategory,
+  deleteProduct,
 };

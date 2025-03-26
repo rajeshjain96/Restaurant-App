@@ -8,6 +8,7 @@ export default function AddEditForm(props) {
   let { itemToBeEdited } = props;
   let { selectedEntity } = props;
   let { emptyValidationsArray } = props;
+  let { flagFormInvalid } = props;
 
   const [formData, setFormData] = useState(props.emptyEntityObject);
 
@@ -198,7 +199,7 @@ export default function AddEditForm(props) {
             </div>
           ))}
           <div className="add-form-but my-3">
-            <button className="btn btn-primary mx-2" type="submit">
+            <button className="btn btn-primary mx-2 " type="submit">
               {action == "add" ? "ADD " : "UPDATE "} {selectedEntity.btnLabel}
             </button>
             <button

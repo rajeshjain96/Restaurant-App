@@ -1,15 +1,5 @@
-// const Category = require("../models/category.model.js");
-// const { MongoClient } = require("mongodb");
-// const { MongoClient } = require("mongodb");
-const { db, app } = require("../init.js");
-const collection = require("../index.js");
+const { app } = require("../init.js");
 const { ObjectId } = require("mongodb");
-
-// const collection = db.collection("customers");
-// const collection = null; //db.collection("customers");
-// console.log("Dada");
-
-// console.log(db);
 
 async function getAllCustomers() {
   const db = app.locals.db;
