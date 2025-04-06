@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AddEditForm from "./addEditForm";
+import AddEditForm from "./AddEditForm";
 import AnItem from "./AnItem";
 import CommonUtilityBar from "./CommonUtilityBar";
 

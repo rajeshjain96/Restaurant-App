@@ -1,16 +1,18 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+
 import "./App.css";
 import Home from "./components/Home";
-import ShowModal from "./components/ShowModal";
+import RestaurantHomePage from "./components_r/RestaurantHomePage";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <Home /> {/* <ShowModal></ShowModal> */}
+      {/* This Home Component was developed for Nimbalkar's sw.
+    commented on date: 05.04.2025*/}
+      {/* <Home /> */}
+      <RestaurantHomePage />
     </>
   );
 }

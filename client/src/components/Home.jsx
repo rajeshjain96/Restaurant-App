@@ -95,6 +95,7 @@ export default function Home() {
     setSelectedEntity({ ...sEntity, attributes: a });
     setRequiredLists(rList);
   }
+
   async function getListFromBackEnd(collectionName) {
     let response = await axios("http://localhost:3000/" + collectionName);
     let list = response.data;
@@ -109,9 +110,6 @@ export default function Home() {
     setFilteredList(list);
   }
 
-  function handleAddEntityClick() {
-    setAction("add");
-  }
   function handleSubmit(obj) {
     // check for form validations
     let flag = false;
@@ -158,31 +156,25 @@ export default function Home() {
     // setCategoryList(cList);
     setSelectedList(list);
     setFilteredList(fList);
-
-    // if (selectedEntityName == "categories") {
-    //   let response = await axios.post("http://localhost:3000/categories", obj);
-    //   obj = response.data;
-    //   //update the list
-    //   let cList = [...categoryList];
-    //   cList.push(obj);
-    //   setCategoryList(cList);
-    //   setSelectedList(cList);
-    // } else if (selectedEntityName == "products") {
-    //   let response = await axios.post("http://localhost:3000/products", obj);
-    //   obj = response.data;
-    //   //update the list
-    //   let pList = [...productList];
-    //   pList.push(obj);
-    //   setProductList(pList);
-    //   setSelectedList(pList);
-    // }
     showMessage(selectedEntity.btnLabel + " added successfully");
     setAction("list");
   }
   async function handleEditSubmitForm(obj) {
+    // if files are there, add them also
+    let cnt = 0;
+    selectedEntity.attributes.map((e, index) => {
+      if (e.type == "file") {
+        cnt++;
+        if (e.tempFile) {
+          obj[e.id + "_file"] = e.tempFile;
+          obj[e.id] = e.tempFile.name; // add file name to object
+        }
+      }
+    });
     let response = await axios.put(
       "http://localhost:3000/" + selectedEntity.dbCollection,
-      obj
+      obj,
+      { headers: { "Content-type": "multipart/form-data" } }
     );
     let obj1 = response.data;
     //update the list
@@ -235,8 +227,30 @@ export default function Home() {
     setAction("list");
   }
   function handleEditButtonClick(item) {
+    clearPreviousData();
     setAction("edit");
     setItemToBeEdited(item);
+  }
+  function handleAddEntityClick() {
+    clearPreviousData();
+    setAction("add");
+  }
+  function clearPreviousData() {
+    // This is required for clear the preview attribute of  file element
+    // If an image in the form is to be changed, we add flagChangeImage attribute to the corresponding object
+    let sEntity = { ...selectedEntity };
+    let att = [...sEntity.attributes];
+    let a = att.map((e, index) => {
+      let p = { ...e };
+      if (p.type == "file") {
+        p.preview = "";
+        p.file = "";
+        p.flagChangeImage = false;
+      }
+      return p;
+    });
+    sEntity.attributes = a;
+    setSelectedEntity(sEntity);
   }
   async function handleDeleteButtonClick(ans, item) {
     if (ans == "No") {
@@ -303,6 +317,39 @@ export default function Home() {
         p.preview = URL.createObjectURL(file);
         p.size = file.size;
         p.file = file;
+        if (action == "edit") {
+          // save file name in attributes, because user may change it or cancel it
+          p.tempFile = file;
+        }
+      }
+      return p;
+    });
+    sEntity.attributes = a;
+    setSelectedEntity(sEntity);
+  }
+  function handleChangeImageClick(selectedIndex) {
+    // If an image in the form is to be changed, we add flagChangeImage attribute to the corresponding object
+    let sEntity = { ...selectedEntity };
+    let att = [...sEntity.attributes];
+    let a = att.map((e, index) => {
+      let p = { ...e };
+      if (index == selectedIndex) {
+        p.flagChangeImage = true;
+        p.tempFile = "";
+      }
+      return p;
+    });
+    sEntity.attributes = a;
+    setSelectedEntity(sEntity);
+  }
+  function handleChangeImageCancelClick(selectedIndex) {
+    // If an image in the form is to be changed, we add flagChangeImage attribute to the corresponding object
+    let sEntity = { ...selectedEntity };
+    let att = [...sEntity.attributes];
+    let a = att.map((e, index) => {
+      let p = { ...e };
+      if (index == selectedIndex) {
+        p.flagChangeImage = false;
       }
       return p;
     });
@@ -481,6 +528,8 @@ export default function Home() {
             onSrNoClick={handleSrNoClick}
             onFormTextChangeValidations={handleFormTextChangeValidations}
             onFileUploadChange={handleFileUploadChange}
+            onChangeImageClick={handleChangeImageClick}
+            onChangeImageCancelClick={handleChangeImageCancelClick}
           />
         )}
       </div>

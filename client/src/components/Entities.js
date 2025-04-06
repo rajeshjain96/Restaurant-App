@@ -100,7 +100,8 @@ export let entities = [
         // placeholder: "Upload image file",
         value: "",
         preview: "",
-        file:"",
+        file: "",
+        tempFile: "", // while editing, this is the new file
         validations: { message: "", mxLen: 80, mnLen: 10, onlyDigits: false },
       },
       // {
