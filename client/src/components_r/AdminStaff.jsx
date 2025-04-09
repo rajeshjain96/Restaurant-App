@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminProductForm from "./AdminProductForm";
+import AdminStaffForm from "./AdminStaffForm";
 import { BeatLoader } from "react-spinners";
-import AProduct from "./AProduct";
+import AStaff from "./AStaff";
 import axios from "axios";
 
-export default function AdminProducts(props) {
-  let [productList, setProductList] = useState([]);
+export default function AdminStaff(props) {
+  let [staffList, setStaffList] = useState([]);
   let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredProductList, setFilteredProductList] = useState([]);
-  let [productToBeEdited, setProductToBeEdited] = useState("");
+  let [filteredStaffList, setFilteredStaffList] = useState([]);
+  let [staffToBeEdited, setStaffToBeEdited] = useState("");
   let [loadFlag, setLoadFlag] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
@@ -18,39 +18,34 @@ export default function AdminProducts(props) {
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
-  let productSchema = [
+  let staffSchema = [
     { attribute: "name" },
-    {
-      attribute: "category",
-      relationalData: true,
-      list: "categoryList",
-      relatedId: "categoryId",
-    },
-    { attribute: "categoryId", type: "select" },
-    { attribute: "info" },
-    { attribute: "price" },
-    { attribute: "imageName" },
-    // instock: 1,
-    // rating: 5,
+    // {
+    //   attribute: "staffCategory",
+    //   relationalData: true,
+    //   list: "staffCategoryList",
+    //   relatedId: "categoryId",
+    // },
+    // { attribute: "categoryId", type: "select" },
+    { attribute: "mobileNumber" },
+    { attribute: "address" },
   ];
-  let productValidations = {
+  let staffValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
-    info: { message: "", onlyDigits: false },
-    price: {
+    mobileNumber: { message: "", mxLen: 10, mnLen: 10, onlyDigits: true },
+    address: {
       message: "",
       mxLen: 30,
       mnLen: 2,
       onlyDigits: false,
     },
-    imageName: { message: "" },
-    category: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getListFromProductSchema());
-  let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getListFromProductSchema() {
+  let [showInList, setShowInList] = useState(getListFromStaffSchema());
+  let [emptyStaff, setEmptyStaff] = useState(getEmptyStaff());
+  function getListFromStaffSchema() {
     let list = [];
     let cnt = 0;
-    productSchema.forEach((e, index) => {
+    staffSchema.forEach((e, index) => {
       let obj = {};
       if (!e.type) {
         // do not show id of relational data.
@@ -66,84 +61,84 @@ export default function AdminProducts(props) {
     });
     return list;
   }
-  function getEmptyProduct() {
-    let eProduct = {};
-    productSchema.forEach((e, index) => {
-      eProduct[e["attribute"]] = "";
+  function getEmptyStaff() {
+    let eStaff = {};
+    staffSchema.forEach((e, index) => {
+      eStaff[e["attribute"]] = "";
     });
-    return eProduct;
+    return eStaff;
   }
   useEffect(() => {
     getData();
   }, []);
   async function getData() {
     setLoadFlag(true);
-    let response = await axios("http://localhost:3000/products");
+    let response = await axios("http://localhost:3000/staff");
     let pList = await response.data;
     response = await axios("http://localhost:3000/categories");
     let cList = await response.data;
-    // In the productList, add a parameter - category
-    pList.forEach((product, index) => {
+    // In the staffList, add a parameter - category
+    pList.forEach((staff, index) => {
       // get category (string) from categoryId
       for (let i = 0; i < cList.length; i++) {
-        if (product.categoryId == cList[i]._id) {
-          product.category = cList[i].name;
+        if (staff.categoryId == cList[i]._id) {
+          staff.category = cList[i].name;
           break;
         }
       } //for
     });
-    setProductList(pList);
-    setFilteredProductList(pList);
+    setStaffList(pList);
+    setFilteredStaffList(pList);
     setCategoryList(cList);
     setLoadFlag(false);
   }
-  async function handleFormSubmit(product) {
+  async function handleFormSubmit(staff) {
     let message;
     // now remove relational data
-    let productForBackEnd = { ...product };
-    for (let key in productForBackEnd) {
-      productSchema.forEach((e, index) => {
+    let staffForBackEnd = { ...staff };
+    for (let key in staffForBackEnd) {
+      staffSchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete productForBackEnd[key];
+          delete staffForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // product = await addProductToBackend(product);
+      // staff = await addStaffToBackend(staff);
       let response = await axios.post(
-        "http://localhost:3000/products",
-        productForBackEnd
+        "http://localhost:3000/staff",
+        staffForBackEnd
       );
-      product._id = await response.data.insertedId;
-      message = "Product added successfully";
-      // update the product list now.
-      let prList = [...productList];
-      prList.push(product);
-      setProductList(prList);
+      staff._id = await response.data.insertedId;
+      message = "Staff added successfully";
+      // update the staff list now.
+      let prList = [...staffList];
+      prList.push(staff);
+      setStaffList(prList);
 
-      let fprList = [...filteredProductList];
-      fprList.push(product);
-      setFilteredProductList(fprList);
+      let fprList = [...filteredStaffList];
+      fprList.push(staff);
+      setFilteredStaffList(fprList);
     } else if (action == "update") {
-      product._id = productToBeEdited._id; // The form does not have id field
-      // await updateBackendProduct(product);
+      staff._id = staffToBeEdited._id; // The form does not have id field
+      // await updateBackendStaff(staff);
       let response = await axios.put(
-        "http://localhost:3000/products",
-        productForBackEnd
+        "http://localhost:3000/staff",
+        staffForBackEnd
       );
       let r = await response.data;
-      message = "Product Updated successfully";
-      // update the product list now.
-      let prList = productList.map((e, index) => {
-        if (e._id == product._id) return product;
+      message = "Staff Updated successfully";
+      // update the staff list now.
+      let prList = staffList.map((e, index) => {
+        if (e._id == staff._id) return staff;
         return e;
       });
-      let fprList = filteredProductList.map((e, index) => {
-        if (e._id == product._id) return product;
+      let fprList = filteredStaffList.map((e, index) => {
+        if (e._id == staff._id) return staff;
         return e;
       });
-      setProductList(prList);
-      setFilteredProductList(fprList);
+      setStaffList(prList);
+      setFilteredStaffList(fprList);
     }
     showMessage(message);
     setAction("list");
@@ -157,9 +152,9 @@ export default function AdminProducts(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(product) {
+  function handleEditButtonClick(staff) {
     setAction("update");
-    setProductToBeEdited(product);
+    setStaffToBeEdited(staff);
   }
   function showMessage(message) {
     setMessage(message);
@@ -167,19 +162,19 @@ export default function AdminProducts(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, product) {
-    // await deleteBackendProduct(product.id);
+  async function handleDeleteButtonClick(ans, staff) {
+    // await deleteBackendStaff(staff.id);
     let response = await axios.delete(
-      "http://localhost:3000/products/" + product._id
+      "http://localhost:3000/staff/" + staff._id
     );
     let r = await response.data;
-    message = `Product - ${product.name} deleted successfully.`;
-    //update the product list now.
-    let prList = productList.filter((e, index) => e._id != product._id);
-    setProductList(prList);
+    message = `Staff - ${staff.name} deleted successfully.`;
+    //update the staff list now.
+    let prList = staffList.filter((e, index) => e._id != staff._id);
+    setStaffList(prList);
 
-    let fprList = productList.filter((e, index) => e._id != product._id);
-    setFilteredProductList(fprList);
+    let fprList = staffList.filter((e, index) => e._id != staff._id);
+    setFilteredStaffList(fprList);
     showMessage(message);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
@@ -217,7 +212,7 @@ export default function AdminProducts(props) {
       // different field
       d = false;
     }
-    let list = [...filteredProductList];
+    let list = [...filteredStaffList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -243,7 +238,7 @@ export default function AdminProducts(props) {
         return 0;
       });
     }
-    setFilteredProductList(list);
+    setFilteredStaffList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -264,13 +259,13 @@ export default function AdminProducts(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredProductList(productList);
+      setFilteredStaffList(staffList);
       return;
     }
-    let searchedProducts = [];
-    // searchedProducts = filterByName(query);
-    searchedProducts = filterByShowInListAttributes(query);
-    setFilteredProductList(searchedProducts);
+    let searchedStaff = [];
+    // searchedStaff = filterByName(query);
+    searchedStaff = filterByShowInListAttributes(query);
+    setFilteredStaffList(searchedStaff);
   }
   function filterByName(query) {
     let fList = [];
@@ -285,17 +280,17 @@ export default function AdminProducts(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < productList.length; i++) {
+    for (let i = 0; i < staffList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            productList[i][parameterName] &&
-            productList[i][parameterName]
+            staffList[i][parameterName] &&
+            staffList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(productList[i]);
+            fList.push(staffList[i]);
             break;
           }
         }
@@ -326,21 +321,21 @@ export default function AdminProducts(props) {
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredProductList.length == 0 && productList.length != 0 && (
+      {filteredStaffList.length == 0 && staffList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {productList.length == 0 && (
+      {staffList.length == 0 && (
         <div className="text-center">List is empty</div>
       )}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminProductForm
-            productSchema={productSchema}
-            productValidations={productValidations}
-            emptyProduct={emptyProduct}
+          <AdminStaffForm
+            staffSchema={staffSchema}
+            staffValidations={staffValidations}
+            emptyStaff={emptyStaff}
             categoryList={categoryList}
             selectedEntity={selectedEntity}
-            productToBeEdited={productToBeEdited}
+            staffToBeEdited={staffToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
@@ -349,7 +344,7 @@ export default function AdminProducts(props) {
           />
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredStaffList.length != 0 && (
         <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
           <div className="col-1">
             <a
@@ -383,7 +378,7 @@ export default function AdminProducts(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredStaffList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -431,15 +426,15 @@ export default function AdminProducts(props) {
         </div>
       )}
       {action == "list" &&
-        filteredProductList.length != 0 &&
-        filteredProductList.map((e, index) => (
-          <AProduct
-            product={e}
+        filteredStaffList.length != 0 &&
+        filteredStaffList.map((e, index) => (
+          <AStaff
+            staff={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredProductList.length}
+            listSize={filteredStaffList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

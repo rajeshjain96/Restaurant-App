@@ -15,14 +15,7 @@ export default function SideBar(props) {
   return (
     <div className="row bg-danger text-start container-sidebar p-3">
       <div className="btn-group dropend">
-        <button
-          type="button"
-          className="btn btn-black dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          DashBoard
-        </button>
+       
         <ul className="dropdown-menu">
           {dashboardList.map((e, index) => (
             <li key={index}>

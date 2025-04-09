@@ -1,24 +1,28 @@
 const { app } = require("../init.js");
 const { ObjectId } = require("mongodb");
-async function getAllCategories() {
+
+async function getAllStaff() {
   const db = app.locals.db;
-  const collection = db.collection("categories");
+
+  const collection = db.collection("staff");
+
   let list = await collection.find().toArray();
+
   return list;
 }
-async function getCategoryById(id) {
-  let obj = await Category.findById(id);
+async function getStaffById(id) {
+  let obj = await Staff.findById(id);
   return obj;
 }
-async function addCategory(obj) {
+async function addStaff(obj) {
   const db = app.locals.db;
-  const collection = db.collection("categories");
+  const collection = db.collection("staff");
   let response = await collection.insertOne(obj);
   return obj;
 }
-async function updateCategory(obj) {
+async function updateStaff(obj) {
   const db = app.locals.db;
-  const collection = db.collection("categories");
+  const collection = db.collection("staff");
   let id = obj._id;
   delete obj._id;
   obj = await collection.updateOne(
@@ -26,21 +30,22 @@ async function updateCategory(obj) {
     { $set: obj }
   );
   console.log("Updated");
+  console.log(obj);
   return obj;
 }
-async function deleteCategory(id) {
+async function deleteStaff(id) {
   const db = app.locals.db;
-  const collection = db.collection("categories");
+  const collection = db.collection("staff");
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
   console.log("Deleted");
   return obj;
 }
-module.exports = CategoryService = {
-  getAllCategories,
-  getCategoryById,
-  addCategory,
-  updateCategory,
-  deleteCategory,
+module.exports = StaffService = {
+  getAllStaff,
+  getStaffById,
+  addStaff,
+  updateStaff,
+  deleteStaff,
 };

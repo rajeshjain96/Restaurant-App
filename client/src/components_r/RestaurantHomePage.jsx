@@ -1,42 +1,41 @@
 import { useState } from "react";
-import Content from "./Content";
 import SideBar from "./SideBar";
 import AdminProducts from "./AdminProducts";
+import AdminCategories from "./AdminCategories";
+import AdminStaff from "./AdminStaff";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
   let entities = [
-    { name: "Products", singularName: "Product", dbCollection: "products" },
-    { name: "Categories", singularName: "Product", dbCollection: "categories" },
-    { name: "Users", singularName: "Product", dbCollection: "users" },
-    { name: "Tables", singularName: "Product", dbCollection: "tables" },
-    { name: "Bills", singularName: "Product", dbCollection: "bills" },
+    {
+      name: "Products",
+      singularName: "Product",
+      dbCollection: "products",
+      addFacility: true,
+    },
+    {
+      name: "Categories",
+      singularName: "Category",
+      dbCollection: "categories",
+      addFacility: true,
+    },
+    {
+      name: "Staff",
+      singularName: "Staff",
+      dbCollection: "staff",
+      addFacility: true,
+    },
+    {
+      name: "Bills",
+      singularName: "Bill",
+      dbCollection: "bills",
+      addFacility: false,
+    },
   ];
   function handleEntityClick(selectedIndex) {
     setLoadFlag(true);
-    // setSortedField("");
-    // let sEntity = .name;
-    // getListFromBackEnd(entities[selectedIndex].dbCollection);
     setSelectedEntity(entities[selectedIndex]);
-    // if (sEntity.requiredLists.length != 0) {
-    //   // data is to be fetched
-    //   getRequiredLists(sEntity);
-    // } else {
-    //   setSelectedEntity(sEntity);
-    // }
-    // let emptyObj = {};
-    // let emptyVArray = [];
-    // sEntity.attributes.forEach((e, index) => {
-    //   emptyObj[e.id] = e.value;
-    //   emptyVArray.push(e.validations);
-    // });
-    //This is empty object for ADD form
-    // setEmptyEntityObject(emptyObj);
-    // setEmptyValidationsArray(emptyVArray);
-    // setAction("list");
-    // setSelectedEntityIndex(selectedIndex);
-    // setSelectedEntityName(entities[selectedIndex].dbCollection);
     setLoadFlag(false);
   }
   async function getListFromBackEnd(collectionName) {
@@ -57,11 +56,21 @@ export default function RestaurantHomePage() {
       <div className="col-2 ">
         <SideBar entities={entities} onEntityClick={handleEntityClick} />
       </div>
-      <div className="col-10 ">
-        {selectedEntity.name == "Products" && (
+      {selectedEntity.name == "Products" && (
+        <div className="col-10 ">
           <AdminProducts selectedEntity={selectedEntity} />
-        )}
-      </div>
+        </div>
+      )}
+      {selectedEntity.name == "Categories" && (
+        <div className="col-10 ">
+          <AdminCategories selectedEntity={selectedEntity} />
+        </div>
+      )}
+      {selectedEntity.name == "Staff" && (
+        <div className="col-10 ">
+          <AdminStaff selectedEntity={selectedEntity} />
+        </div>
+      )}
       {/* <div className="col-10 ">{true && <Content />}</div> */}
     </div>
   );

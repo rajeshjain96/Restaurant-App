@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
-export default function AdminProductForm(props) {
-  let [product, setProduct] = useState("");
-  let [errorProduct, setErrorProduct] = useState(props.productValidations);
+export default function AdminStaffForm(props) {
+  let [staff, setStaff] = useState("");
+  let [errorStaff, setErrorStaff] = useState(props.staffValidations);
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let { action } = props;
   let { selectedEntity } = props;
@@ -16,49 +16,49 @@ export default function AdminProductForm(props) {
   function init() {
     let { action } = props;
     if (action === "add") {
-      // emptyProduct.category = props.categoryToRetain;
-      // emptyProduct.categoryId = props.categoryIdToRetain;
-      setProduct(props.emptyProduct);
+      // emptyStaff.category = props.categoryToRetain;
+      // emptyStaff.categoryId = props.categoryIdToRetain;
+      setStaff(props.emptyStaff);
     } else if (action === "update") {
       // in edit mode, keep the update button enabled at the beginning
       setFlagFormInvalid(false);
-      setProduct(props.productToBeEdited);
+      setStaff(props.staffToBeEdited);
     }
   }
   function handleTextFieldChange(event) {
     let name = event.target.name;
-    setProduct({ ...product, [name]: event.target.value });
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    setStaff({ ...staff, [name]: event.target.value });
+    let message = fieldValidate(event, errorStaff);
+    let errStaff = { ...errorStaff };
+    errorStaff[`${name}`].message = message;
+    setErrorStaff(errStaff);
   }
   function handleBlur(event) {
     let name = event.target.name;
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    let message = fieldValidate(event, errorStaff);
+    let errStaff = { ...errorStaff };
+    errorStaff[`${name}`].message = message;
+    setErrorStaff(errStaff);
   }
   function handleFocus(event) {
     setFlagFormInvalid(false);
   }
   function checkAllErrors() {
-    for (let field in errorProduct) {
-      if (errorProduct[field].message !== "") {
+    for (let field in errorStaff) {
+      if (errorStaff[field].message !== "") {
         return true;
       } //if
     } //for
-    let errProduct = { ...errorProduct };
+    let errStaff = { ...errorStaff };
     let flag = false;
-    for (let field in product) {
-      if (product[field] == "") {
+    for (let field in staff) {
+      if (staff[field] == "") {
         flag = true;
-        errProduct[field].message = "Required...";
+        errStaff[field].message = "Required...";
       } //if
     } //for
     if (flag) {
-      setErrorProduct(errProduct);
+      setErrorStaff(errStaff);
       return true;
     }
     return false;
@@ -73,7 +73,7 @@ export default function AdminProductForm(props) {
     }
     setFlagFormInvalid(false);
 
-    props.onFormSubmit(product);
+    props.onFormSubmit(staff);
   };
   function handleSelectCategoryChange(event) {
     let index = event.target.selectedIndex; // get selected index, instead of selected value
@@ -81,7 +81,7 @@ export default function AdminProductForm(props) {
     var selectedCategoryId = optionElement.getAttribute("id");
     let category = event.target.value.trim();
     let categoryId = selectedCategoryId;
-    setProduct({ ...product, category: category, categoryId: categoryId });
+    setStaff({ ...staff, category: category, categoryId: categoryId });
   }
   let optionsCategory = categoryList.map((category, index) =>
     category.rating != 1 ? (
@@ -104,105 +104,65 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="name"
-                value={product.name}
+                value={staff.name}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter product name"
+                placeholder="Enter staff name"
               />
             </div>
             <div className="">
-              {errorProduct.name.message ? (
-                <span className="text-danger">{errorProduct.name.message}</span>
+              {errorStaff.name.message ? (
+                <span className="text-danger">{errorStaff.name.message}</span>
               ) : null}
             </div>
           </div>
           <div className="col-6 my-2">
             <div className="text-bold my-1">
-              <label>Price</label>
+              <label>Mobile Number</label>
             </div>
             <div className="px-0">
               <input
                 type="text"
                 className="form-control"
-                name="price"
-                value={product.price}
+                name="mobileNumber"
+                value={staff.mobileNumber}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter price in Rs."
+                placeholder="Enter Mobile Number"
               />
             </div>
             <div className="">
-              {errorProduct.price.message ? (
+              {errorStaff.mobileNumber.message ? (
                 <span className="text-danger">
-                  {errorProduct.price.message}
+                  {errorStaff.mobileNumber.message}
                 </span>
               ) : null}
             </div>
           </div>
           <div className="col-6 my-2">
             <div className="text-bold my-1">
-              <label>Information</label>
+              <label>Address</label>
             </div>
             <div className="px-0">
               <input
                 type="text"
                 className="form-control"
-                name="info"
-                value={product.info}
+                name="address"
+                value={staff.address}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter information"
+                placeholder="Enter Address"
               />
             </div>
             <div className="">
-              {errorProduct.info.message ? (
-                <span className="text-danger">{errorProduct.info.message}</span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Image Name</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="imageName"
-                value={product.imageName}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter image name"
-              />
-            </div>
-            <div className="">
-              {errorProduct.imageName.message ? (
+              {errorStaff.address.message ? (
                 <span className="text-danger">
-                  {errorProduct.imageName.message}
+                  {errorStaff.address.message}
                 </span>
               ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Category</label>
-            </div>
-            <div className="px-0">
-              <select
-                className="form-control"
-                name="category"
-                value={product.category}
-                onChange={handleSelectCategoryChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-              >
-                <option> Select Category </option>
-                {optionsCategory}
-              </select>
             </div>
           </div>
           <div className="col-12">

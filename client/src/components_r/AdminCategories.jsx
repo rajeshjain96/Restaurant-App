@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminProductForm from "./AdminProductForm";
+import AdminCategoryForm from "./AdminCategoryForm";
 import { BeatLoader } from "react-spinners";
-import AProduct from "./AProduct";
+import ACategory from "./ACategory";
 import axios from "axios";
 
-export default function AdminProducts(props) {
-  let [productList, setProductList] = useState([]);
+export default function AdminCategories(props) {
   let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredProductList, setFilteredProductList] = useState([]);
-  let [productToBeEdited, setProductToBeEdited] = useState("");
+  let [filteredCategoryList, setFilteredCategoryList] = useState([]);
+  let [categoryToBeEdited, setCategoryToBeEdited] = useState("");
   let [loadFlag, setLoadFlag] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
@@ -18,39 +17,30 @@ export default function AdminProducts(props) {
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
-  let productSchema = [
+  let categorySchema = [
     { attribute: "name" },
-    {
-      attribute: "category",
-      relationalData: true,
-      list: "categoryList",
-      relatedId: "categoryId",
-    },
-    { attribute: "categoryId", type: "select" },
     { attribute: "info" },
-    { attribute: "price" },
+    { attribute: "rating" },
     { attribute: "imageName" },
-    // instock: 1,
-    // rating: 5,
   ];
-  let productValidations = {
+  let categoryValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
     info: { message: "", onlyDigits: false },
-    price: {
+    rating: {
       message: "",
       mxLen: 30,
       mnLen: 2,
       onlyDigits: false,
     },
     imageName: { message: "" },
-    category: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getListFromProductSchema());
-  let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getListFromProductSchema() {
+  let [showInList, setShowInList] = useState(getListFromCategorySchema());
+  let [emptyCategory, setEmptyCategory] = useState(getEmptyCategory());
+
+  function getListFromCategorySchema() {
     let list = [];
     let cnt = 0;
-    productSchema.forEach((e, index) => {
+    categorySchema.forEach((e, index) => {
       let obj = {};
       if (!e.type) {
         // do not show id of relational data.
@@ -66,84 +56,71 @@ export default function AdminProducts(props) {
     });
     return list;
   }
-  function getEmptyProduct() {
-    let eProduct = {};
-    productSchema.forEach((e, index) => {
-      eProduct[e["attribute"]] = "";
+  function getEmptyCategory() {
+    let eCategory = {};
+    categorySchema.forEach((e, index) => {
+      eCategory[e["attribute"]] = "";
     });
-    return eProduct;
+    return eCategory;
   }
   useEffect(() => {
     getData();
   }, []);
   async function getData() {
     setLoadFlag(true);
-    let response = await axios("http://localhost:3000/products");
-    let pList = await response.data;
-    response = await axios("http://localhost:3000/categories");
-    let cList = await response.data;
-    // In the productList, add a parameter - category
-    pList.forEach((product, index) => {
-      // get category (string) from categoryId
-      for (let i = 0; i < cList.length; i++) {
-        if (product.categoryId == cList[i]._id) {
-          product.category = cList[i].name;
-          break;
-        }
-      } //for
-    });
-    setProductList(pList);
-    setFilteredProductList(pList);
-    setCategoryList(cList);
+    let response = await axios("http://localhost:3000/categories");
+    let list = await response.data;
+    setCategoryList(list);
+    setFilteredCategoryList(list);
     setLoadFlag(false);
   }
-  async function handleFormSubmit(product) {
+  async function handleFormSubmit(category) {
     let message;
     // now remove relational data
-    let productForBackEnd = { ...product };
-    for (let key in productForBackEnd) {
-      productSchema.forEach((e, index) => {
+    let categoryForBackEnd = { ...category };
+    for (let key in categoryForBackEnd) {
+      categoryList.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete productForBackEnd[key];
+          delete categoryForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // product = await addProductToBackend(product);
+      // category = await addCategoryToBackend(category);
       let response = await axios.post(
-        "http://localhost:3000/products",
-        productForBackEnd
+        "http://localhost:3000/categories",
+        categoryForBackEnd
       );
-      product._id = await response.data.insertedId;
-      message = "Product added successfully";
-      // update the product list now.
-      let prList = [...productList];
-      prList.push(product);
-      setProductList(prList);
+      category._id = await response.data.insertedId;
+      message = "Category added successfully";
+      // update the category list now.
+      let prList = [...categoryList];
+      prList.push(category);
+      setCategoryList(prList);
 
-      let fprList = [...filteredProductList];
-      fprList.push(product);
-      setFilteredProductList(fprList);
+      let fprList = [...filteredCategoryList];
+      fprList.push(category);
+      setFilteredCategoryList(fprList);
     } else if (action == "update") {
-      product._id = productToBeEdited._id; // The form does not have id field
-      // await updateBackendProduct(product);
+      category._id = categoryToBeEdited._id; // The form does not have id field
+      // await updateBackendCategory(category);
       let response = await axios.put(
-        "http://localhost:3000/products",
-        productForBackEnd
+        "http://localhost:3000/categories",
+        categoryForBackEnd
       );
       let r = await response.data;
-      message = "Product Updated successfully";
-      // update the product list now.
-      let prList = productList.map((e, index) => {
-        if (e._id == product._id) return product;
+      message = "Category Updated successfully";
+      // update the category list now.
+      let prList = categoryList.map((e, index) => {
+        if (e._id == category._id) return category;
         return e;
       });
-      let fprList = filteredProductList.map((e, index) => {
-        if (e._id == product._id) return product;
+      let fprList = filteredCategoryList.map((e, index) => {
+        if (e._id == category._id) return category;
         return e;
       });
-      setProductList(prList);
-      setFilteredProductList(fprList);
+      setCategoryList(prList);
+      setFilteredCategoryList(fprList);
     }
     showMessage(message);
     setAction("list");
@@ -157,9 +134,9 @@ export default function AdminProducts(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(product) {
+  function handleEditButtonClick(category) {
     setAction("update");
-    setProductToBeEdited(product);
+    setCategoryToBeEdited(category);
   }
   function showMessage(message) {
     setMessage(message);
@@ -167,19 +144,19 @@ export default function AdminProducts(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, product) {
-    // await deleteBackendProduct(product.id);
+  async function handleDeleteButtonClick(ans, category) {
+    // await deleteBackendCategory(category.id);
     let response = await axios.delete(
-      "http://localhost:3000/products/" + product._id
+      "http://localhost:3000/categories/" + category._id
     );
     let r = await response.data;
-    message = `Product - ${product.name} deleted successfully.`;
-    //update the product list now.
-    let prList = productList.filter((e, index) => e._id != product._id);
-    setProductList(prList);
+    message = `Category - ${category.name} deleted successfully.`;
+    //update the category list now.
+    let prList = categoryList.filter((e, index) => e._id != category._id);
+    setCategoryList(prList);
 
-    let fprList = productList.filter((e, index) => e._id != product._id);
-    setFilteredProductList(fprList);
+    let fprList = categoryList.filter((e, index) => e._id != category._id);
+    setFilteredCategoryList(fprList);
     showMessage(message);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
@@ -217,7 +194,7 @@ export default function AdminProducts(props) {
       // different field
       d = false;
     }
-    let list = [...filteredProductList];
+    let list = [...filteredCategoryList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -243,7 +220,7 @@ export default function AdminProducts(props) {
         return 0;
       });
     }
-    setFilteredProductList(list);
+    setFilteredCategoryList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -264,13 +241,13 @@ export default function AdminProducts(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredProductList(productList);
+      setFilteredCategoryList(categoryList);
       return;
     }
-    let searchedProducts = [];
-    // searchedProducts = filterByName(query);
-    searchedProducts = filterByShowInListAttributes(query);
-    setFilteredProductList(searchedProducts);
+    let searchedCategories = [];
+    // searchedCategories = filterByName(query);
+    searchedCategories = filterByShowInListAttributes(query);
+    setFilteredCategoryList(searchedCategories);
   }
   function filterByName(query) {
     let fList = [];
@@ -285,17 +262,17 @@ export default function AdminProducts(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < productList.length; i++) {
+    for (let i = 0; i < categoryList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            productList[i][parameterName] &&
-            productList[i][parameterName]
+            categoryList[i][parameterName] &&
+            categoryList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(productList[i]);
+            fList.push(categoryList[i]);
             break;
           }
         }
@@ -326,21 +303,20 @@ export default function AdminProducts(props) {
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredProductList.length == 0 && productList.length != 0 && (
+      {filteredCategoryList.length == 0 && categoryList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {productList.length == 0 && (
+      {categoryList.length == 0 && (
         <div className="text-center">List is empty</div>
       )}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminProductForm
-            productSchema={productSchema}
-            productValidations={productValidations}
-            emptyProduct={emptyProduct}
-            categoryList={categoryList}
+          <AdminCategoryForm
+            categorySchema={categorySchema}
+            categoryValidations={categoryValidations}
+            emptyCategory={emptyCategory}
             selectedEntity={selectedEntity}
-            productToBeEdited={productToBeEdited}
+            categoryToBeEdited={categoryToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
@@ -349,7 +325,7 @@ export default function AdminProducts(props) {
           />
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredCategoryList.length != 0 && (
         <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
           <div className="col-1">
             <a
@@ -383,7 +359,7 @@ export default function AdminProducts(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredCategoryList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -431,15 +407,15 @@ export default function AdminProducts(props) {
         </div>
       )}
       {action == "list" &&
-        filteredProductList.length != 0 &&
-        filteredProductList.map((e, index) => (
-          <AProduct
-            product={e}
+        filteredCategoryList.length != 0 &&
+        filteredCategoryList.map((e, index) => (
+          <ACategory
+            category={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredProductList.length}
+            listSize={filteredCategoryList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

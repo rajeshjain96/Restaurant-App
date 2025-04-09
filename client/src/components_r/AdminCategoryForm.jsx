@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
-export default function AdminProductForm(props) {
-  let [product, setProduct] = useState("");
-  let [errorProduct, setErrorProduct] = useState(props.productValidations);
+export default function AdminCategoryForm(props) {
+  let [category, setCategory] = useState("");
+  let [errorCategory, setErrorCategory] = useState(props.categoryValidations);
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let { action } = props;
   let { selectedEntity } = props;
-  let { categoryList } = props;
 
   useEffect(() => {
     window.scroll(0, 0);
@@ -16,49 +15,58 @@ export default function AdminProductForm(props) {
   function init() {
     let { action } = props;
     if (action === "add") {
-      // emptyProduct.category = props.categoryToRetain;
-      // emptyProduct.categoryId = props.categoryIdToRetain;
-      setProduct(props.emptyProduct);
+      // emptyCategory.category = props.categoryToRetain;
+      // emptyCategory.categoryId = props.categoryIdToRetain;
+      setCategory(props.emptyCategory);
     } else if (action === "update") {
       // in edit mode, keep the update button enabled at the beginning
       setFlagFormInvalid(false);
-      setProduct(props.productToBeEdited);
+      setCategory(props.categoryToBeEdited);
     }
   }
   function handleTextFieldChange(event) {
     let name = event.target.name;
-    setProduct({ ...product, [name]: event.target.value });
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    setCategory({ ...category, [name]: event.target.value });
+    let message = fieldValidate(event, errorCategory);
+    let errCategory = { ...errorCategory };
+    errorCategory[`${name}`].message = message;
+    setErrorCategory(errCategory);
+  }
+  function handleChange(event) {
+    let name = event.target.name;
+    setCategory({ ...category, [name]: event.target.value });
+    // isValid(event);
+    let message = fieldValidate(event, errorCategory);
+    let errCategory = { ...errorCategory };
+    errorCategory[`${name}`].message = message;
+    setErrorCategory(errCategory);
   }
   function handleBlur(event) {
     let name = event.target.name;
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    let message = fieldValidate(event, errorCategory);
+    let errCategory = { ...errorCategory };
+    errorCategory[`${name}`].message = message;
+    setErrorCategory(errCategory);
   }
   function handleFocus(event) {
     setFlagFormInvalid(false);
   }
   function checkAllErrors() {
-    for (let field in errorProduct) {
-      if (errorProduct[field].message !== "") {
+    for (let field in errorCategory) {
+      if (errorCategory[field].message !== "") {
         return true;
       } //if
     } //for
-    let errProduct = { ...errorProduct };
+    let errCategory = { ...errorCategory };
     let flag = false;
-    for (let field in product) {
-      if (product[field] == "") {
+    for (let field in category) {
+      if (category[field] == "") {
         flag = true;
-        errProduct[field].message = "Required...";
+        errCategory[field].message = "Required...";
       } //if
     } //for
     if (flag) {
-      setErrorProduct(errProduct);
+      setErrorCategory(errCategory);
       return true;
     }
     return false;
@@ -72,24 +80,17 @@ export default function AdminProductForm(props) {
       return;
     }
     setFlagFormInvalid(false);
-
-    props.onFormSubmit(product);
+    props.onFormSubmit(category);
   };
-  function handleSelectCategoryChange(event) {
-    let index = event.target.selectedIndex; // get selected index, instead of selected value
-    var optionElement = event.target.childNodes[index];
-    var selectedCategoryId = optionElement.getAttribute("id");
-    let category = event.target.value.trim();
-    let categoryId = selectedCategoryId;
-    setProduct({ ...product, category: category, categoryId: categoryId });
+  function handleFormCloseClick() {
+    props.onFormCloseClick();
   }
-  let optionsCategory = categoryList.map((category, index) =>
-    category.rating != 1 ? (
-      <option value={category.name} key={index} id={category._id}>
-        {category.name}
-      </option>
-    ) : null
-  );
+  function handleChangeImageClick(index) {
+    props.onChangeImageClick(index);
+  }
+  function handleChangeImageCancelClick(index) {
+    props.onChangeImageCancelClick(index);
+  }
   return (
     <div className="p-2">
       <form className="text-thick p-4" onSubmit={handleFormSubmit}>
@@ -104,39 +105,17 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="name"
-                value={product.name}
+                value={category.name}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter product name"
+                placeholder="Enter category name"
               />
             </div>
             <div className="">
-              {errorProduct.name.message ? (
-                <span className="text-danger">{errorProduct.name.message}</span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Price</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="price"
-                value={product.price}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter price in Rs."
-              />
-            </div>
-            <div className="">
-              {errorProduct.price.message ? (
+              {errorCategory.name.message ? (
                 <span className="text-danger">
-                  {errorProduct.price.message}
+                  {errorCategory.name.message}
                 </span>
               ) : null}
             </div>
@@ -150,16 +129,42 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="info"
-                value={product.info}
+                value={category.info}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter information"
+                placeholder="Enter details about this category "
               />
             </div>
             <div className="">
-              {errorProduct.info.message ? (
-                <span className="text-danger">{errorProduct.info.message}</span>
+              {errorCategory.info.message ? (
+                <span className="text-danger">
+                  {errorCategory.info.message}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="col-6 my-2">
+            <div className="text-bold my-1">
+              <label>Rating</label>
+            </div>
+            <div className="px-0">
+              <input
+                type="text"
+                className="form-control"
+                name="rating"
+                value={category.rating}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter Rating"
+              />
+            </div>
+            <div className="">
+              {errorCategory.rating.message ? (
+                <span className="text-danger">
+                  {errorCategory.rating.message}
+                </span>
               ) : null}
             </div>
           </div>
@@ -172,7 +177,7 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="imageName"
-                value={product.imageName}
+                value={category.imageName}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
@@ -180,29 +185,11 @@ export default function AdminProductForm(props) {
               />
             </div>
             <div className="">
-              {errorProduct.imageName.message ? (
+              {errorCategory.imageName.message ? (
                 <span className="text-danger">
-                  {errorProduct.imageName.message}
+                  {errorCategory.imageName.message}
                 </span>
               ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Category</label>
-            </div>
-            <div className="px-0">
-              <select
-                className="form-control"
-                name="category"
-                value={product.category}
-                onChange={handleSelectCategoryChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-              >
-                <option> Select Category </option>
-                {optionsCategory}
-              </select>
             </div>
           </div>
           <div className="col-12">

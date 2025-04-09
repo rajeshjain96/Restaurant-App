@@ -23,12 +23,12 @@ router.get("/:id", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   let obj = req.body;
-  obj.addDate = new Date();
-  obj.updateDate = new Date();
+  obj.lastModified = new Date();
+  obj.lastUpdated = new Date();
   obj = await ProductService.addProduct(obj);
   res.status(201).json(obj);
 });
-router.put("/", async (req, res) => {
+router.put("/", upload.single("image_file"), async (req, res) => {
   let obj = req.body;
   obj.updateDate = new Date();
   obj = await ProductService.updateProduct(obj);

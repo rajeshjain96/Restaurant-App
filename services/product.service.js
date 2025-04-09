@@ -17,7 +17,7 @@ async function getProductById(id) {
 async function addProduct(obj) {
   const db = app.locals.db;
   const collection = db.collection("products");
-  obj = await collection.insertOne(obj);
+  let response = await collection.insertOne(obj);
   return obj;
 }
 async function updateProduct(obj) {
@@ -34,14 +34,12 @@ async function updateProduct(obj) {
   return obj;
 }
 async function deleteProduct(id) {
-  // obj = await Product.findByIdAndDelete(id);
   const db = app.locals.db;
   const collection = db.collection("products");
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
   console.log("Deleted");
-  console.log(obj);
   return obj;
 }
 module.exports = ProductService = {

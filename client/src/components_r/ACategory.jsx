@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Modal from "./Modal";
 
-export default function AProduct(props) {
+export default function ACategory(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
-  let { product } = props;
+  let { category } = props;
   let { showInList } = props;
   let { sortedField } = props;
   let { direction } = props;
@@ -11,7 +11,7 @@ export default function AProduct(props) {
   let { selectedEntity } = props;
   let { listSize } = props;
   function handleEditButtonClick() {
-    props.onEditButtonClick(product);
+    props.onEditButtonClick(category);
   }
 
   function handleDeleteButtonClick() {
@@ -25,7 +25,7 @@ export default function AProduct(props) {
 
     setFlagDeleteButtonPressed(false);
 
-    props.onDeleteButtonClick(ans, product);
+    props.onDeleteButtonClick(ans, category);
   }
   function getNameFromId(id, index) {
     let obj = selectedEntity.attributes[index].optionList.find(
@@ -45,13 +45,13 @@ export default function AProduct(props) {
         </div>
 
         {/* <div key={index} className="col-2">
-          {product.name}
+          {category.name}
         </div> */}
         {showInList.map(
           (e, index) =>
             e.show && (
               <div key={index} className="col-2">
-                {product[e.attribute]}
+                {category[e.attribute]}
               </div>
             )
         )}
@@ -72,7 +72,7 @@ export default function AProduct(props) {
       {flagDeleteButtonPressed && (
         <Modal
           modalText={
-            'Do you really want to delete data of "' + product.name + '".'
+            'Do you really want to delete data of "' + category.name + '".'
           }
           btnGroup={["Yes", "No"]}
           onModalCloseClick={handleModalCloseClick}

@@ -2,6 +2,7 @@ export default function CommonUtilityBar(props) {
   let { action } = props;
   let { message } = props;
   let { listLength } = props;
+  let { selectedEntity } = props;
 
   function handleListClick() {
     props.onListClick();
@@ -16,13 +17,15 @@ export default function CommonUtilityBar(props) {
     <>
       {action == "list" && (
         <div className="row w-75 mx-auto justify-content-center text-start p-3 align-items-center">
-          <div
-            className="col-1"
-            style={{ fontSize: "40px" }}
-            onClick={handleAddEntityClick}
-          >
-            <i className="bi bi-file-plus-fill"></i>
-          </div>
+          {selectedEntity.addFacility && (
+            <div
+              className="col-1"
+              style={{ fontSize: "40px" }}
+              onClick={handleAddEntityClick}
+            >
+              <i className="bi bi-file-plus-fill"></i>
+            </div>
+          )}
 
           {listLength != 0 && (
             <div className="col-8 text-center">
