@@ -26,10 +26,10 @@ export default function AdminProducts(props) {
       list: "categoryList",
       relatedId: "categoryId",
     },
-    { attribute: "categoryId", type: "select" },
+    { attribute: "categoryId", type: "relationalId" },
     { attribute: "info" },
     { attribute: "price" },
-    { attribute: "imageName" },
+    { attribute: "image", type: "file" },
     // instock: 1,
     // rating: 5,
   ];
@@ -42,17 +42,17 @@ export default function AdminProducts(props) {
       mnLen: 2,
       onlyDigits: false,
     },
-    imageName: { message: "" },
+    image: { message: "" },
     category: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getListFromProductSchema());
+  let [showInList, setShowInList] = useState(getShowInListFromProductSchema());
   let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getListFromProductSchema() {
+  function getShowInListFromProductSchema() {
     let list = [];
     let cnt = 0;
     productSchema.forEach((e, index) => {
       let obj = {};
-      if (!e.type) {
+      if (e.type != "relationalId") {
         // do not show id of relational data.
         obj["attribute"] = e.attribute;
         if (cnt < 4) {
@@ -72,6 +72,17 @@ export default function AdminProducts(props) {
       eProduct[e["attribute"]] = "";
     });
     return eProduct;
+  }
+  function getFileListFromProductSchema() {
+    let list = [];
+    productSchema.forEach((e, index) => {
+      let obj = {};
+      if (e.type == "file") {
+        obj["fileAttributeName"] = e.attribute;
+        list.push(obj);
+      }
+    });
+    return list;
   }
   useEffect(() => {
     getData();
@@ -110,9 +121,11 @@ export default function AdminProducts(props) {
     }
     if (action == "add") {
       // product = await addProductToBackend(product);
+
       let response = await axios.post(
         "http://localhost:3000/products",
-        productForBackEnd
+        productForBackEnd,
+        { headers: { "Content-type": "multipart/form-data" } }
       );
       product._id = await response.data.insertedId;
       message = "Product added successfully";
@@ -127,9 +140,11 @@ export default function AdminProducts(props) {
     } else if (action == "update") {
       product._id = productToBeEdited._id; // The form does not have id field
       // await updateBackendProduct(product);
+
       let response = await axios.put(
         "http://localhost:3000/products",
-        productForBackEnd
+        product,
+        { headers: { "Content-type": "multipart/form-data" } }
       );
       let r = await response.data;
       message = "Product Updated successfully";
@@ -221,7 +236,6 @@ export default function AdminProducts(props) {
     setDirection(d);
     if (d == false) {
       //in ascending order
-
       list.sort((a, b) => {
         if (a[field] > b[field]) {
           return 1;
@@ -247,7 +261,42 @@ export default function AdminProducts(props) {
     setSortedField(field);
   }
   function handleSrNoClick() {
-    props.onSrNoClick();
+    // let field = selectedEntity.attributes[index].id;
+    let d = false;
+    if (sortedField === "updateDate") {
+      d = !direction;
+    } else {
+      d = false;
+    }
+
+    let list = [...filteredProductList];
+    setDirection(!direction);
+    if (d == false) {
+      //in ascending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    } else {
+      //in descending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+    // setSelectedList(list);
+    setFilteredProductList(list);
+    setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
     props.onFormTextChangeValidations(message, index);
@@ -309,6 +358,13 @@ export default function AdminProducts(props) {
   function handleChangeImageCancelClick(index) {
     props.onChangeImageCancelClick(index);
   }
+  function handleFileChangeInUpdateMode(file, fileIndex) {
+    let fl = [...fileList];
+    fl[fileIndex]["newFileName"] = file.name;
+    fl[fileIndex]["newFile"] = file;
+    setFileList(fl);
+  }
+
   if (loadFlag) {
     return (
       <div className="my-5 text-center">
@@ -346,6 +402,8 @@ export default function AdminProducts(props) {
             onFormSubmit={handleFormSubmit}
             onFormCloseClick={handleFormCloseClick}
             onFormTextChangeValidations={handleFormTextChangeValidations}
+            // onFileChangeInUpdateMode={handleFileChangeInUpdateMode}
+            // onFileChangeCancelInUpdateMode={handleFileChangeCancelInUpdateMode}
           />
         </div>
       )}
@@ -357,15 +415,7 @@ export default function AdminProducts(props) {
               onClick={() => {
                 handleSrNoClick();
               }}
-            >
-              S N.{" "}
-              {sortedField == "updateDate" && direction && (
-                <i className="bi bi-arrow-up"></i>
-              )}
-              {sortedField == "updateDate" && !direction && (
-                <i className="bi bi-arrow-down"></i>
-              )}
-            </a>
+            ></a>
           </div>
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
@@ -392,7 +442,7 @@ export default function AdminProducts(props) {
                 handleSrNoClick();
               }}
             >
-              S N.{" "}
+              SN.{" "}
               {sortedField == "updateDate" && direction && (
                 <i className="bi bi-arrow-up"></i>
               )}

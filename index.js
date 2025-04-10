@@ -6,7 +6,7 @@ const categoryRouter = require("./routers/category.router.js");
 const staffRouter = require("./routers/staff.router.js");
 
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/products", productRouter);

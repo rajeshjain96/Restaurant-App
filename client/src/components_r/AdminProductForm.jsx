@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
+import FileUpload from "./FileUpload.jsx";
 export default function AdminProductForm(props) {
   let [product, setProduct] = useState("");
   let [errorProduct, setErrorProduct] = useState(props.productValidations);
@@ -8,7 +9,19 @@ export default function AdminProductForm(props) {
   let { action } = props;
   let { selectedEntity } = props;
   let { categoryList } = props;
-
+  // let { fileList } = props;
+  let [fileList, setFileList] = useState(getFileListFromProductSchema());
+  function getFileListFromProductSchema() {
+    let list = [];
+    props.productSchema.forEach((e, index) => {
+      let obj = {};
+      if (e.type == "file") {
+        obj["fileAttributeName"] = e.attribute;
+        list.push(obj);
+      }
+    });
+    return list;
+  }
   useEffect(() => {
     window.scroll(0, 0);
     init();
@@ -72,9 +85,43 @@ export default function AdminProductForm(props) {
       return;
     }
     setFlagFormInvalid(false);
-
+    if (action == "update") {
+      // There might be files in this form, add those also
+      for (let i = 0; i < fileList.length; i++) {
+        if (fileList[i].newFileName) {
+          product[fileList[i].fileAttributeName] = fileList[i].newFileName;
+          //currently this is only for one file.
+          product.file = fileList[i].newFile;
+        }
+      } //for
+      // console.log(fileList);
+    }
     props.onFormSubmit(product);
   };
+  function handleFileChange(file, fileIndex) {
+    if (action == "add") {
+      setProduct({
+        ...product,
+        file: file,
+        [fileList[fileIndex].fileAttributeName]: file.name,
+      });
+    } else if (action == "update") {
+      // setProduct({ ...product, newFile: file, newImage: file.name });
+      // props.onFileChangeInUpdateMode(file, fileIndex);
+      let fl = [...fileList];
+      fl[fileIndex]["newFileName"] = file.name;
+      fl[fileIndex]["newFile"] = file;
+      setFileList(fl);
+    }
+  }
+  function handleCancelChangeImageClick() {
+    if (action == "update") {
+      let fl = [...fileList];
+      fl[fileIndex]["newFileName"] = "";
+      fl[fileIndex]["newFile"] = "";
+      setFileList(fl);
+    }
+  }
   function handleSelectCategoryChange(event) {
     let index = event.target.selectedIndex; // get selected index, instead of selected value
     var optionElement = event.target.childNodes[index];
@@ -83,6 +130,7 @@ export default function AdminProductForm(props) {
     let categoryId = selectedCategoryId;
     setProduct({ ...product, category: category, categoryId: categoryId });
   }
+
   let optionsCategory = categoryList.map((category, index) =>
     category.rating != 1 ? (
       <option value={category.name} key={index} id={category._id}>
@@ -163,29 +211,18 @@ export default function AdminProductForm(props) {
               ) : null}
             </div>
           </div>
-          <div className="col-6 my-2">
+          <div className="col-12 my-2">
             <div className="text-bold my-1">
-              <label>Image Name</label>
+              <label>Image</label>
             </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="imageName"
-                value={product.imageName}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter image name"
-              />
-            </div>
-            <div className="">
-              {errorProduct.imageName.message ? (
-                <span className="text-danger">
-                  {errorProduct.imageName.message}
-                </span>
-              ) : null}
-            </div>
+            <FileUpload
+              fileList={fileList}
+              action={action}
+              name="image"
+              value={product.image}
+              onFileChange={handleFileChange}
+              onCancelChangeImageClick={handleCancelChangeImageClick}
+            />
           </div>
           <div className="col-6 my-2">
             <div className="text-bold my-1">

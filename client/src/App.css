@@ -12,6 +12,10 @@
 .btn-sidebar {
   width: 100%;
 }
+.fileUpload-image {
+  height: 100px;
+  width: 150px;
+}
 .myborder {
   border: 3px solid darkblue;
 }

@@ -29,8 +29,6 @@ async function updateProduct(obj) {
     { _id: ObjectId.createFromHexString(id) },
     { $set: obj }
   );
-  console.log("Updated");
-  console.log(obj);
   return obj;
 }
 async function deleteProduct(id) {

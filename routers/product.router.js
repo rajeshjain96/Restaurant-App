@@ -8,7 +8,6 @@ const storage = multer.diskStorage({
     cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
-    // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     cb(null, file.originalname);
   },
 });
@@ -21,14 +20,14 @@ router.get("/:id", async (req, res) => {
   let id = req.params.id;
   res.send(ProductService.getProductById(id));
 });
-router.post("/", async (req, res) => {
+router.post("/", upload.single("file"), async (req, res) => {
   let obj = req.body;
   obj.addDate = new Date();
   obj.updateDate = new Date();
   obj = await ProductService.addProduct(obj);
   res.status(201).json(obj);
 });
-router.put("/", async (req, res) => {
+router.put("/", upload.single("file"), async (req, res) => {
   let obj = req.body;
   obj.updateDate = new Date();
   obj = await ProductService.updateProduct(obj);
