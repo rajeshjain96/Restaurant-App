@@ -2,6 +2,9 @@ const express = require("express");
 const { app } = require("./init.js");
 var cors = require("cors");
 const productRouter = require("./routers/product.router.js");
+const customerRouter = require("./routers/customer.router.js");
+const fruitRouter = require("./routers/fruits.router.js");
+const userRouter = require("./routers/user.router.js");
 const categoryRouter = require("./routers/category.router.js");
 const staffRouter = require("./routers/staff.router.js");
 
@@ -10,6 +13,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/products", productRouter);
+app.use("/customers", customerRouter);
+app.use("/fruits", fruitRouter);
+app.use("/users", userRouter);
 app.use("/categories", categoryRouter);
 app.use("/staff", staffRouter);
 app.use("/uploadedImages", express.static("uploads"));

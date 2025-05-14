@@ -13,6 +13,12 @@ export default function CommonUtilityBar(props) {
   function handleSearchKeyUp(event) {
     props.onSearchKeyUp(event);
   }
+  function handleExcelExportClick() {
+    props.onExcelExportClick();
+  }
+  function handlePDFExportClick() {
+    props.onPDFExportClick();
+  }
   return (
     <>
       {action == "list" && (
@@ -50,6 +56,17 @@ export default function CommonUtilityBar(props) {
               </select>
             </div>
           )}
+          <div className="text-center">
+            <button
+              className="btn btn-primary"
+              onClick={handleExcelExportClick}
+            >
+              Export To Excel
+            </button>{" "}
+            <button className="btn btn-primary" onClick={handlePDFExportClick}>
+              Export To PDF
+            </button>
+          </div>
         </div>
       )}
       {(action == "add" || action == "update") && (

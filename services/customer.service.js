@@ -17,7 +17,7 @@ async function getCustomerById(id) {
 async function addCustomer(obj) {
   const db = app.locals.db;
   const collection = db.collection("customers");
-  obj = await collection.insertOne(obj);
+  let response = await collection.insertOne(obj);
   return obj;
 }
 async function updateCustomer(obj) {
@@ -29,19 +29,15 @@ async function updateCustomer(obj) {
     { _id: ObjectId.createFromHexString(id) },
     { $set: obj }
   );
-  console.log("Updated");
-  console.log(obj);
   return obj;
 }
 async function deleteCustomer(id) {
-  // obj = await Customer.findByIdAndDelete(id);
   const db = app.locals.db;
   const collection = db.collection("customers");
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
   console.log("Deleted");
-  console.log(obj);
   return obj;
 }
 module.exports = CustomerService = {

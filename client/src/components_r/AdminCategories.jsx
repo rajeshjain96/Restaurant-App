@@ -171,6 +171,10 @@ export default function AdminCategories(props) {
       showMessage("Minimum 1 field should be selected.");
       return;
     }
+    if (cnt == 4 && checked) {
+      showMessage("Maximum 4 fields can be selected.");
+      return;
+    }
     let att = [...showInList];
     let a = att.map((e, index) => {
       let p = { ...e };

@@ -6,7 +6,7 @@ const url =
   "mongodb+srv://rjacpune:rjacPune411041@cluster0.fwt9kiy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 const client = new MongoClient(url);
-const dbName = "mobicodb";
+const dbName = "ecommdb";
 
 let db;
 const app = express();

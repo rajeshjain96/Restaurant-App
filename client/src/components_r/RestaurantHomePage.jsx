@@ -3,6 +3,7 @@ import SideBar from "./SideBar";
 import AdminProducts from "./AdminProducts";
 import AdminCategories from "./AdminCategories";
 import AdminStaff from "./AdminStaff";
+import AdminCustomers from "./AdminCustomers";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
@@ -15,7 +16,7 @@ export default function RestaurantHomePage() {
       addFacility: true,
     },
     {
-      name: "Categories",
+      name: "Product Categories",
       singularName: "Category",
       dbCollection: "categories",
       addFacility: true,
@@ -24,6 +25,12 @@ export default function RestaurantHomePage() {
       name: "Staff",
       singularName: "Staff",
       dbCollection: "staff",
+      addFacility: true,
+    },
+    {
+      name: "Customers",
+      singularName: "Customer",
+      dbCollection: "customers",
       addFacility: true,
     },
     {
@@ -61,9 +68,14 @@ export default function RestaurantHomePage() {
           <AdminProducts selectedEntity={selectedEntity} />
         </div>
       )}
-      {selectedEntity.name == "Categories" && (
+      {selectedEntity.name == "Product Categories" && (
         <div className="col-10 ">
           <AdminCategories selectedEntity={selectedEntity} />
+        </div>
+      )}
+      {selectedEntity.name == "Customers" && (
+        <div className="col-10 ">
+          <AdminCustomers selectedEntity={selectedEntity} />
         </div>
       )}
       {selectedEntity.name == "Staff" && (
