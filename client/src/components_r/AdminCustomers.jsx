@@ -369,7 +369,7 @@ export default function AdminCustomers(props) {
   function handleExcelExportClick() {
     JSONToCSVConvertor(customerList, "Nothing", true);
   }
-  async function handlePDFExportClick() {
+  async function handlePDFExportClick(exportColumnsSize) {
     // const data = [
     //   { name: "Alice", email: "alice@example.com", age: 25 },
     //   { name: "Bob", email: "bob@example.com", age: 30 },
@@ -381,7 +381,10 @@ export default function AdminCustomers(props) {
     // add content to header dynamically
     let columnNames = [];
     showInList.forEach((e, index) => {
-      if (e.show) {
+      if (
+        (e.show && exportColumnsSize == "selected") ||
+        exportColumnsSize == "all"
+      ) {
         columnNames.push(e.attribute);
       }
     });
@@ -417,7 +420,7 @@ export default function AdminCustomers(props) {
     logo.onload = () => {
       doc.addImage(logo, "JPEG", pageWidth - 140, 20, 100, 50);
       doc.setFontSize(18);
-      doc.text("Hidden User Table Report", 40, 50);
+      doc.text("Customers Data", 40, 50);
       doc.setFontSize(12);
       doc.text("Generated on: " + new Date().toLocaleDateString(), 40, 70);
 
@@ -559,14 +562,14 @@ export default function AdminCustomers(props) {
       )}
       {action == "list" && filteredCustomerList.length != 0 && (
         <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
-          <div className="col-1">
+          {/* <div className="col-1">
             <a
               href="#"
               onClick={() => {
                 handleSrNoClick();
               }}
             ></a>
-          </div>
+          </div> */}
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
               <input
