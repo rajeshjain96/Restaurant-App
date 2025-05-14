@@ -8,11 +8,19 @@ import AdminCustomers from "./AdminCustomers";
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
+  let [flagToggleButton, setFlagToggleButton] = useState(false);
+
   let entities = [
     {
       name: "Products",
       singularName: "Product",
       dbCollection: "products",
+      addFacility: true,
+    },
+    {
+      name: "Customers",
+      singularName: "Customer",
+      dbCollection: "customers",
       addFacility: true,
     },
     {
@@ -27,12 +35,7 @@ export default function RestaurantHomePage() {
       dbCollection: "staff",
       addFacility: true,
     },
-    {
-      name: "Customers",
-      singularName: "Customer",
-      dbCollection: "customers",
-      addFacility: true,
-    },
+
     {
       name: "Bills",
       singularName: "Bill",
@@ -58,13 +61,24 @@ export default function RestaurantHomePage() {
     setSelectedList(list);
     setFilteredList(list);
   }
+  function handleToggleSidebar() {
+    console.log(flagToggleButton);
+    let flag = flagToggleButton;
+    flag = !flag;
+    setFlagToggleButton(flag);
+  }
   return (
-    <div className="row">
+    <div className="row justify-content-center p-4">
       <div className="col-2 ">
-        <SideBar entities={entities} onEntityClick={handleEntityClick} />
+        <SideBar
+          entities={entities}
+          flagToggleButton={flagToggleButton}
+          onEntityClick={handleEntityClick}
+          onToggleSidebar={handleToggleSidebar}
+        />
       </div>
       {selectedEntity.name == "Products" && (
-        <div className="col-10 ">
+        <div className={flagToggleButton ? "col-9" : "col-12"}>
           <AdminProducts selectedEntity={selectedEntity} />
         </div>
       )}
@@ -74,8 +88,11 @@ export default function RestaurantHomePage() {
         </div>
       )}
       {selectedEntity.name == "Customers" && (
-        <div className="col-10 ">
-          <AdminCustomers selectedEntity={selectedEntity} />
+        <div className={flagToggleButton ? "col-9" : "col-12"}>
+          <AdminCustomers
+            selectedEntity={selectedEntity}
+            flagToggleButton={flagToggleButton}
+          />
         </div>
       )}
       {selectedEntity.name == "Staff" && (

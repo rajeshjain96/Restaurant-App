@@ -131,16 +131,13 @@ export default function AdminCustomerForm(props) {
     setCustomer({ ...customer, category: category, categoryId: categoryId });
   }
 
-  let optionsCategory = categoryList.map((category, index) =>
-    category.rating != 1 ? (
-      <option value={category.name} key={index} id={category._id}>
-        {category.name}
-      </option>
-    ) : null
-  );
+ 
+  function handleCancelFormButton() {
+    props.onCancelFormButton();
+  }
   return (
-    <div className="p-2">
-      <form className="text-thick p-4" onSubmit={handleFormSubmit}>
+    <>
+      <form className="text-thick px-4" onSubmit={handleFormSubmit}>
         {/* row starts */}
         <div className="form-group row align-items-center">
           <div className="col-6 my-2">
@@ -303,6 +300,13 @@ export default function AdminCustomerForm(props) {
             >
               {(action + " " + selectedEntity.singularName).toUpperCase()}
             </button>{" "}
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={handleCancelFormButton}
+            >
+              Cancel
+            </button>{" "}
             &nbsp;{" "}
             <span className="text-danger">
               {" "}
@@ -311,6 +315,6 @@ export default function AdminCustomerForm(props) {
           </div>
         </div>
       </form>
-    </div>
+    </>
   );
 }

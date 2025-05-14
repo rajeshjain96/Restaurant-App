@@ -6,6 +6,7 @@ export default function CommonUtilityBar(props) {
   let { message } = props;
   let { listLength } = props;
   let { selectedEntity } = props;
+  let { flagToggleButton } = props;
   let [flagExport, setFlagExport] = useState(false);
   let [exportColumnsSize, setExportColumnSize] = useState("");
   let [exportFileType, setExportFileType] = useState("excel");
@@ -55,18 +56,48 @@ export default function CommonUtilityBar(props) {
   }
   return (
     <>
+      <h2
+        className={
+          "text-center text-primary  " +
+          (flagToggleButton ? "" : "w-75 mx-auto")
+        }
+      >
+        {selectedEntity.name}
+      </h2>
+      <h6
+        className={
+          "text-center text-primary  " +
+          (flagToggleButton ? "" : "w-75 mx-auto")
+        }
+      >
+        {action == "add"
+          ? "(Add a Record)"
+          : action == "update"
+          ? "(Update Record)"
+          : "(Showing Records)"}
+      </h6>
+      {(action == "add" || action == "update") && (
+        <div className="text-center" style={{ fontSize: "30px" }}>
+          <button className="btn btn-primary" onClick={handleListClick}>
+            <i className="bi bi-list-columns-reverse"></i>
+          </button>
+        </div>
+      )}
+      {action == "list" && selectedEntity.addFacility && (
+        <div
+          className="text-center"
+          style={{ fontSize: "40px" }}
+          onClick={handleAddEntityClick}
+        >
+          <i className="bi bi-file-plus-fill"></i>
+        </div>
+      )}
       {action == "list" && (
-        <div className="row mx-auto justify-content-center text-start p-3 align-items-center">
-          {selectedEntity.addFacility && (
-            <div
-              className="col-1 "
-              style={{ fontSize: "40px" }}
-              onClick={handleAddEntityClick}
-            >
-              <i className="bi bi-file-plus-fill"></i>
-            </div>
-          )}
-
+        <div
+          className={
+            "row mx-auto justify-content-center text-start p-3 align-items-center my-3 border-top border-bottom border-2 border-primary"
+          }
+        >
           {listLength != 0 && (
             <div className="col-6 text-center ">
               <input
@@ -81,7 +112,7 @@ export default function CommonUtilityBar(props) {
             </div>
           )}
           {listLength != 0 && (
-            <div className="col-2 text-end ">
+            <div className="col-3 text-end ">
               <select name="" id="">
                 <option value="10">10</option>
                 <option value="10">20</option>
@@ -90,7 +121,7 @@ export default function CommonUtilityBar(props) {
               </select>
             </div>
           )}
-          <div className="col-1 text-center">
+          <div className="col-3 text-center">
             {/* <button
               className="btn btn-primary"
               onClick={handleExcelExportClick}
@@ -108,15 +139,7 @@ export default function CommonUtilityBar(props) {
           </div>
         </div>
       )}
-      {(action == "add" || action == "update") && (
-        <div className="row w-75 mx-auto justify-content-center text-start p-3 align-items-center">
-          <div className="col-2" style={{ fontSize: "40px" }}>
-            <button className="btn btn-primary" onClick={handleListClick}>
-              <i className="bi bi-list-columns-reverse"></i>
-            </button>
-          </div>
-        </div>
-      )}
+
       {message && (
         <div className="message text-danger text-small text-center">
           {message}

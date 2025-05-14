@@ -9,7 +9,6 @@ import autoTable from "jspdf-autotable";
 
 export default function AdminCustomers(props) {
   let [customerList, setCustomerList] = useState([]);
-  let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
   let [filteredCustomerList, setFilteredCustomerList] = useState([]);
   let [customerToBeEdited, setCustomerToBeEdited] = useState("");
@@ -20,6 +19,7 @@ export default function AdminCustomers(props) {
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
+  let { flagToggleButton } = props;
   let customerSchema = [
     { attribute: "name" },
     { attribute: "emailId" },
@@ -53,7 +53,7 @@ export default function AdminCustomers(props) {
       if (e.type != "relationalId") {
         // do not show id of relational data.
         obj["attribute"] = e.attribute;
-        if (cnt < 4) {
+        if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
@@ -89,21 +89,9 @@ export default function AdminCustomers(props) {
     setLoadFlag(true);
     let response = await axios("http://localhost:3000/customers");
     let pList = await response.data;
-    response = await axios("http://localhost:3000/categories");
-    let cList = await response.data;
-    // In the customerList, add a parameter - category
-    pList.forEach((customer, index) => {
-      // get category (string) from categoryId
-      for (let i = 0; i < cList.length; i++) {
-        if (customer.categoryId == cList[i]._id) {
-          customer.category = cList[i].name;
-          break;
-        }
-      } //for
-    });
+
     setCustomerList(pList);
     setFilteredCustomerList(pList);
-    setCategoryList(cList);
     setLoadFlag(false);
   }
   async function handleFormSubmit(customer) {
@@ -162,7 +150,8 @@ export default function AdminCustomers(props) {
     setAction("list");
   }
   function handleFormCloseClick() {
-    props.onFormCloseClick();
+    // props.onFormCloseClick();
+    setAction("list");
   }
   function handleListClick() {
     setAction("list");
@@ -207,8 +196,8 @@ export default function AdminCustomers(props) {
       showMessage("Minimum 1 field should be selected.");
       return;
     }
-    if (cnt == 4 && checked) {
-      showMessage("Maximum 4 fields can be selected.");
+    if (cnt == 5 && checked) {
+      showMessage("Maximum 5 fields can be selected.");
       return;
     }
     let att = [...showInList];
@@ -367,7 +356,7 @@ export default function AdminCustomers(props) {
     setFileList(fl);
   }
   function handleExcelExportClick() {
-    JSONToCSVConvertor(customerList, "Nothing", true);
+    JSONToCSVConvertor(filteredCustomerList, "Nothing", true);
   }
   async function handlePDFExportClick(exportColumnsSize) {
     // const data = [
@@ -494,7 +483,7 @@ export default function AdminCustomers(props) {
 
     //Generate a file name
     var fileName =
-      "Summary " + dt.toDateString() + " " + dt.toLocaleTimeString();
+      "Customers " + dt.toDateString() + " " + dt.toLocaleTimeString();
     //  + ".xls";
     //this will remove the blank-spaces from the title and replace it with an underscore
     // fileName += ReportTitle.replace(/ /g, "_");
@@ -529,6 +518,7 @@ export default function AdminCustomers(props) {
         action={action}
         message={message}
         selectedEntity={selectedEntity}
+        flagToggleButton={flagToggleButton}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
@@ -547,7 +537,6 @@ export default function AdminCustomers(props) {
             customerSchema={customerSchema}
             customerValidations={customerValidations}
             emptyCustomer={emptyCustomer}
-            categoryList={categoryList}
             selectedEntity={selectedEntity}
             customerToBeEdited={customerToBeEdited}
             action={action}
@@ -555,13 +544,12 @@ export default function AdminCustomers(props) {
             onFormSubmit={handleFormSubmit}
             onFormCloseClick={handleFormCloseClick}
             onFormTextChangeValidations={handleFormTextChangeValidations}
-            // onFileChangeInUpdateMode={handleFileChangeInUpdateMode}
-            // onFileChangeCancelInUpdateMode={handleFileChangeCancelInUpdateMode}
+            onCancelFormButton={handleFormCloseClick}
           />
         </div>
       )}
       {action == "list" && filteredCustomerList.length != 0 && (
-        <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
+        <div className="row  my-2 mx-auto  p-1">
           {/* <div className="col-1">
             <a
               href="#"

@@ -4,6 +4,8 @@ import AdminProductForm from "./AdminProductForm";
 import { BeatLoader } from "react-spinners";
 import AProduct from "./AProduct";
 import axios from "axios";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
@@ -18,6 +20,8 @@ export default function AdminProducts(props) {
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
+  let { flagToggleButton } = props;
+
   let productSchema = [
     { attribute: "name" },
     {
@@ -55,7 +59,7 @@ export default function AdminProducts(props) {
       if (e.type != "relationalId") {
         // do not show id of relational data.
         obj["attribute"] = e.attribute;
-        if (cnt < 4) {
+        if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
@@ -209,8 +213,8 @@ export default function AdminProducts(props) {
       showMessage("Minimum 1 field should be selected.");
       return;
     }
-    if (cnt == 4 && checked) {
-      showMessage("Maximum 4 fields can be selected.");
+    if (cnt == 5 && checked) {
+      showMessage("Maximum 5 fields can be selected.");
       return;
     }
     let att = [...showInList];
@@ -368,7 +372,156 @@ export default function AdminProducts(props) {
     fl[fileIndex]["newFile"] = file;
     setFileList(fl);
   }
+  function handleExcelExportClick() {
+    JSONToCSVConvertor(filteredProductList, "Nothing", true);
+  }
+  async function handlePDFExportClick(exportColumnsSize) {
+    // const data = [
+    //   { name: "Alice", email: "alice@example.com", age: 25 },
+    //   { name: "Bob", email: "bob@example.com", age: 30 },
+    //   { name: "Charlie", email: "charlie@example.com", age: 28 },
+    // ];
+    const data = [...filteredProductList];
+    // const headers = [["Name", "Email", "Age"]];
+    let headers = [];
+    // add content to header dynamically
+    let columnNames = [];
+    showInList.forEach((e, index) => {
+      if (
+        (e.show && exportColumnsSize == "selected") ||
+        exportColumnsSize == "all"
+      ) {
+        columnNames.push(e.attribute);
+      }
+    });
+    // headers.push(columnNames);
+    console.log(headers);
 
+    // const body = data.map((row) => [row.name, row.email, row.age.toString()]);
+    let body = data.map((row, index) => {
+      let a = [];
+      for (let i = 0; i < columnNames.length; i++) {
+        a.push(row[columnNames[i]].toString());
+      } //for
+      return a;
+    });
+    // Make first letter of headers capital
+    columnNames = columnNames.map((e, index) => {
+      let s = e.charAt(0).toUpperCase() + e.slice(1);
+      return s;
+    });
+    // now push to headers
+    headers.push(columnNames);
+
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "pt",
+      format: "A4",
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Logo (optional)
+    const logo = new Image();
+    logo.src = "/images/fruits/anjeer.jpg";
+    logo.onload = () => {
+      doc.addImage(logo, "JPEG", pageWidth - 140, 20, 100, 50);
+      doc.setFontSize(18);
+      doc.text("Products Data", 40, 50);
+      doc.setFontSize(12);
+      doc.text("Generated on: " + new Date().toLocaleDateString(), 40, 70);
+
+      autoTable(doc, {
+        head: headers,
+        body: body,
+        startY: 100,
+        theme: "grid",
+        headStyles: { fillColor: [0, 102, 204], textColor: 255 },
+        bodyStyles: { fillColor: [245, 245, 245] },
+        alternateRowStyles: { fillColor: [255, 255, 255] },
+        styles: { fontSize: 10, cellPadding: 6 },
+        didDrawPage: (data) => {
+          const pageCount = doc.internal.getNumberOfPages();
+          const pageHeight = doc.internal.pageSize.getHeight();
+          doc.setFontSize(9);
+          doc.text(
+            `Page ${
+              doc.internal.getCurrentPageInfo().pageNumber
+            } of ${pageCount}`,
+            pageWidth - 100,
+            pageHeight - 20
+          );
+        },
+      });
+      let fileName = "Products - " + new Date() + ".pdf";
+      // doc.save("hidden-table.pdf");
+      doc.save(fileName);
+    };
+  }
+  function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != "object" ? JSON.parse(JSONData) : JSONData;
+    var arrData = JSONData;
+    //Set Report title in first row or line
+    CSV += ReportTitle + "\r\n\n";
+    let headers = [...showInList];
+    // Remove all other than showInList
+    headers = headers.filter((e, index) => e.show == true);
+    if (ShowLabel) {
+      var row = "";
+      var CSV = "";
+      // Add Sr. No.
+      row += "Sr. No., ";
+      //This loop will extract the label from 1st index of on array
+      for (let i = 0; i < headers.length; i++) {
+        //Now convert each value to string and comma-seprated
+        row += headers[i].attribute + ",";
+      }
+      //append Label row with line break
+      CSV += row + "\r\n";
+    }
+    //1st loop is to extract each row
+    let data;
+    for (var i = 0; i < arrData.length; i++) {
+      var row = '"' + (i + 1) + '",';
+      //2nd loop will extract each column and convert it in string comma-seprated
+      for (let e of headers) {
+        data = arrData[i][e["attribute"]];
+        row += '"' + data + '",';
+      } //for
+      // row.slice(0, row.length - 1);
+      //add a line break after each row
+      CSV += row + "\r\n";
+    }
+    if (CSV == "") {
+      alert("Invalid data");
+      return;
+    }
+    let dt = new Date();
+
+    //Generate a file name
+    var fileName =
+      "Products " + dt.toDateString() + " " + dt.toLocaleTimeString();
+    //  + ".xls";
+    //this will remove the blank-spaces from the title and replace it with an underscore
+    // fileName += ReportTitle.replace(/ /g, "_");
+    //Initialize file format you want csv or xls
+    // var uri = "data:text/csv;charset=utf-8," + escape(CSV);
+    var uri = "data:text/csv;charset=utf-8," + CSV;
+    // Now the little tricky part.
+    // you can use either>> window.open(uri);
+    // but this will not work in some browsers
+    // or you will not get the correct file extension
+    //this trick will generate a temp <a /> tag
+    var link = document.createElement("a");
+    link.href = uri;
+    //set the visibility hidden so it will not effect on your web-layout
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+    //this part will append the anchor tag and remove it after automatic click
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
   if (loadFlag) {
     return (
       <div className="my-5 text-center">
@@ -382,9 +535,12 @@ export default function AdminProducts(props) {
         action={action}
         message={message}
         selectedEntity={selectedEntity}
+        flagToggleButton={flagToggleButton}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
+        onExcelExportClick={handleExcelExportClick}
+        onPDFExportClick={handlePDFExportClick}
       />
       {filteredProductList.length == 0 && productList.length != 0 && (
         <div className="text-center">Nothing to show</div>
@@ -406,13 +562,11 @@ export default function AdminProducts(props) {
             onFormSubmit={handleFormSubmit}
             onFormCloseClick={handleFormCloseClick}
             onFormTextChangeValidations={handleFormTextChangeValidations}
-            // onFileChangeInUpdateMode={handleFileChangeInUpdateMode}
-            // onFileChangeCancelInUpdateMode={handleFileChangeCancelInUpdateMode}
           />
         </div>
       )}
       {action == "list" && filteredProductList.length != 0 && (
-        <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
+        <div className="row  my-2 mx-auto p-1">
           <div className="col-1">
             <a
               href="#"

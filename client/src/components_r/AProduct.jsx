@@ -36,7 +36,7 @@ export default function AProduct(props) {
   }
   return (
     <>
-      <div className="row my-2 mx-auto border border-2 border-secondary p-1">
+      <div className="row my-2 mx-auto border border-1 border-secondary p-1">
         <div className="col-1">
           {sortedField == "updateDate" && !direction
             ? index + 1

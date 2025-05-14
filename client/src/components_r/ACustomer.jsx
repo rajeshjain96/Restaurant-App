@@ -36,7 +36,7 @@ export default function ACustomer(props) {
   }
   return (
     <>
-      <div className="row my-2 mx-auto border border-2 border-secondary p-1">
+      <div className="row my-2 mx-auto border border-1 border-secondary p-1">
         <div className="col-1">
           {sortedField == "updateDate" && !direction
             ? index + 1
@@ -50,7 +50,7 @@ export default function ACustomer(props) {
         {showInList.map(
           (e, index) =>
             e.show && (
-              <div key={index} className="col-2">
+              <div key={index} className="col-2 p-0">
                 {customer[e.attribute]}
               </div>
             )
