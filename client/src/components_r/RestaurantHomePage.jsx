@@ -5,48 +5,82 @@ import AdminCategories from "./AdminCategories";
 import AdminStaff from "./AdminStaff";
 import AdminCustomers from "./AdminCustomers";
 import ContentPage from "./ContentPage";
+import HomePage from "./HomePage";
+import NavBar from "./NavBar";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
   let [flagToggleButton, setFlagToggleButton] = useState(false);
-
-  let entities = [
+  let [user, setUser] = useState(true);
+  let menus = [
     {
-      name: "Products",
-      singularName: "Product",
-      dbCollection: "products",
-      addFacility: true,
+      name: "Manage",
+      entities: [
+        {
+          name: "Products",
+          singularName: "Product",
+          dbCollection: "products",
+          addFacility: true,
+        },
+        {
+          name: "Customers",
+          singularName: "Customer",
+          dbCollection: "customers",
+          addFacility: true,
+        },
+        {
+          name: "Product Categories",
+          singularName: "Category",
+          dbCollection: "categories",
+          addFacility: true,
+        },
+        {
+          name: "Users",
+          singularName: "User",
+          dbCollection: "users",
+          addFacility: true,
+        },
+      ],
     },
     {
-      name: "Customers",
-      singularName: "Customer",
-      dbCollection: "customers",
-      addFacility: true,
+      name: "Control",
+      entities: [
+        {
+          name: "Products",
+          singularName: "Product",
+          dbCollection: "products",
+          addFacility: true,
+        },
+        {
+          name: "Customers",
+          singularName: "Customer",
+          dbCollection: "customers",
+          addFacility: true,
+        },
+      ],
     },
     {
-      name: "Product Categories",
-      singularName: "Category",
-      dbCollection: "categories",
-      addFacility: true,
-    },
-    {
-      name: "Staff",
-      singularName: "Staff",
-      dbCollection: "staff",
-      addFacility: true,
-    },
-
-    {
-      name: "Bills",
-      singularName: "Bill",
-      dbCollection: "bills",
-      addFacility: false,
+      name: "Reports",
+      entities: [
+        {
+          name: "Products",
+          singularName: "Product",
+          dbCollection: "products",
+          addFacility: true,
+        },
+        {
+          name: "Customers",
+          singularName: "Customer",
+          dbCollection: "customers",
+          addFacility: true,
+        },
+      ],
     },
   ];
-  function handleEntityClick(selectedIndex) {
+  function handleEntityClick(selectedMenuIndex, selectedIndex) {
     setLoadFlag(true);
-    setSelectedEntity(entities[selectedIndex]);
+    setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
     setLoadFlag(false);
   }
   async function getListFromBackEnd(collectionName) {
@@ -70,14 +104,21 @@ export default function RestaurantHomePage() {
   }
   return (
     <div className="row justify-content-center p-4">
-      <div className="col-2 ">
-        <SideBar
-          entities={entities}
-          flagToggleButton={flagToggleButton}
-          onEntityClick={handleEntityClick}
-          onToggleSidebar={handleToggleSidebar}
-        />
+      {true && (
+        <div className="col-2 ">
+          <SideBar
+            // entities={entities}
+            menus={menus}
+            flagToggleButton={flagToggleButton}
+            onEntityClick={handleEntityClick}
+            onToggleSidebar={handleToggleSidebar}
+          />
+        </div>
+      )}
+      <div className="col-10 ">
+        <NavBar />
       </div>
+      {!user && <HomePage />}
       <div className={flagToggleButton ? "col-9" : "col-12"}>
         <ContentPage selectedEntity={selectedEntity} />
       </div>

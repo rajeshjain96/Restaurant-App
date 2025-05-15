@@ -7,6 +7,7 @@ const fruitRouter = require("./routers/fruits.router.js");
 const userRouter = require("./routers/user.router.js");
 const categoryRouter = require("./routers/category.router.js");
 const staffRouter = require("./routers/staff.router.js");
+const fileRouter = require("./routers/file.router.js");
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use("/fruits", fruitRouter);
 app.use("/users", userRouter);
 app.use("/categories", categoryRouter);
 app.use("/staff", staffRouter);
+app.use("/files", fileRouter);
 app.use("/uploadedImages", express.static("uploads"));
 // connectToDatabase();
 // async function connectToDatabase() {
