@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const UserService = require("../services/user.service");
+const RoleService = require("../services/role.service");
 const multer = require("multer");
 // const upload = multer({ dest: "uploads/" });
 const storage = multer.diskStorage({
@@ -13,39 +13,30 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 router.get("/", async (req, res) => {
-  let list = await UserService.getAllUsers();
+  let list = await RoleService.getAllRoles();
   res.status(200).json(list);
 });
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
-  res.send(UserService.getUserById(id));
-});
-router.get("/byEmailId/:emailId", async (req, res) => {
-  let emailId = req.params.emailId;
-  res.status(200).json(await UserService.getUserByEmailId(emailId));
+  res.send(RoleService.getRoleById(id));
 });
 router.post("/", upload.single("file"), async (req, res) => {
   let obj = req.body;
   obj.addDate = new Date();
   obj.updateDate = new Date();
-  obj = await UserService.addUser(obj);
-  res.status(201).json(obj);
-});
-router.post("/signup", async (req, res) => {
-  let obj = req.body;
-  obj = await UserService.checkUser(obj);
+  obj = await RoleService.addRole(obj);
   res.status(201).json(obj);
 });
 router.put("/", upload.single("file"), async (req, res) => {
   let obj = req.body;
   obj.updateDate = new Date();
-  obj = await UserService.updateUser(obj);
+  obj = await RoleService.updateRole(obj);
   res.status(200).json(obj);
 });
 router.delete("/:id", async (req, res) => {
   let id = req.params.id;
   let obj = req.body;
-  obj = await UserService.deleteUser(id);
+  obj = await RoleService.deleteRole(id);
   res.json(obj);
 });
 

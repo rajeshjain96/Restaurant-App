@@ -71,7 +71,11 @@ export default function AdminProducts(props) {
   function getEmptyProduct() {
     let eProduct = {};
     productSchema.forEach((e, index) => {
-      eProduct[e["attribute"]] = "";
+      if (e["defaultValue"]) {
+        eProduct[e["attribute"]] = e["defaultValue"];
+      } else {
+        eProduct[e["attribute"]] = "";
+      }
     });
     return eProduct;
   }

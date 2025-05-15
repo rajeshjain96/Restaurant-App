@@ -2,8 +2,8 @@ import { useState } from "react";
 import "../SideBar.css";
 
 export default function SideBar(props) {
-  let { entities } = props;
   let { menus } = props;
+  let { user } = props;
   let { flagToggleButton } = props;
   let [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
   let [selectedEntityIndex, setSelectedEntityIndex] = useState(-1);
@@ -13,6 +13,8 @@ export default function SideBar(props) {
     } else {
       setSelectedMenuIndex(index);
     }
+    setSelectedEntityIndex(-1);
+    props.onSideBarMenuClick(index);
   }
   function handleSideBarEntityClick(index) {
     setSelectedEntityIndex(index);
@@ -25,6 +27,9 @@ export default function SideBar(props) {
     // flag = !flag;
     // setFlagToggleButton(flag);
     props.onToggleSidebar();
+  }
+  function handleLogInSignupButtonClick() {
+    props.onLogInSignupButtonClick();
   }
   let dashboardList = ["Manage Data", "Settings", "Reports"];
   return (
@@ -45,44 +50,59 @@ export default function SideBar(props) {
               ×
             </button>
           </div>
-          {menus.map((e, index) => (
+          {user &&
+            menus.map((e, index) => (
+              <>
+                <div className="text-start" key={index}>
+                  <button
+                    className={
+                      "btn btn-sidebar my-2 border " +
+                      (index == selectedMenuIndex
+                        ? "bg-dark text-white"
+                        : "bg-dark text-white")
+                    }
+                    onClick={() => {
+                      handleSideBarMenuClick(index);
+                    }}
+                  >
+                    {e.name}
+                  </button>
+                </div>
+                {selectedMenuIndex == index &&
+                  e.entities.map((ee, indexx) => (
+                    <div className="text-start" key={indexx}>
+                      <button
+                        className={
+                          "btn btn-sidebar ms-3 my-2 border " +
+                          (indexx == selectedEntityIndex
+                            ? "bg-white text-primary"
+                            : "text-white")
+                        }
+                        onClick={() => {
+                          handleSideBarEntityClick(indexx);
+                        }}
+                      >
+                        {ee.name}
+                      </button>
+                    </div>
+                  ))}
+              </>
+            ))}
+          {!user && (
             <>
-              <div className="text-start" key={index}>
+              {" "}
+              <div className="text-start">
                 <button
-                  className={
-                    "btn btn-sidebar my-2 border " +
-                    (index == selectedMenuIndex
-                      ? "bg-dark text-white"
-                      : "bg-dark text-white")
-                  }
-                  onClick={() => {
-                    handleSideBarMenuClick(index);
-                  }}
+                  className={"btn btn-sidebar ms-3 my-2 border "}
+                  onClick={handleLogInSignupButtonClick}
                 >
-                  {e.name}
+                  LogIn / Signup
                 </button>
               </div>
-              {selectedMenuIndex == index &&
-                e.entities.map((ee, indexx) => (
-                  <div className="text-start" key={indexx}>
-                    <button
-                      className={
-                        "btn btn-sidebar ms-3 my-2 border " +
-                        (indexx == selectedEntityIndex
-                          ? "text-white"
-                          : "bg-white text-primary")
-                      }
-                      onClick={() => {
-                        handleSideBarEntityClick(indexx);
-                      }}
-                    >
-                      {ee.name}
-                    </button>
-                  </div>
-                ))}
             </>
-          ))}
+          )}
         </div>
+
         {/* col-11 ends */}
       </div>
     </>

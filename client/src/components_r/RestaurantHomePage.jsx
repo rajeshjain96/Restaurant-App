@@ -7,12 +7,14 @@ import AdminCustomers from "./AdminCustomers";
 import ContentPage from "./ContentPage";
 import HomePage from "./HomePage";
 import NavBar from "./NavBar";
+import LoginSignupPage from "./LoginSignupPage";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
   let [flagToggleButton, setFlagToggleButton] = useState(false);
-  let [user, setUser] = useState(true);
+  let [user, setUser] = useState(false);
+  let [view, setView] = useState("home");
   let menus = [
     {
       name: "Manage",
@@ -47,9 +49,9 @@ export default function RestaurantHomePage() {
       name: "Control",
       entities: [
         {
-          name: "Products",
-          singularName: "Product",
-          dbCollection: "products",
+          name: "Roles",
+          singularName: "Role",
+          dbCollection: "roles",
           addFacility: true,
         },
         {
@@ -83,6 +85,9 @@ export default function RestaurantHomePage() {
     setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
     setLoadFlag(false);
   }
+  function handleSideBarMenuClick() {
+    setSelectedEntity("");
+  }
   async function getListFromBackEnd(collectionName) {
     // let response = await axios("http://localhost:3000/" + collectionName);
     let list = response.data;
@@ -102,26 +107,35 @@ export default function RestaurantHomePage() {
     flag = !flag;
     setFlagToggleButton(flag);
   }
+  function handleLogInSignupButtonClick() {
+    setView("loginSignup");
+  }
   return (
     <div className="row justify-content-center p-4">
       {true && (
         <div className="col-2 ">
           <SideBar
             // entities={entities}
+            user={user}
             menus={menus}
             flagToggleButton={flagToggleButton}
             onEntityClick={handleEntityClick}
+            onSideBarMenuClick={handleSideBarMenuClick}
             onToggleSidebar={handleToggleSidebar}
+            onLogInSignupButtonClick={handleLogInSignupButtonClick}
           />
         </div>
       )}
-      <div className="col-10 ">
+      {/* <div className="col-10 ">
         <NavBar />
-      </div>
-      {!user && <HomePage />}
-      <div className={flagToggleButton ? "col-9" : "col-12"}>
-        <ContentPage selectedEntity={selectedEntity} />
-      </div>
+      </div> */}
+      {view == "home" && <HomePage />}
+      {view == "loginSignup" && <LoginSignupPage />}
+      {
+        <div className={flagToggleButton ? "col-9" : "col-12"}>
+          <ContentPage selectedEntity={selectedEntity} />
+        </div>
+      }
 
       {/* <div className="col-10 ">{true && <Content />}</div> */}
     </div>

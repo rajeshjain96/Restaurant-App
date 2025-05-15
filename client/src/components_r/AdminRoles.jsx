@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminCustomerForm from "./AdminCustomerForm";
+import AdminRoleForm from "./AdminRoleForm";
 import { BeatLoader } from "react-spinners";
-import ACustomer from "./ACustomer";
+import ARole from "./ARole";
 import axios from "axios";
 
-export default function AdminCustomers(props) {
-  let [customerList, setCustomerList] = useState([]);
+export default function AdminRoles(props) {
+  let [roleList, setRoleList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredCustomerList, setFilteredCustomerList] = useState([]);
-  let [customerToBeEdited, setCustomerToBeEdited] = useState("");
+  let [filteredRoleList, setFilteredRoleList] = useState([]);
+  let [roleToBeEdited, setRoleToBeEdited] = useState("");
   let [loadFlag, setLoadFlag] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
@@ -18,35 +18,17 @@ export default function AdminCustomers(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-  let customerSchema = [
-    { attribute: "name" },
-    { attribute: "emailId" },
-    { attribute: "mobileNumber" },
-    { attribute: "address" },
-    { attribute: "companyName" },
-    { attribute: "designation" },
-    // instock: 1,
-    // rating: 5,
-  ];
-  let customerValidations = {
+  let roleSchema = [{ attribute: "name" }, { attribute: "level" }];
+  let roleValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
-    emailId: { message: "", onlyDigits: false },
-    mobileNumber: {
-      message: "",
-      mxLen: 10,
-      mnLen: 10,
-      onlyDigits: true,
-    },
-    address: { message: "" },
-    companyName: { message: "" },
-    designation: { message: "" },
+    level: { message: "", onlyDigits: false },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromCustomerSchema());
-  let [emptyCustomer, setEmptyCustomer] = useState(getEmptyCustomer());
-  function getShowInListFromCustomerSchema() {
+  let [showInList, setShowInList] = useState(getShowInListFromRoleSchema());
+  let [emptyRole, setEmptyRole] = useState(getEmptyRole());
+  function getShowInListFromRoleSchema() {
     let list = [];
     let cnt = 0;
-    customerSchema.forEach((e, index) => {
+    roleSchema.forEach((e, index) => {
       let obj = {};
       if (e.type != "relationalId") {
         // do not show id of relational data.
@@ -62,20 +44,20 @@ export default function AdminCustomers(props) {
     });
     return list;
   }
-  function getEmptyCustomer() {
-    let eCustomer = {};
-    customerSchema.forEach((e, index) => {
+  function getEmptyRole() {
+    let eRole = {};
+    roleSchema.forEach((e, index) => {
       if (e["defaultValue"]) {
-        eCustomer[e["attribute"]] = e["defaultValue"];
+        eRole[e["attribute"]] = e["defaultValue"];
       } else {
-        eCustomer[e["attribute"]] = "";
+        eRole[e["attribute"]] = "";
       }
     });
-    return eCustomer;
+    return eRole;
   }
-  function getFileListFromCustomerSchema() {
+  function getFileListFromRoleSchema() {
     let list = [];
-    customerSchema.forEach((e, index) => {
+    roleSchema.forEach((e, index) => {
       let obj = {};
       if (e.type == "file") {
         obj["fileAttributeName"] = e.attribute;
@@ -89,64 +71,62 @@ export default function AdminCustomers(props) {
   }, []);
   async function getData() {
     setLoadFlag(true);
-    let response = await axios("http://localhost:3000/customers");
+    let response = await axios("http://localhost:3000/roles");
     let pList = await response.data;
 
-    setCustomerList(pList);
-    setFilteredCustomerList(pList);
+    setRoleList(pList);
+    setFilteredRoleList(pList);
     setLoadFlag(false);
   }
-  async function handleFormSubmit(customer) {
+  async function handleFormSubmit(role) {
     let message;
     // now remove relational data
-    let customerForBackEnd = { ...customer };
-    for (let key in customerForBackEnd) {
-      customerSchema.forEach((e, index) => {
+    let roleForBackEnd = { ...role };
+    for (let key in roleForBackEnd) {
+      roleSchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete customerForBackEnd[key];
+          delete roleForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // customer = await addCustomerToBackend(customer);
+      // role = await addRoleToBackend(role);
 
       let response = await axios.post(
-        "http://localhost:3000/customers",
-        customerForBackEnd,
+        "http://localhost:3000/roles",
+        roleForBackEnd,
         { headers: { "Content-type": "multipart/form-data" } }
       );
-      customer._id = await response.data.insertedId;
-      message = "Customer added successfully";
-      // update the customer list now.
-      let prList = [...customerList];
-      prList.push(customer);
-      setCustomerList(prList);
+      role._id = await response.data.insertedId;
+      message = "Role added successfully";
+      // update the role list now.
+      let prList = [...roleList];
+      prList.push(role);
+      setRoleList(prList);
 
-      let fprList = [...filteredCustomerList];
-      fprList.push(customer);
-      setFilteredCustomerList(fprList);
+      let fprList = [...filteredRoleList];
+      fprList.push(role);
+      setFilteredRoleList(fprList);
     } else if (action == "update") {
-      customer._id = customerToBeEdited._id; // The form does not have id field
-      // await updateBackendCustomer(customer);
+      role._id = roleToBeEdited._id; // The form does not have id field
+      // await updateBackendRole(role);
 
-      let response = await axios.put(
-        "http://localhost:3000/customers",
-        customer,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
+      let response = await axios.put("http://localhost:3000/roles", role, {
+        headers: { "Content-type": "multipart/form-data" },
+      });
       let r = await response.data;
-      message = "Customer Updated successfully";
-      // update the customer list now.
-      let prList = customerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
+      message = "Role Updated successfully";
+      // update the role list now.
+      let prList = roleList.map((e, index) => {
+        if (e._id == role._id) return role;
         return e;
       });
-      let fprList = filteredCustomerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
+      let fprList = filteredRoleList.map((e, index) => {
+        if (e._id == role._id) return role;
         return e;
       });
-      setCustomerList(prList);
-      setFilteredCustomerList(fprList);
+      setRoleList(prList);
+      setFilteredRoleList(fprList);
     }
     showMessage(message);
     setAction("list");
@@ -161,9 +141,9 @@ export default function AdminCustomers(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(customer) {
+  function handleEditButtonClick(role) {
     setAction("update");
-    setCustomerToBeEdited(customer);
+    setRoleToBeEdited(role);
   }
   function showMessage(message) {
     setMessage(message);
@@ -171,19 +151,19 @@ export default function AdminCustomers(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, customer) {
-    // await deleteBackendCustomer(customer.id);
+  async function handleDeleteButtonClick(ans, role) {
+    // await deleteBackendRole(role.id);
     let response = await axios.delete(
-      "http://localhost:3000/customers/" + customer._id
+      "http://localhost:3000/roles/" + role._id
     );
     let r = await response.data;
-    message = `Customer - ${customer.name} deleted successfully.`;
-    //update the customer list now.
-    let prList = customerList.filter((e, index) => e._id != customer._id);
-    setCustomerList(prList);
+    message = `Role - ${role.name} deleted successfully.`;
+    //update the role list now.
+    let prList = roleList.filter((e, index) => e._id != role._id);
+    setRoleList(prList);
 
-    let fprList = customerList.filter((e, index) => e._id != customer._id);
-    setFilteredCustomerList(fprList);
+    let fprList = roleList.filter((e, index) => e._id != role._id);
+    setFilteredRoleList(fprList);
     showMessage(message);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
@@ -225,7 +205,7 @@ export default function AdminCustomers(props) {
       // different field
       d = false;
     }
-    let list = [...filteredCustomerList];
+    let list = [...filteredRoleList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -250,7 +230,7 @@ export default function AdminCustomers(props) {
         return 0;
       });
     }
-    setFilteredCustomerList(list);
+    setFilteredRoleList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -262,7 +242,7 @@ export default function AdminCustomers(props) {
       d = false;
     }
 
-    let list = [...filteredCustomerList];
+    let list = [...filteredRoleList];
     setDirection(!direction);
     if (d == false) {
       //in ascending order
@@ -288,7 +268,7 @@ export default function AdminCustomers(props) {
       });
     }
     // setSelectedList(list);
-    setFilteredCustomerList(list);
+    setFilteredRoleList(list);
     setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
@@ -306,13 +286,13 @@ export default function AdminCustomers(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredCustomerList(customerList);
+      setFilteredRoleList(roleList);
       return;
     }
-    let searchedCustomers = [];
-    // searchedCustomers = filterByName(query);
-    searchedCustomers = filterByShowInListAttributes(query);
-    setFilteredCustomerList(searchedCustomers);
+    let searchedRoles = [];
+    // searchedRoles = filterByName(query);
+    searchedRoles = filterByShowInListAttributes(query);
+    setFilteredRoleList(searchedRoles);
   }
   function filterByName(query) {
     let fList = [];
@@ -327,17 +307,17 @@ export default function AdminCustomers(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < customerList.length; i++) {
+    for (let i = 0; i < roleList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            customerList[i][parameterName] &&
-            customerList[i][parameterName]
+            roleList[i][parameterName] &&
+            roleList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(customerList[i]);
+            fList.push(roleList[i]);
             break;
           }
         }
@@ -372,26 +352,26 @@ export default function AdminCustomers(props) {
         message={message}
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
-        filteredList={filteredCustomerList}
+        filteredList={filteredRoleList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredCustomerList.length == 0 && customerList.length != 0 && (
+      {filteredRoleList.length == 0 && roleList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {customerList.length == 0 && action == "list" && (
+      {roleList.length == 0 && action == "list" && (
         <div className="text-center">List is empty</div>
       )}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminCustomerForm
-            customerSchema={customerSchema}
-            customerValidations={customerValidations}
-            emptyCustomer={emptyCustomer}
+          <AdminRoleForm
+            roleSchema={roleSchema}
+            roleValidations={roleValidations}
+            emptyRole={emptyRole}
             selectedEntity={selectedEntity}
-            customerToBeEdited={customerToBeEdited}
+            roleToBeEdited={roleToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
@@ -401,7 +381,7 @@ export default function AdminCustomers(props) {
           />
         </div>
       )}
-      {action == "list" && filteredCustomerList.length != 0 && (
+      {action == "list" && filteredRoleList.length != 0 && (
         <div className="row  my-2 mx-auto  p-1">
           {/* <div className="col-1">
             <a
@@ -427,7 +407,7 @@ export default function AdminCustomers(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredCustomerList.length != 0 && (
+      {action == "list" && filteredRoleList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -475,15 +455,15 @@ export default function AdminCustomers(props) {
         </div>
       )}
       {action == "list" &&
-        filteredCustomerList.length != 0 &&
-        filteredCustomerList.map((e, index) => (
-          <ACustomer
-            customer={e}
+        filteredRoleList.length != 0 &&
+        filteredRoleList.map((e, index) => (
+          <ARole
+            role={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredCustomerList.length}
+            listSize={filteredRoleList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

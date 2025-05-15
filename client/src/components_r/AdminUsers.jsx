@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminCustomerForm from "./AdminCustomerForm";
+import AdminUserForm from "./AdminUserForm";
 import { BeatLoader } from "react-spinners";
-import ACustomer from "./ACustomer";
+import AUser from "./AUser";
 import axios from "axios";
 
-export default function AdminCustomers(props) {
-  let [customerList, setCustomerList] = useState([]);
+export default function AdminUsers(props) {
+  let [userList, setUserList] = useState([]);
+  let [roleList, setRoleList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredCustomerList, setFilteredCustomerList] = useState([]);
-  let [customerToBeEdited, setCustomerToBeEdited] = useState("");
+  let [filteredUserList, setFilteredUserList] = useState([]);
+  let [userToBeEdited, setUserToBeEdited] = useState("");
   let [loadFlag, setLoadFlag] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
@@ -18,35 +19,42 @@ export default function AdminCustomers(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-  let customerSchema = [
+
+  let userSchema = [
     { attribute: "name" },
+    {
+      attribute: "role",
+      relationalData: true,
+      list: "roleList",
+      relatedId: "roleId",
+    },
+    { attribute: "roleId", type: "relationalId" },
+    { attribute: "status", defaultValue: "active" },
     { attribute: "emailId" },
+    // { attribute: "password" },
     { attribute: "mobileNumber" },
-    { attribute: "address" },
-    { attribute: "companyName" },
-    { attribute: "designation" },
-    // instock: 1,
-    // rating: 5,
+    // { attribute: "address" },
   ];
-  let customerValidations = {
+  let userValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
     emailId: { message: "", onlyDigits: false },
+    status: { message: "" },
     mobileNumber: {
       message: "",
       mxLen: 10,
       mnLen: 10,
       onlyDigits: true,
     },
-    address: { message: "" },
-    companyName: { message: "" },
-    designation: { message: "" },
+    // address: { message: "" },
+    // password: { message: "" },
+    role: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromCustomerSchema());
-  let [emptyCustomer, setEmptyCustomer] = useState(getEmptyCustomer());
-  function getShowInListFromCustomerSchema() {
+  let [showInList, setShowInList] = useState(getShowInListFromUserSchema());
+  let [emptyUser, setEmptyUser] = useState(getEmptyUser());
+  function getShowInListFromUserSchema() {
     let list = [];
     let cnt = 0;
-    customerSchema.forEach((e, index) => {
+    userSchema.forEach((e, index) => {
       let obj = {};
       if (e.type != "relationalId") {
         // do not show id of relational data.
@@ -62,20 +70,20 @@ export default function AdminCustomers(props) {
     });
     return list;
   }
-  function getEmptyCustomer() {
-    let eCustomer = {};
-    customerSchema.forEach((e, index) => {
+  function getEmptyUser() {
+    let eUser = {};
+    userSchema.forEach((e, index) => {
       if (e["defaultValue"]) {
-        eCustomer[e["attribute"]] = e["defaultValue"];
+        eUser[e["attribute"]] = e["defaultValue"];
       } else {
-        eCustomer[e["attribute"]] = "";
+        eUser[e["attribute"]] = "";
       }
     });
-    return eCustomer;
+    return eUser;
   }
-  function getFileListFromCustomerSchema() {
+  function getFileListFromUserSchema() {
     let list = [];
-    customerSchema.forEach((e, index) => {
+    userSchema.forEach((e, index) => {
       let obj = {};
       if (e.type == "file") {
         obj["fileAttributeName"] = e.attribute;
@@ -89,71 +97,80 @@ export default function AdminCustomers(props) {
   }, []);
   async function getData() {
     setLoadFlag(true);
-    let response = await axios("http://localhost:3000/customers");
+    let response = await axios("http://localhost:3000/users");
     let pList = await response.data;
-
-    setCustomerList(pList);
-    setFilteredCustomerList(pList);
+    response = await axios("http://localhost:3000/roles");
+    let rList = await response.data;
+    // In the userList, add a parameter - role
+    pList.forEach((user, index) => {
+      // get role (string) from roleId
+      for (let i = 0; i < rList.length; i++) {
+        if (user.roleId == rList[i]._id) {
+          user.role = rList[i].name;
+          break;
+        }
+      } //for
+    });
+    setUserList(pList);
+    setFilteredUserList(pList);
+    setRoleList(rList);
     setLoadFlag(false);
   }
-  async function handleFormSubmit(customer) {
+  async function handleFormSubmit(user) {
     let message;
     // now remove relational data
-    let customerForBackEnd = { ...customer };
-    for (let key in customerForBackEnd) {
-      customerSchema.forEach((e, index) => {
+    let userForBackEnd = { ...user };
+    for (let key in userForBackEnd) {
+      userSchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete customerForBackEnd[key];
+          delete userForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // customer = await addCustomerToBackend(customer);
+      // user = await addUserToBackend(user);
 
       let response = await axios.post(
-        "http://localhost:3000/customers",
-        customerForBackEnd,
+        "http://localhost:3000/users",
+        userForBackEnd,
         { headers: { "Content-type": "multipart/form-data" } }
       );
-      customer._id = await response.data.insertedId;
-      message = "Customer added successfully";
-      // update the customer list now.
-      let prList = [...customerList];
-      prList.push(customer);
-      setCustomerList(prList);
+      user._id = await response.data.insertedId;
+      message = "User added successfully";
+      // update the user list now.
+      let prList = [...userList];
+      prList.push(user);
+      setUserList(prList);
 
-      let fprList = [...filteredCustomerList];
-      fprList.push(customer);
-      setFilteredCustomerList(fprList);
+      let fprList = [...filteredUserList];
+      fprList.push(user);
+      setFilteredUserList(fprList);
     } else if (action == "update") {
-      customer._id = customerToBeEdited._id; // The form does not have id field
-      // await updateBackendCustomer(customer);
+      user._id = userToBeEdited._id; // The form does not have id field
+      // await updateBackendUser(user);
 
-      let response = await axios.put(
-        "http://localhost:3000/customers",
-        customer,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
+      let response = await axios.put("http://localhost:3000/users", user, {
+        headers: { "Content-type": "multipart/form-data" },
+      });
       let r = await response.data;
-      message = "Customer Updated successfully";
-      // update the customer list now.
-      let prList = customerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
+      message = "User Updated successfully";
+      // update the user list now.
+      let prList = userList.map((e, index) => {
+        if (e._id == user._id) return user;
         return e;
       });
-      let fprList = filteredCustomerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
+      let fprList = filteredUserList.map((e, index) => {
+        if (e._id == user._id) return user;
         return e;
       });
-      setCustomerList(prList);
-      setFilteredCustomerList(fprList);
+      setUserList(prList);
+      setFilteredUserList(fprList);
     }
     showMessage(message);
     setAction("list");
   }
   function handleFormCloseClick() {
-    // props.onFormCloseClick();
-    setAction("list");
+    props.onFormCloseClick();
   }
   function handleListClick() {
     setAction("list");
@@ -161,9 +178,9 @@ export default function AdminCustomers(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(customer) {
+  function handleEditButtonClick(user) {
     setAction("update");
-    setCustomerToBeEdited(customer);
+    setUserToBeEdited(user);
   }
   function showMessage(message) {
     setMessage(message);
@@ -171,19 +188,19 @@ export default function AdminCustomers(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, customer) {
-    // await deleteBackendCustomer(customer.id);
+  async function handleDeleteButtonClick(ans, user) {
+    // await deleteBackendUser(user.id);
     let response = await axios.delete(
-      "http://localhost:3000/customers/" + customer._id
+      "http://localhost:3000/users/" + user._id
     );
     let r = await response.data;
-    message = `Customer - ${customer.name} deleted successfully.`;
-    //update the customer list now.
-    let prList = customerList.filter((e, index) => e._id != customer._id);
-    setCustomerList(prList);
+    message = `User - ${user.name} deleted successfully.`;
+    //update the user list now.
+    let prList = userList.filter((e, index) => e._id != user._id);
+    setUserList(prList);
 
-    let fprList = customerList.filter((e, index) => e._id != customer._id);
-    setFilteredCustomerList(fprList);
+    let fprList = userList.filter((e, index) => e._id != user._id);
+    setFilteredUserList(fprList);
     showMessage(message);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
@@ -225,7 +242,7 @@ export default function AdminCustomers(props) {
       // different field
       d = false;
     }
-    let list = [...filteredCustomerList];
+    let list = [...filteredUserList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -250,7 +267,7 @@ export default function AdminCustomers(props) {
         return 0;
       });
     }
-    setFilteredCustomerList(list);
+    setFilteredUserList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -262,7 +279,7 @@ export default function AdminCustomers(props) {
       d = false;
     }
 
-    let list = [...filteredCustomerList];
+    let list = [...filteredUserList];
     setDirection(!direction);
     if (d == false) {
       //in ascending order
@@ -288,7 +305,7 @@ export default function AdminCustomers(props) {
       });
     }
     // setSelectedList(list);
-    setFilteredCustomerList(list);
+    setFilteredUserList(list);
     setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
@@ -306,13 +323,13 @@ export default function AdminCustomers(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredCustomerList(customerList);
+      setFilteredUserList(userList);
       return;
     }
-    let searchedCustomers = [];
-    // searchedCustomers = filterByName(query);
-    searchedCustomers = filterByShowInListAttributes(query);
-    setFilteredCustomerList(searchedCustomers);
+    let searchedUsers = [];
+    // searchedUsers = filterByName(query);
+    searchedUsers = filterByShowInListAttributes(query);
+    setFilteredUserList(searchedUsers);
   }
   function filterByName(query) {
     let fList = [];
@@ -327,17 +344,17 @@ export default function AdminCustomers(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < customerList.length; i++) {
+    for (let i = 0; i < userList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            customerList[i][parameterName] &&
-            customerList[i][parameterName]
+            userList[i][parameterName] &&
+            userList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(customerList[i]);
+            fList.push(userList[i]);
             break;
           }
         }
@@ -361,7 +378,7 @@ export default function AdminCustomers(props) {
   if (loadFlag) {
     return (
       <div className="my-5 text-center">
-        <BeatLoader size={24} color={"blue"} />
+        <BeatLoader size={24} color={"red"} />
       </div>
     );
   }
@@ -372,45 +389,43 @@ export default function AdminCustomers(props) {
         message={message}
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
-        filteredList={filteredCustomerList}
+        filteredList={filteredUserList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredCustomerList.length == 0 && customerList.length != 0 && (
+      {filteredUserList.length == 0 && userList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {customerList.length == 0 && action == "list" && (
-        <div className="text-center">List is empty</div>
-      )}
+      {userList.length == 0 && <div className="text-center">List is empty</div>}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminCustomerForm
-            customerSchema={customerSchema}
-            customerValidations={customerValidations}
-            emptyCustomer={emptyCustomer}
+          <AdminUserForm
+            userSchema={userSchema}
+            userValidations={userValidations}
+            emptyUser={emptyUser}
+            roleList={roleList}
             selectedEntity={selectedEntity}
-            customerToBeEdited={customerToBeEdited}
+            userToBeEdited={userToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
             onFormCloseClick={handleFormCloseClick}
             onFormTextChangeValidations={handleFormTextChangeValidations}
-            onCancelFormButton={handleFormCloseClick}
           />
         </div>
       )}
-      {action == "list" && filteredCustomerList.length != 0 && (
-        <div className="row  my-2 mx-auto  p-1">
-          {/* <div className="col-1">
+      {action == "list" && filteredUserList.length != 0 && (
+        <div className="row  my-2 mx-auto p-1">
+          <div className="col-1">
             <a
               href="#"
               onClick={() => {
                 handleSrNoClick();
               }}
             ></a>
-          </div> */}
+          </div>
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
               <input
@@ -427,7 +442,7 @@ export default function AdminCustomers(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredCustomerList.length != 0 && (
+      {action == "list" && filteredUserList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -475,15 +490,15 @@ export default function AdminCustomers(props) {
         </div>
       )}
       {action == "list" &&
-        filteredCustomerList.length != 0 &&
-        filteredCustomerList.map((e, index) => (
-          <ACustomer
-            customer={e}
+        filteredUserList.length != 0 &&
+        filteredUserList.map((e, index) => (
+          <AUser
+            user={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredCustomerList.length}
+            listSize={filteredUserList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

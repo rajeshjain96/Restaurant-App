@@ -24,7 +24,6 @@ export default function ModalExport(props) {
     props.onExportButtonClick();
   }
   function handleColumnSizeSelection(columnSize) {
-    console.log(columnSize);
     setColumnSize(columnSize);
     props.onColumnSizeSelection(columnSize);
   }

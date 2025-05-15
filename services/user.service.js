@@ -11,8 +11,53 @@ async function getAllUsers() {
   return list;
 }
 async function getUserById(id) {
-  let obj = await User.findById(id);
-  return obj;
+  const db = app.locals.db;
+  const collection = db.collection("users");
+  const userObj = await collection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+  // console.log("Found document is =>", userObj);
+  return userObj;
+
+  // let obj = await User.findById(id);
+  // return obj;
+}
+async function getUserByEmailId(emailId) {
+  const db = app.locals.db;
+  const collection = db.collection("users");
+  const userObj = await collection.findOne({
+    emailId: emailId,
+  });
+  console.log("Found document is =>", userObj);
+  if (userObj) {
+    return { result: "success" };
+  } else {
+    return { result: "failed" };
+  }
+  // return userObj;
+}
+async function checkUser(obj) {
+  const db = app.locals.db;
+  const collection = db.collection("users");
+  const userObj = await collection.findOne({
+    emailId: obj.emailId,
+  });
+  console.log("Found document is =>", userObj);
+  if (!userObj) {
+    return { result: "na" };
+  } else if (obj.password && userObj.password == "") {
+    //add this password
+    userObj.password = obj.password;
+    userObj._id = userObj._id.toString();
+    await updateUser(userObj);
+    return { result: "signupSuccess" };
+  } else if (userObj.password == "") {
+    // first-time, ask user to set the password
+    return { result: "setPassword" };
+  } else {
+    return { result: "alreadySetPassword" };
+  }
+  // return userObj;
 }
 async function addUser(obj) {
   const db = app.locals.db;
@@ -37,12 +82,13 @@ async function deleteUser(id) {
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
-  console.log("Deleted");
   return obj;
 }
 module.exports = UserService = {
   getAllUsers,
   getUserById,
+  getUserByEmailId,
+  checkUser,
   addUser,
   updateUser,
   deleteUser,
