@@ -4,6 +4,7 @@ import AdminProducts from "./AdminProducts";
 import AdminCategories from "./AdminCategories";
 import AdminStaff from "./AdminStaff";
 import AdminCustomers from "./AdminCustomers";
+import ContentPage from "./ContentPage";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
@@ -77,29 +78,10 @@ export default function RestaurantHomePage() {
           onToggleSidebar={handleToggleSidebar}
         />
       </div>
-      {selectedEntity.name == "Products" && (
-        <div className={flagToggleButton ? "col-9" : "col-12"}>
-          <AdminProducts selectedEntity={selectedEntity} />
-        </div>
-      )}
-      {selectedEntity.name == "Product Categories" && (
-        <div className="col-10 ">
-          <AdminCategories selectedEntity={selectedEntity} />
-        </div>
-      )}
-      {selectedEntity.name == "Customers" && (
-        <div className={flagToggleButton ? "col-9" : "col-12"}>
-          <AdminCustomers
-            selectedEntity={selectedEntity}
-            flagToggleButton={flagToggleButton}
-          />
-        </div>
-      )}
-      {selectedEntity.name == "Staff" && (
-        <div className="col-10 ">
-          <AdminStaff selectedEntity={selectedEntity} />
-        </div>
-      )}
+      <div className={flagToggleButton ? "col-9" : "col-12"}>
+        <ContentPage selectedEntity={selectedEntity} />
+      </div>
+
       {/* <div className="col-10 ">{true && <Content />}</div> */}
     </div>
   );
