@@ -307,7 +307,7 @@ export default function AdminStaff(props) {
   if (loadFlag) {
     return (
       <div className="my-5 text-center">
-        <BeatLoader size={24} color={"red"} />
+        <BeatLoader size={24} color={"blue"} />
       </div>
     );
   }

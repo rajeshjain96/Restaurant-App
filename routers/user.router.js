@@ -36,6 +36,11 @@ router.post("/signup", async (req, res) => {
   obj = await UserService.checkUser(obj);
   res.status(201).json(obj);
 });
+router.post("/login", async (req, res) => {
+  let obj = req.body;
+  obj = await UserService.checkUserTryingToLogIn(obj);
+  res.status(201).json(obj);
+});
 router.put("/", upload.single("file"), async (req, res) => {
   let obj = req.body;
   obj.updateDate = new Date();

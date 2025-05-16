@@ -186,7 +186,15 @@ export default function AdminUserForm(props) {
                 checked={user.status == "disabled"}
                 onChange={() => handleUserStatusSelection("disabled")}
               />{" "}
-              Disabled
+              Disabled{" "}
+              <input
+                type="radio"
+                name="status"
+                id=""
+                checked={user.status == "forgotPassword"}
+                onChange={() => handleUserStatusSelection("forgotPassword")}
+              />{" "}
+              Forgot password
             </div>
             <div className="">
               {errorUser.emailId.message ? (

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 
-export default function LoginSignupPage() {
+export default function LoginSignupPage(props) {
   const [formData, setFormData] = useState({
     emailId: "",
     password: "",
@@ -10,7 +10,6 @@ export default function LoginSignupPage() {
   let [message, setMessage] = useState("");
   let [status, setStatus] = useState("checkEmail");
   const [formType, setFormType] = useState("login");
-  const [resetMode, setResetMode] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -27,14 +26,11 @@ export default function LoginSignupPage() {
     ) {
       return true;
     }
-    if (
-      (formType === "login" || formType === "signup" || resetMode) &&
-      !formData.password
-    ) {
+    if ((formType === "login" || formType === "signup") && !formData.password) {
       newErrors.password = "Password is required";
     }
     if (
-      (formType === "signup" || resetMode) &&
+      formType === "signup" &&
       formData.password !== formData.confirmPassword
     ) {
       newErrors.confirmPassword = "Passwords do not match";
@@ -61,6 +57,25 @@ export default function LoginSignupPage() {
       showMessage("Sign-up operation successful");
     }
   }
+  async function handleLoginFormSubmit() {
+    let response = await axios.post(
+      "http://localhost:3000/users/login",
+      formData
+    );
+    response = response.data;
+    if (response.result == "na") {
+      showMessage("This email-id is not registered by the Admin.");
+    } else if (response.result == "disabled") {
+      showMessage("This account is disabled by the Admin.");
+    } else if (response.result == "signupFirst") {
+      showMessage("First time login. Please signup to set the password.");
+    } else if (response.result == "wrongPassword") {
+      showMessage("You entered wrong password");
+    } else if (response.result == "validUser") {
+      showMessage("Login Successful");
+      props.setLoggedinUser(response.user);
+    }
+  }
   function showMessage(m) {
     setMessage(m);
     window.setTimeout(() => {
@@ -75,14 +90,8 @@ export default function LoginSignupPage() {
     if (formType == "signup") {
       // check whether user is added by the admin or not.
       handleSignupFormSubmit();
-    } else if (resetMode && formType === "login") {
-      alert("Password has been reset successfully.");
-      setResetMode(false);
-    } else if (resetMode) {
-      alert("Reset link sent to emailId. Now you can change your password.");
-      setResetMode(true);
-    } else {
-      alert(`${formType.toUpperCase()} FORM\nEmail: ${formData.emailId}`);
+    } else if (formType === "login") {
+      handleLoginFormSubmit();
     }
   };
 
@@ -96,14 +105,9 @@ export default function LoginSignupPage() {
               className="nav-item"
               onClick={() => {
                 setFormType("login");
-                setResetMode(false);
               }}
             >
-              <button
-                className={`nav-link ${
-                  formType === "login" && !resetMode ? "active" : ""
-                }`}
-              >
+              <button className={`nav-link ${formType === "login"}`}>
                 Login
               </button>
             </li>
@@ -111,7 +115,6 @@ export default function LoginSignupPage() {
               className="nav-item"
               onClick={() => {
                 setFormType("signup");
-                setResetMode(false);
               }}
             >
               <button
@@ -122,7 +125,7 @@ export default function LoginSignupPage() {
             </li>
           </ul>
 
-          {formType === "login" && !resetMode && (
+          {formType === "login" && (
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <input
@@ -149,15 +152,6 @@ export default function LoginSignupPage() {
                     {errors.password}
                   </div>
                 )}
-              </div>
-              <div className="mb-3 text-end">
-                <button
-                  type="button"
-                  className="btn btn-link p-0"
-                  onClick={() => setResetMode(true)}
-                >
-                  Forgot Password?
-                </button>
               </div>
               <button type="submit" className="btn btn-primary w-100">
                 Login
@@ -217,60 +211,6 @@ export default function LoginSignupPage() {
               )}
               <button type="submit" className="btn btn-dark w-100">
                 Signup
-              </button>
-            </form>
-          )}
-
-          {resetMode && (
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <input
-                  name="emailId"
-                  type="email"
-                  className="form-control"
-                  placeholder="Enter your emailId"
-                  onChange={handleChange}
-                />
-                {errors.emailId && (
-                  <div className="text-danger mt-1 small">{errors.emailId}</div>
-                )}
-              </div>
-              {!formData.emailId || errors.emailId ? null : (
-                <>
-                  <div className="mb-3">
-                    <input
-                      name="password"
-                      type="password"
-                      className="form-control"
-                      placeholder="New Password"
-                      onChange={handleChange}
-                    />
-                    {errors.password && (
-                      <div className="text-danger mt-1 small">
-                        {errors.password}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      name="confirmPassword"
-                      type="password"
-                      className="form-control"
-                      placeholder="Confirm New Password"
-                      onChange={handleChange}
-                    />
-                    {errors.confirmPassword && (
-                      <div className="text-danger mt-1 small">
-                        {errors.confirmPassword}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-              <button type="submit" className="btn btn-warning w-100">
-                {formData.emailId && !errors.emailId
-                  ? "Change Password"
-                  : "Send Reset Link"}
               </button>
             </form>
           )}

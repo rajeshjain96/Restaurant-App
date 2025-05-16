@@ -96,7 +96,7 @@ export default function AdminProductForm(props) {
     setFlagLoader(false);
   }
   if (flagLoader) {
-    return <BeatLoader size={24} color={"red"} />;
+    return <BeatLoader size={24} color={"blue"} />;
   }
   function handleSelectUnitChange(event) {
     console.log(event.target.value);

@@ -44,9 +44,14 @@ async function checkUser(obj) {
   });
   console.log("Found document is =>", userObj);
   if (!userObj) {
+    // user is not registered
     return { result: "na" };
-  } else if (obj.password && userObj.password == "") {
-    //add this password
+  } else if (
+    obj.password &&
+    userObj.password == "" &&
+    userObj.status == "active"
+  ) {
+    //First time signup by user, password is being set by the user
     userObj.password = obj.password;
     userObj._id = userObj._id.toString();
     await updateUser(userObj);
@@ -56,6 +61,32 @@ async function checkUser(obj) {
     return { result: "setPassword" };
   } else {
     return { result: "alreadySetPassword" };
+  }
+  // return userObj;
+}
+async function checkUserTryingToLogIn(obj) {
+  const db = app.locals.db;
+  const collection = db.collection("users");
+  const userObj = await collection.findOne({
+    emailId: obj.emailId,
+  });
+  console.log("Found document is =>", userObj);
+  if (!userObj) {
+    // user is not registered
+    return { result: "na" };
+  } else if (userObj.status == "disabled") {
+    return { result: "disabled" };
+  } else if (userObj.password == "" && userObj.status == "active") {
+    //First time login by user, he/she needs to signup first
+    return { result: "signupFirst" };
+  } else if (userObj.password != obj.password) {
+    // wrong password
+    return { result: "wrongPassword" };
+  } else if (userObj.password === obj.password) {
+    // send user to client
+    userObj.password = "...";
+    console.log("Logged in success.. " + userObj.emailId);
+    return { user: userObj, result: "validUser" };
   }
   // return userObj;
 }
@@ -89,6 +120,7 @@ module.exports = UserService = {
   getUserById,
   getUserByEmailId,
   checkUser,
+  checkUserTryingToLogIn,
   addUser,
   updateUser,
   deleteUser,

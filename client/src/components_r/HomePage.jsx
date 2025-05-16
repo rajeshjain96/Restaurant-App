@@ -6,7 +6,7 @@ import axios from "axios";
 export default function HomePage(props) {
   const imageFileName = "mobico";
   let [fileCount, setFileCount] = useState(0);
-
+  let { user } = props;
   useEffect(() => {
     getCountOfImageFiles();
   }, []);
@@ -18,53 +18,58 @@ export default function HomePage(props) {
     setFileCount(fc);
   }
   return (
-    <div className="w-50 mx-auto my-5">
-      <div
-        id="carouselExampleAutoplaying"
-        className="carousel slide"
-        data-bs-ride="carousel"
-      >
-        <div className="carousel-inner">
-          {new Array(fileCount).fill(0).map((e, index) => (
-            <div className="carousel-item active" key={index}>
-              <img
-                src={
-                  "http://localhost:3000/uploadedImages/" +
-                  imageFileName +
-                  (index + 1) +
-                  ".jpg"
-                }
-                className="d-block w-100"
-                alt="..."
-              />
-            </div>
-          ))}
+    <>
+      {user && (
+        <div className="text-center text-primary">Welcome {user.name}</div>
+      )}
+      <div className="w-50 mx-auto my-1">
+        <div
+          id="carouselExampleAutoplaying"
+          className="carousel slide"
+          data-bs-ride="carousel"
+        >
+          <div className="carousel-inner">
+            {new Array(fileCount).fill(0).map((e, index) => (
+              <div className="carousel-item active" key={index}>
+                <img
+                  src={
+                    "http://localhost:3000/uploadedImages/" +
+                    imageFileName +
+                    (index + 1) +
+                    ".jpg"
+                  }
+                  className="d-block w-100"
+                  alt="..."
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            className="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="prev"
+          >
+            <span
+              className="carousel-control-prev-icon"
+              aria-hidden="true"
+            ></span>
+            <span className="visually-hidden">Previous</span>
+          </button>
+          <button
+            className="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="next"
+          >
+            <span
+              className="carousel-control-next-icon"
+              aria-hidden="true"
+            ></span>
+            <span className="visually-hidden">Next</span>
+          </button>
         </div>
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselExampleAutoplaying"
-          data-bs-slide="prev"
-        >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselExampleAutoplaying"
-          data-bs-slide="next"
-        >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Next</span>
-        </button>
       </div>
-    </div>
+    </>
   );
 }

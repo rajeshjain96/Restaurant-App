@@ -58,7 +58,7 @@ function AdminProducts(props) {
     props.onAddProductClick();
   }
   if (flagLoader) {
-    return <BeatLoader size={24} color={"red"} />;
+    return <BeatLoader size={24} color={"blue"} />;
   }
   return (
     <>

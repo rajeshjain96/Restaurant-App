@@ -31,6 +31,9 @@ export default function SideBar(props) {
   function handleLogInSignupButtonClick() {
     props.onLogInSignupButtonClick();
   }
+  function handleSignoutClick() {
+    props.onSignoutClick();
+  }
   let dashboardList = ["Manage Data", "Settings", "Reports"];
   return (
     <>
@@ -88,6 +91,20 @@ export default function SideBar(props) {
                   ))}
               </>
             ))}
+          {user && (
+            <>
+              {" "}
+              <div className="text-center">
+                <a
+                  href="#"
+                  style={{ color: "white" }}
+                  onClick={handleSignoutClick}
+                >
+                  Signout
+                </a>
+              </div>
+            </>
+          )}
           {!user && (
             <>
               {" "}

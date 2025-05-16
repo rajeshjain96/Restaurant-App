@@ -109,7 +109,7 @@ export default function AdminProductFormFireBase(props) {
     setFlagLoader(false);
   }
   if (flagLoader) {
-    return <BeatLoader size={24} color={"red"} />;
+    return <BeatLoader size={24} color={"blue"} />;
   }
   function handleSelectUnitChange(event) {
     console.log(event.target.value);

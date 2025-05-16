@@ -52,7 +52,7 @@ export default function BillPage(props) {
   if (loadFlag) {
     return (
       <div className="my-5">
-        <BeatLoader size={24} color={"red"} />
+        <BeatLoader size={24} color={"blue"} />
       </div>
     );
   }

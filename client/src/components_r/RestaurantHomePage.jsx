@@ -13,7 +13,7 @@ export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
   let [flagToggleButton, setFlagToggleButton] = useState(false);
-  let [user, setUser] = useState(false);
+  let [user, setUser] = useState("");
   let [view, setView] = useState("home");
   let menus = [
     {
@@ -83,10 +83,12 @@ export default function RestaurantHomePage() {
   function handleEntityClick(selectedMenuIndex, selectedIndex) {
     setLoadFlag(true);
     setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
+    setView("content");
     setLoadFlag(false);
   }
   function handleSideBarMenuClick() {
     setSelectedEntity("");
+    setView("home");
   }
   async function getListFromBackEnd(collectionName) {
     // let response = await axios("http://localhost:3000/" + collectionName);
@@ -110,6 +112,16 @@ export default function RestaurantHomePage() {
   function handleLogInSignupButtonClick() {
     setView("loginSignup");
   }
+  function setLoggedinUser(loggedinUser) {
+    console.log(loggedinUser);
+
+    setUser(loggedinUser);
+    setView("home");
+  }
+  function handleSignoutClick() {
+    setUser("");
+    setView("home");
+  }
   return (
     <div className="row justify-content-center p-4">
       {true && (
@@ -123,20 +135,22 @@ export default function RestaurantHomePage() {
             onSideBarMenuClick={handleSideBarMenuClick}
             onToggleSidebar={handleToggleSidebar}
             onLogInSignupButtonClick={handleLogInSignupButtonClick}
+            onSignoutClick={handleSignoutClick}
           />
         </div>
       )}
       {/* <div className="col-10 ">
         <NavBar />
       </div> */}
-      {view == "home" && <HomePage />}
-      {view == "loginSignup" && <LoginSignupPage />}
-      {
+      {view == "home" && <HomePage user={user} />}
+      {!user && view == "loginSignup" && (
+        <LoginSignupPage setLoggedinUser={setLoggedinUser} />
+      )}
+      {view == "content" && (
         <div className={flagToggleButton ? "col-9" : "col-12"}>
           <ContentPage selectedEntity={selectedEntity} />
         </div>
-      }
-
+      )}
       {/* <div className="col-10 ">{true && <Content />}</div> */}
     </div>
   );
