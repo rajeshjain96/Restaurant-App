@@ -267,32 +267,6 @@ export default function AdminUserForm(props) {
               </select>
             </div>
           </div>
-          {/* a field starts */}
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Password</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="mobileNumber"
-                value={user.mobileNumber}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter Mobile Number"
-              />
-            </div>
-            <div className="">
-              {errorUser.mobileNumber.message ? (
-                <span className="text-danger">
-                  {errorUser.mobileNumber.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          {/* a field ends */}
           <div className="col-12">
             <button
               className="btn btn-primary"

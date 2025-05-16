@@ -1,13 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
-import AdminProducts from "./AdminProducts";
-import AdminCategories from "./AdminCategories";
-import AdminStaff from "./AdminStaff";
-import AdminCustomers from "./AdminCustomers";
 import ContentPage from "./ContentPage";
 import HomePage from "./HomePage";
-import NavBar from "./NavBar";
 import LoginSignupPage from "./LoginSignupPage";
+import axios from "axios";
 
 export default function RestaurantHomePage() {
   let [loadFlag, setLoadFlag] = useState(false);
@@ -18,68 +14,72 @@ export default function RestaurantHomePage() {
   let menus = [
     {
       name: "Manage",
+      accessLevel: "D",
       entities: [
         {
           name: "Products",
           singularName: "Product",
           dbCollection: "products",
           addFacility: true,
+          accessLevel: "D",
         },
         {
           name: "Customers",
           singularName: "Customer",
           dbCollection: "customers",
           addFacility: true,
+          accessLevel: "D",
         },
         {
           name: "Product Categories",
           singularName: "Category",
           dbCollection: "categories",
           addFacility: true,
+          accessLevel: "A",
         },
+      ],
+    },
+    {
+      name: "Settings",
+      accessLevel: "A",
+      entities: [
         {
           name: "Users",
           singularName: "User",
           dbCollection: "users",
           addFacility: true,
+          accessLevel: "A",
         },
-      ],
-    },
-    {
-      name: "Control",
-      entities: [
         {
           name: "Roles",
           singularName: "Role",
           dbCollection: "roles",
           addFacility: true,
-        },
-        {
-          name: "Customers",
-          singularName: "Customer",
-          dbCollection: "customers",
-          addFacility: true,
+          accessLevel: "A",
         },
       ],
     },
     {
+      accessLevel: "D",
       name: "Reports",
       entities: [
         {
-          name: "Products",
-          singularName: "Product",
-          dbCollection: "products",
-          addFacility: true,
-        },
-        {
-          name: "Customers",
-          singularName: "Customer",
-          dbCollection: "customers",
-          addFacility: true,
+          name: "Activities",
+          singularName: "Activity",
+          dbCollection: "activities",
+          addFacility: false,
+          accessLevel: "A",
         },
       ],
     },
   ];
+  useEffect(()=>{
+    setSession();
+  },[])
+  async function setSession() {
+    let response=await axios.get("http://localhost:3000/specials/welcome");
+    console.log(response.data);
+  }
   function handleEntityClick(selectedMenuIndex, selectedIndex) {
     setLoadFlag(true);
     setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
@@ -112,15 +112,23 @@ export default function RestaurantHomePage() {
   function handleLogInSignupButtonClick() {
     setView("loginSignup");
   }
-  function setLoggedinUser(loggedinUser) {
+  async function setLoggedinUser(loggedinUser) {
     console.log(loggedinUser);
-
-    setUser(loggedinUser);
     setView("home");
+    // get access level of this user
+    let response = await axios.get(
+      "http://localhost:3000/roles/" + loggedinUser.roleId
+    );
+    console.log(response);
+    loggedinUser.level = response.data.level;
+    console.log(loggedinUser);
+    setUser(loggedinUser);
   }
   function handleSignoutClick() {
     setUser("");
     setView("home");
+    // remove jwt token from backend
+    let response=axios.post("http://localhost:3000/users/signout")
   }
   return (
     <div className="row justify-content-center p-4">

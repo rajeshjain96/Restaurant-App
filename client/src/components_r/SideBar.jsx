@@ -57,36 +57,40 @@ export default function SideBar(props) {
             menus.map((e, index) => (
               <>
                 <div className="text-start" key={index}>
-                  <button
-                    className={
-                      "btn btn-sidebar my-2 border " +
-                      (index == selectedMenuIndex
-                        ? "bg-dark text-white"
-                        : "bg-dark text-white")
-                    }
-                    onClick={() => {
-                      handleSideBarMenuClick(index);
-                    }}
-                  >
-                    {e.name}
-                  </button>
+                  {e.accessLevel >= user.level && (
+                    <button
+                      className={
+                        "btn btn-sidebar my-2 border " +
+                        (index == selectedMenuIndex
+                          ? "bg-dark text-white"
+                          : "bg-dark text-white")
+                      }
+                      onClick={() => {
+                        handleSideBarMenuClick(index);
+                      }}
+                    >
+                      {e.name}
+                    </button>
+                  )}
                 </div>
                 {selectedMenuIndex == index &&
                   e.entities.map((ee, indexx) => (
                     <div className="text-start" key={indexx}>
-                      <button
-                        className={
-                          "btn btn-sidebar ms-3 my-2 border " +
-                          (indexx == selectedEntityIndex
-                            ? "bg-white text-primary"
-                            : "text-white")
-                        }
-                        onClick={() => {
-                          handleSideBarEntityClick(indexx);
-                        }}
-                      >
-                        {ee.name}
-                      </button>
+                      {ee.accessLevel >= user.level && (
+                        <button
+                          className={
+                            "btn btn-sidebar ms-3 my-2 border " +
+                            (indexx == selectedEntityIndex
+                              ? "bg-white text-primary"
+                              : "text-white")
+                          }
+                          onClick={() => {
+                            handleSideBarEntityClick(indexx);
+                          }}
+                        >
+                          {ee.name}
+                        </button>
+                      )}
                     </div>
                   ))}
               </>

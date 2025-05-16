@@ -115,6 +115,7 @@ export default function LoginSignupPage(props) {
               className="nav-item"
               onClick={() => {
                 setFormType("signup");
+                setFormData({ ...formData, password: "", confirmPassword: "" });
               }}
             >
               <button

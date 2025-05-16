@@ -199,15 +199,16 @@ export default function CommonUtilityBar(props) {
   }
   return (
     <>
-      <h2
+      <h4
         className={
           "text-center text-primary  " +
           (flagToggleButton ? "" : "w-75 mx-auto")
         }
+        style={{margin:"0px"}}
       >
         {selectedEntity.name}
-      </h2>
-      <h6
+      </h4>
+      <div
         className={
           "text-center text-primary  " +
           (flagToggleButton ? "" : "w-75 mx-auto")
@@ -218,7 +219,7 @@ export default function CommonUtilityBar(props) {
           : action == "update"
           ? "(Update Record)"
           : "(Showing Records)"}
-      </h6>
+      </div>
       {(action == "add" || action == "update") && (
         <div className="text-center" style={{ fontSize: "30px" }}>
           <button className="btn btn-primary" onClick={handleListClick}>
@@ -238,7 +239,7 @@ export default function CommonUtilityBar(props) {
       {action == "list" && (
         <div
           className={
-            "row mx-auto justify-content-center text-start p-3 align-items-center my-3 border-top border-bottom border-1 border-primary"
+            "row mx-auto justify-content-center text-start p-2 align-items-center my-3 border-top border-1 border-primary"
           }
         >
           {listLength != 0 && (
@@ -250,7 +251,7 @@ export default function CommonUtilityBar(props) {
                 size="50"
                 onKeyUp={handleSearchKeyUp}
                 onChange={handleSearchKeyUp}
-                className="p-2"
+                className="p-1"
               />
             </div>
           )}
@@ -275,7 +276,7 @@ export default function CommonUtilityBar(props) {
               Export To PDF
             </button> */}
             <button className="btn btn-primary" onClick={handleExportClick}>
-              <span style={{ fontSize: "20px" }}>
+              <span style={{ fontSize: "16px" }}>
                 <i className="bi bi-file-earmark-arrow-down-fill"></i>
               </span>
             </button>

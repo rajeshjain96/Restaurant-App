@@ -1,0 +1,110 @@
+2025-05-16T10:20:20.579Z [INFO]: Guest accessed GET /files/count/mobico
+2025-05-16T10:20:20.591Z [INFO]: Guest accessed GET /specials/welcome
+2025-05-16T10:20:20.594Z [INFO]: Guest accessed GET /files/count/mobico
+2025-05-16T10:20:20.599Z [INFO]: Guest accessed GET /specials/welcome
+2025-05-16T10:20:20.602Z [INFO]: Guest accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:20:20.605Z [INFO]: Guest accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:20:20.606Z [INFO]: Guest accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:20:20.609Z [INFO]: Guest accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:20:31.644Z [INFO]: Guest accessed POST /users/login
+2025-05-16T10:21:00.395Z [INFO]: Guest accessed GET /files/count/mobico
+2025-05-16T10:21:00.399Z [INFO]: Guest accessed GET /specials/welcome
+2025-05-16T10:21:00.401Z [INFO]: Guest accessed GET /files/count/mobico
+2025-05-16T10:21:00.404Z [INFO]: Guest accessed GET /specials/welcome
+2025-05-16T10:21:00.432Z [INFO]: Guest accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:21:00.434Z [INFO]: Guest accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:21:00.435Z [INFO]: Guest accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:21:00.437Z [INFO]: Guest accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:21:11.428Z [INFO]: Guest accessed POST /users/login
+2025-05-16T10:25:06.510Z [INFO]: Guest accessed POST /users/login
+2025-05-16T10:25:06.534Z [INFO]: undefined accessed GET /roles/6825d9d588ae3236a12a4914
+2025-05-16T10:25:06.540Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:25:06.543Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:25:06.557Z [INFO]: undefined accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:25:06.561Z [INFO]: undefined accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:25:06.562Z [INFO]: undefined accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:25:06.563Z [INFO]: undefined accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:25:24.866Z [INFO]: Guest accessed GET /users
+2025-05-16T10:28:32.465Z [INFO]: Guest accessed GET /users
+2025-05-16T10:29:13.652Z [INFO]: Guest accessed GET /users
+2025-05-16T10:32:45.669Z [INFO]: Guest accessed GET /users
+2025-05-16T10:36:53.734Z [INFO]: Guest accessed POST /users
+2025-05-16T10:37:46.395Z [INFO]: Guest accessed POST /customers
+2025-05-16T10:42:19.611Z [INFO]: Guest accessed POST /users
+2025-05-16T10:42:25.245Z [INFO]: Guest accessed GET /users
+2025-05-16T10:42:36.387Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:42:36.394Z [INFO]: undefined accessed GET /specials/welcome
+2025-05-16T10:42:36.400Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:42:36.406Z [INFO]: undefined accessed GET /specials/welcome
+2025-05-16T10:42:36.419Z [INFO]: undefined accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:42:36.423Z [INFO]: undefined accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:42:36.425Z [INFO]: undefined accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:42:36.428Z [INFO]: undefined accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:42:46.110Z [INFO]: undefined accessed POST /users/login
+2025-05-16T10:42:46.132Z [INFO]: undefined accessed GET /roles/6825d9d588ae3236a12a4914
+2025-05-16T10:42:46.136Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:42:46.139Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:42:46.151Z [INFO]: undefined accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:42:46.152Z [INFO]: undefined accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:42:46.153Z [INFO]: undefined accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:42:46.157Z [INFO]: undefined accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:44:39.229Z [INFO]: Guest accessed POST /users
+2025-05-16T10:46:00.383Z [INFO]: Guest accessed POST /users/login
+2025-05-16T10:46:12.481Z [INFO]: Guest accessed POST /users/login
+2025-05-16T10:46:31.806Z [INFO]: undefined accessed POST /customers
+2025-05-16T10:46:39.583Z [INFO]: undefined accessed GET /customers
+2025-05-16T10:48:14.517Z [INFO]: undefined accessed GET /customers
+2025-05-16T10:48:14.521Z [INFO]: undefined accessed GET /customers
+2025-05-16T10:50:08.516Z [INFO]: undefined accessed GET /products
+2025-05-16T10:50:08.525Z [INFO]: undefined accessed GET /products
+2025-05-16T10:50:08.541Z [INFO]: undefined accessed GET /categories
+2025-05-16T10:50:08.674Z [INFO]: undefined accessed GET /categories
+2025-05-16T10:50:18.030Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:18.035Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:18.047Z [INFO]: undefined accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:50:18.049Z [INFO]: undefined accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:50:18.050Z [INFO]: undefined accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:50:18.052Z [INFO]: undefined accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:50:35.533Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:35.536Z [INFO]: undefined accessed GET /specials/welcome
+2025-05-16T10:50:35.539Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:35.541Z [INFO]: undefined accessed GET /specials/welcome
+2025-05-16T10:50:35.553Z [INFO]: undefined accessed GET /uploadedImages/mobico1.jpg
+2025-05-16T10:50:35.555Z [INFO]: undefined accessed GET /uploadedImages/mobico2.jpg
+2025-05-16T10:50:35.557Z [INFO]: undefined accessed GET /uploadedImages/mobico3.jpg
+2025-05-16T10:50:35.559Z [INFO]: undefined accessed GET /uploadedImages/mobico4.jpg
+2025-05-16T10:50:46.055Z [INFO]: undefined accessed POST /users/login
+2025-05-16T10:50:46.081Z [INFO]: undefined accessed GET /roles/6825d9d588ae3236a12a4914
+2025-05-16T10:50:46.085Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:46.088Z [INFO]: undefined accessed GET /files/count/mobico
+2025-05-16T10:50:50.038Z [INFO]: undefined accessed GET /customers
+2025-05-16T10:50:50.055Z [INFO]: undefined accessed GET /customers
+2025-05-16T11:10:33.664Z [INFO]: undefined accessed GET /
+2025-05-16T11:10:33.679Z [INFO]: undefined accessed GET /
+2025-05-16T11:14:30.029Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:14:30.047Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:16:16.015Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:16:16.029Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:20:04.726Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:20:04.747Z [WARN]: Invalid token while accessing GET /
+2025-05-16T11:21:50.287Z [INFO]: Rajesh Jain accessed GET /
+2025-05-16T11:21:50.304Z [INFO]: Rajesh Jain accessed GET /
+2025-05-16T11:23:27.337Z [INFO]: Rajesh Jain accessed GET /
+2025-05-16T11:23:27.353Z [INFO]: Rajesh Jain accessed GET /
+2025-05-16T12:11:33.439Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:19:32.122Z [WARN]: Guest tried to fetch data illegally
+2025-05-16T12:29:36.080Z [WARN]: Guest tried to fetch data illegally
+2025-05-16T12:30:00.965Z [WARN]: Guest tried to fetch data illegally
+2025-05-16T12:32:09.943Z [WARN]: Guest tried to fetch data illegally
+2025-05-16T12:32:58.888Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:34:26.426Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:37:44.255Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:38:06.945Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:38:54.359Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:39:32.697Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T12:43:42.539Z [INFO]: Rajesh Jain-->GET--->customers
+2025-05-16T12:43:42.554Z [INFO]: Rajesh Jain-->GET--->customers
+2025-05-16T12:58:01.910Z [WARN]: Unauthorized way to fetch data illegally
+2025-05-16T13:00:52.794Z [WARN]: Unauthorized way to fetch data -->POST--->customers
+2025-05-16T13:19:13.535Z [WARN]: Unauthorized operation -->GET--->customers
+2025-05-16T13:21:02.429Z [ERROR]: guest encountered error during GET /users/abcd — hex string must be 24 characters

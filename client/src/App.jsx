@@ -6,9 +6,11 @@ import RestaurantHomePage from "./components_r/RestaurantHomePage";
 import EComm from "./components_Ecomm/EComm";
 import SamplePdfGenerator from "./components_r/SamplePdfGenerator";
 import TableExportOnly from "./components_r/TableExportOnly";
+import axios from "axios";
 
 function App() {
   const [count, setCount] = useState(0);
+  axios.defaults.withCredentials = true; // ⬅️ Important!
 
   return (
     <>

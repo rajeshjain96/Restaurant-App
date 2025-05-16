@@ -11,8 +11,12 @@ async function getAllRoles() {
   return list;
 }
 async function getRoleById(id) {
-  let obj = await Role.findById(id);
-  return obj;
+  const db = app.locals.db;
+  const collection = db.collection("roles");
+  const roleObj = await collection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+  return roleObj;
 }
 async function addRole(obj) {
   const db = app.locals.db;

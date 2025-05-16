@@ -85,6 +85,10 @@ async function checkUserTryingToLogIn(obj) {
   } else if (userObj.password === obj.password) {
     // send user to client
     userObj.password = "...";
+    delete userObj.mobileNumber;
+    // delete userObj.roleId;
+    delete userObj.status;
+    // delete userObj._id;
     console.log("Logged in success.. " + userObj.emailId);
     return { user: userObj, result: "validUser" };
   }
