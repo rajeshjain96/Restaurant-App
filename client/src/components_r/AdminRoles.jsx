@@ -10,7 +10,7 @@ export default function AdminRoles(props) {
   let [action, setAction] = useState("list");
   let [filteredRoleList, setFilteredRoleList] = useState([]);
   let [roleToBeEdited, setRoleToBeEdited] = useState("");
-  let [loadFlag, setLoadFlag] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
@@ -70,13 +70,16 @@ export default function AdminRoles(props) {
     getData();
   }, []);
   async function getData() {
-    setLoadFlag(true);
-    let response = await axios("http://localhost:3000/roles");
-    let pList = await response.data;
-
-    setRoleList(pList);
-    setFilteredRoleList(pList);
-    setLoadFlag(false);
+    setFlagLoad(true);
+    try {
+      let response = await axios("http://localhost:3000/roles");
+      let pList = await response.data;
+      setRoleList(pList);
+      setFilteredRoleList(pList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(role) {
     let message;
@@ -91,45 +94,56 @@ export default function AdminRoles(props) {
     }
     if (action == "add") {
       // role = await addRoleToBackend(role);
-
-      let response = await axios.post(
-        "http://localhost:3000/roles",
-        roleForBackEnd,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      role._id = await response.data.insertedId;
-      message = "Role added successfully";
-      // update the role list now.
-      let prList = [...roleList];
-      prList.push(role);
-      setRoleList(prList);
-
-      let fprList = [...filteredRoleList];
-      fprList.push(role);
-      setFilteredRoleList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.post(
+          "http://localhost:3000/roles",
+          roleForBackEnd,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        role._id = await response.data.insertedId;
+        message = "Role added successfully";
+        // update the role list now.
+        let prList = [...roleList];
+        prList.push(role);
+        setRoleList(prList);
+        let fprList = [...filteredRoleList];
+        fprList.push(role);
+        setFilteredRoleList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     } else if (action == "update") {
       role._id = roleToBeEdited._id; // The form does not have id field
       // await updateBackendRole(role);
-
-      let response = await axios.put("http://localhost:3000/roles", role, {
-        headers: { "Content-type": "multipart/form-data" },
-      });
-      let r = await response.data;
-      message = "Role Updated successfully";
-      // update the role list now.
-      let prList = roleList.map((e, index) => {
-        if (e._id == role._id) return role;
-        return e;
-      });
-      let fprList = filteredRoleList.map((e, index) => {
-        if (e._id == role._id) return role;
-        return e;
-      });
-      setRoleList(prList);
-      setFilteredRoleList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.put("http://localhost:3000/roles", role, {
+          headers: { "Content-type": "multipart/form-data" },
+        });
+        let r = await response.data;
+        message = "Role Updated successfully";
+        // update the role list now.
+        let prList = roleList.map((e, index) => {
+          if (e._id == role._id) return role;
+          return e;
+        });
+        let fprList = filteredRoleList.map((e, index) => {
+          if (e._id == role._id) return role;
+          return e;
+        });
+        setRoleList(prList);
+        setFilteredRoleList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     }
-    showMessage(message);
-    setAction("list");
   }
   function handleFormCloseClick() {
     // props.onFormCloseClick();
@@ -153,18 +167,23 @@ export default function AdminRoles(props) {
   }
   async function handleDeleteButtonClick(ans, role) {
     // await deleteBackendRole(role.id);
-    let response = await axios.delete(
-      "http://localhost:3000/roles/" + role._id
-    );
-    let r = await response.data;
-    message = `Role - ${role.name} deleted successfully.`;
-    //update the role list now.
-    let prList = roleList.filter((e, index) => e._id != role._id);
-    setRoleList(prList);
-
-    let fprList = roleList.filter((e, index) => e._id != role._id);
-    setFilteredRoleList(fprList);
-    showMessage(message);
+    setFlagLoad(true);
+    try {
+      let response = await axios.delete(
+        "http://localhost:3000/roles/" + role._id
+      );
+      let r = await response.data;
+      message = `Role - ${role.name} deleted successfully.`;
+      //update the role list now.
+      let prList = roleList.filter((e, index) => e._id != role._id);
+      setRoleList(prList);
+      let fprList = roleList.filter((e, index) => e._id != role._id);
+      setFilteredRoleList(fprList);
+      showMessage(message);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -338,7 +357,7 @@ export default function AdminRoles(props) {
     setFileList(fl);
   }
 
-  if (loadFlag) {
+  if (flagLoad) {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />

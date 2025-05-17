@@ -11,7 +11,7 @@ export default function AdminUsers(props) {
   let [action, setAction] = useState("list");
   let [filteredUserList, setFilteredUserList] = useState([]);
   let [userToBeEdited, setUserToBeEdited] = useState("");
-  let [loadFlag, setLoadFlag] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
@@ -96,25 +96,29 @@ export default function AdminUsers(props) {
     getData();
   }, []);
   async function getData() {
-    setLoadFlag(true);
-    let response = await axios("http://localhost:3000/users");
-    let pList = await response.data;
-    response = await axios("http://localhost:3000/roles");
-    let rList = await response.data;
-    // In the userList, add a parameter - role
-    pList.forEach((user, index) => {
-      // get role (string) from roleId
-      for (let i = 0; i < rList.length; i++) {
-        if (user.roleId == rList[i]._id) {
-          user.role = rList[i].name;
-          break;
-        }
-      } //for
-    });
-    setUserList(pList);
-    setFilteredUserList(pList);
-    setRoleList(rList);
-    setLoadFlag(false);
+    setFlagLoad(true);
+    try {
+      let response = await axios("http://localhost:3000/users");
+      let pList = await response.data;
+      response = await axios("http://localhost:3000/roles");
+      let rList = await response.data;
+      // In the userList, add a parameter - role
+      pList.forEach((user, index) => {
+        // get role (string) from roleId
+        for (let i = 0; i < rList.length; i++) {
+          if (user.roleId == rList[i]._id) {
+            user.role = rList[i].name;
+            break;
+          }
+        } //for
+      });
+      setUserList(pList);
+      setFilteredUserList(pList);
+      setRoleList(rList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(user) {
     let message;
@@ -129,45 +133,56 @@ export default function AdminUsers(props) {
     }
     if (action == "add") {
       // user = await addUserToBackend(user);
+      setFlagLoad(true);
+      try {
+        let response = await axios.post(
+          "http://localhost:3000/users",
+          userForBackEnd,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        user._id = await response.data.insertedId;
+        message = "User added successfully";
+        // update the user list now.
+        let prList = [...userList];
+        prList.push(user);
+        setUserList(prList);
 
-      let response = await axios.post(
-        "http://localhost:3000/users",
-        userForBackEnd,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      user._id = await response.data.insertedId;
-      message = "User added successfully";
-      // update the user list now.
-      let prList = [...userList];
-      prList.push(user);
-      setUserList(prList);
-
-      let fprList = [...filteredUserList];
-      fprList.push(user);
-      setFilteredUserList(fprList);
+        let fprList = [...filteredUserList];
+        fprList.push(user);
+        setFilteredUserList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     } else if (action == "update") {
       user._id = userToBeEdited._id; // The form does not have id field
-      // await updateBackendUser(user);
-
-      let response = await axios.put("http://localhost:3000/users", user, {
-        headers: { "Content-type": "multipart/form-data" },
-      });
-      let r = await response.data;
-      message = "User Updated successfully";
-      // update the user list now.
-      let prList = userList.map((e, index) => {
-        if (e._id == user._id) return user;
-        return e;
-      });
-      let fprList = filteredUserList.map((e, index) => {
-        if (e._id == user._id) return user;
-        return e;
-      });
-      setUserList(prList);
-      setFilteredUserList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.put("http://localhost:3000/users", user, {
+          headers: { "Content-type": "multipart/form-data" },
+        });
+        let r = await response.data;
+        message = "User Updated successfully";
+        // update the user list now.
+        let prList = userList.map((e, index) => {
+          if (e._id == user._id) return user;
+          return e;
+        });
+        let fprList = filteredUserList.map((e, index) => {
+          if (e._id == user._id) return user;
+          return e;
+        });
+        setUserList(prList);
+        setFilteredUserList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     }
-    showMessage(message);
-    setAction("list");
   }
   function handleFormCloseClick() {
     props.onFormCloseClick();
@@ -190,18 +205,24 @@ export default function AdminUsers(props) {
   }
   async function handleDeleteButtonClick(ans, user) {
     // await deleteBackendUser(user.id);
-    let response = await axios.delete(
-      "http://localhost:3000/users/" + user._id
-    );
-    let r = await response.data;
-    message = `User - ${user.name} deleted successfully.`;
-    //update the user list now.
-    let prList = userList.filter((e, index) => e._id != user._id);
-    setUserList(prList);
+    setFlagLoad(true);
+    try {
+      let response = await axios.delete(
+        "http://localhost:3000/users/" + user._id
+      );
+      let r = await response.data;
+      message = `User - ${user.name} deleted successfully.`;
+      //update the user list now.
+      let prList = userList.filter((e, index) => e._id != user._id);
+      setUserList(prList);
 
-    let fprList = userList.filter((e, index) => e._id != user._id);
-    setFilteredUserList(fprList);
-    showMessage(message);
+      let fprList = userList.filter((e, index) => e._id != user._id);
+      setFilteredUserList(fprList);
+      showMessage(message);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -374,8 +395,7 @@ export default function AdminUsers(props) {
     fl[fileIndex]["newFile"] = file;
     setFileList(fl);
   }
-
-  if (loadFlag) {
+  if (flagLoad) {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />

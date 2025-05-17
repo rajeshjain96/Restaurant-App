@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "C:\\RestaurantApp\\logs\\.7626e3994608ab245bc0a90d3b8c4c887487dd06-audit.json",
+    "files": [
+        {
+            "date": 1747478279306,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-05-17.log",
+            "hash": "1938f302c792a3016674b0b8b24d84f2546df83c36a692b0bc7fd3b0d85a08da"
+        }
+    ],
+    "hashType": "sha256"
+}

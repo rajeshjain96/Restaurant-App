@@ -11,7 +11,7 @@ export default function AdminProducts(props) {
   let [action, setAction] = useState("list");
   let [filteredProductList, setFilteredProductList] = useState([]);
   let [productToBeEdited, setProductToBeEdited] = useState("");
-  let [loadFlag, setLoadFlag] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
@@ -94,25 +94,29 @@ export default function AdminProducts(props) {
     getData();
   }, []);
   async function getData() {
-    setLoadFlag(true);
-    let response = await axios("http://localhost:3000/products");
-    let pList = await response.data;
-    response = await axios("http://localhost:3000/categories");
-    let cList = await response.data;
-    // In the productList, add a parameter - category
-    pList.forEach((product, index) => {
-      // get category (string) from categoryId
-      for (let i = 0; i < cList.length; i++) {
-        if (product.categoryId == cList[i]._id) {
-          product.category = cList[i].name;
-          break;
-        }
-      } //for
-    });
-    setProductList(pList);
-    setFilteredProductList(pList);
-    setCategoryList(cList);
-    setLoadFlag(false);
+    setFlagLoad(true);
+    try {
+      let response = await axios("http://localhost:3000/products");
+      let pList = await response.data;
+      response = await axios("http://localhost:3000/categories");
+      let cList = await response.data;
+      // In the productList, add a parameter - category
+      pList.forEach((product) => {
+        // get category (string) from categoryId
+        for (let i = 0; i < cList.length; i++) {
+          if (product.categoryId == cList[i]._id) {
+            product.category = cList[i].name;
+            break;
+          }
+        } //for
+      });
+      setProductList(pList);
+      setFilteredProductList(pList);
+      setCategoryList(cList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(product) {
     let message;
@@ -127,47 +131,59 @@ export default function AdminProducts(props) {
     }
     if (action == "add") {
       // product = await addProductToBackend(product);
+      setFlagLoad(true);
+      try {
+        let response = await axios.post(
+          "http://localhost:3000/products",
+          productForBackEnd,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        product._id = await response.data.insertedId;
+        message = "Product added successfully";
+        // update the product list now.
+        let prList = [...productList];
+        prList.push(product);
+        setProductList(prList);
 
-      let response = await axios.post(
-        "http://localhost:3000/products",
-        productForBackEnd,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      product._id = await response.data.insertedId;
-      message = "Product added successfully";
-      // update the product list now.
-      let prList = [...productList];
-      prList.push(product);
-      setProductList(prList);
-
-      let fprList = [...filteredProductList];
-      fprList.push(product);
-      setFilteredProductList(fprList);
-    } else if (action == "update") {
+        let fprList = [...filteredProductList];
+        fprList.push(product);
+        setFilteredProductList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
+    } //...add
+    else if (action == "update") {
       product._id = productToBeEdited._id; // The form does not have id field
-      // await updateBackendProduct(product);
-
-      let response = await axios.put(
-        "http://localhost:3000/products",
-        product,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      let r = await response.data;
-      message = "Product Updated successfully";
-      // update the product list now.
-      let prList = productList.map((e, index) => {
-        if (e._id == product._id) return product;
-        return e;
-      });
-      let fprList = filteredProductList.map((e, index) => {
-        if (e._id == product._id) return product;
-        return e;
-      });
-      setProductList(prList);
-      setFilteredProductList(fprList);
-    }
-    showMessage(message);
-    setAction("list");
+      setFlagLoad(true);
+      try {
+        let response = await axios.put(
+          "http://localhost:3000/products",
+          product,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        let r = await response.data;
+        message = "Product Updated successfully";
+        // update the product list now.
+        let prList = productList.map((e, index) => {
+          if (e._id == product._id) return product;
+          return e;
+        });
+        let fprList = filteredProductList.map((e, index) => {
+          if (e._id == product._id) return product;
+          return e;
+        });
+        setProductList(prList);
+        setFilteredProductList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+    } //else ...(update)
+    setFlagLoad(false);
   }
   function handleFormCloseClick() {
     props.onFormCloseClick();
@@ -190,18 +206,24 @@ export default function AdminProducts(props) {
   }
   async function handleDeleteButtonClick(ans, product) {
     // await deleteBackendProduct(product.id);
-    let response = await axios.delete(
-      "http://localhost:3000/products/" + product._id
-    );
-    let r = await response.data;
-    message = `Product - ${product.name} deleted successfully.`;
-    //update the product list now.
-    let prList = productList.filter((e, index) => e._id != product._id);
-    setProductList(prList);
+    setFlagLoad(true);
+    try {
+      let response = await axios.delete(
+        "http://localhost:3000/products/" + product._id
+      );
+      let r = await response.data;
+      message = `Product - ${product.name} deleted successfully.`;
+      //update the product list now.
+      let prList = productList.filter((e, index) => e._id != product._id);
+      setProductList(prList);
 
-    let fprList = productList.filter((e, index) => e._id != product._id);
-    setFilteredProductList(fprList);
-    showMessage(message);
+      let fprList = productList.filter((e, index) => e._id != product._id);
+      setFilteredProductList(fprList);
+      showMessage(message);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -375,7 +397,7 @@ export default function AdminProducts(props) {
     setFileList(fl);
   }
 
-  if (loadFlag) {
+  if (flagLoad) {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />

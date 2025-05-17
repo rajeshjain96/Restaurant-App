@@ -10,7 +10,7 @@ export default function AdminCustomers(props) {
   let [action, setAction] = useState("list");
   let [filteredCustomerList, setFilteredCustomerList] = useState([]);
   let [customerToBeEdited, setCustomerToBeEdited] = useState("");
-  let [loadFlag, setLoadFlag] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
@@ -25,8 +25,6 @@ export default function AdminCustomers(props) {
     { attribute: "address" },
     { attribute: "companyName" },
     { attribute: "designation" },
-    // instock: 1,
-    // rating: 5,
   ];
   let customerValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
@@ -88,13 +86,17 @@ export default function AdminCustomers(props) {
     getData();
   }, []);
   async function getData() {
-    setLoadFlag(true);
-    let response = await axios("http://localhost:3000/customers");
-    let pList = await response.data;
+    setFlagLoad(true);
+    try {
+      let response = await axios("http://localhost:3000/customers");
+      let pList = await response.data;
 
-    setCustomerList(pList);
-    setFilteredCustomerList(pList);
-    setLoadFlag(false);
+      setCustomerList(pList);
+      setFilteredCustomerList(pList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(customer) {
     let message;
@@ -108,48 +110,59 @@ export default function AdminCustomers(props) {
       });
     }
     if (action == "add") {
-      // customer = await addCustomerToBackend(customer);
+      setFlagLoad(true);
+      try {
+        let response = await axios.post(
+          "http://localhost:3000/customers",
+          customerForBackEnd,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        customer._id = await response.data.insertedId;
+        message = "Customer added successfully";
+        // update the customer list now.
+        let prList = [...customerList];
+        prList.push(customer);
+        setCustomerList(prList);
+        let fprList = [...filteredCustomerList];
+        fprList.push(customer);
+        setFilteredCustomerList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
 
-      let response = await axios.post(
-        "http://localhost:3000/customers",
-        customerForBackEnd,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      customer._id = await response.data.insertedId;
-      message = "Customer added successfully";
-      // update the customer list now.
-      let prList = [...customerList];
-      prList.push(customer);
-      setCustomerList(prList);
-
-      let fprList = [...filteredCustomerList];
-      fprList.push(customer);
-      setFilteredCustomerList(fprList);
+      setFlagLoad(false);
     } else if (action == "update") {
       customer._id = customerToBeEdited._id; // The form does not have id field
       // await updateBackendCustomer(customer);
-
-      let response = await axios.put(
-        "http://localhost:3000/customers",
-        customer,
-        { headers: { "Content-type": "multipart/form-data" } }
-      );
-      let r = await response.data;
-      message = "Customer Updated successfully";
-      // update the customer list now.
-      let prList = customerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
-        return e;
-      });
-      let fprList = filteredCustomerList.map((e, index) => {
-        if (e._id == customer._id) return customer;
-        return e;
-      });
-      setCustomerList(prList);
-      setFilteredCustomerList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.put(
+          "http://localhost:3000/customers",
+          customer,
+          { headers: { "Content-type": "multipart/form-data" } }
+        );
+        let r = await response.data;
+        message = "Customer Updated successfully";
+        // update the customer list now.
+        let prList = customerList.map((e, index) => {
+          if (e._id == customer._id) return customer;
+          return e;
+        });
+        let fprList = filteredCustomerList.map((e, index) => {
+          if (e._id == customer._id) return customer;
+          return e;
+        });
+        setCustomerList(prList);
+        setFilteredCustomerList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     }
-    showMessage(message);
-    setAction("list");
   }
   function handleFormCloseClick() {
     // props.onFormCloseClick();
@@ -173,18 +186,24 @@ export default function AdminCustomers(props) {
   }
   async function handleDeleteButtonClick(ans, customer) {
     // await deleteBackendCustomer(customer.id);
-    let response = await axios.delete(
-      "http://localhost:3000/customers/" + customer._id
-    );
-    let r = await response.data;
-    message = `Customer - ${customer.name} deleted successfully.`;
-    //update the customer list now.
-    let prList = customerList.filter((e, index) => e._id != customer._id);
-    setCustomerList(prList);
+    setFlagLoad(true);
+    try {
+      let response = await axios.delete(
+        "http://localhost:3000/customers/" + customer._id
+      );
+      let r = await response.data;
+      message = `Customer - ${customer.name} deleted successfully.`;
+      //update the customer list now.
+      let prList = customerList.filter((e, index) => e._id != customer._id);
+      setCustomerList(prList);
 
-    let fprList = customerList.filter((e, index) => e._id != customer._id);
-    setFilteredCustomerList(fprList);
-    showMessage(message);
+      let fprList = customerList.filter((e, index) => e._id != customer._id);
+      setFilteredCustomerList(fprList);
+      showMessage(message);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -358,7 +377,7 @@ export default function AdminCustomers(props) {
     setFileList(fl);
   }
 
-  if (loadFlag) {
+  if (flagLoad) {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />

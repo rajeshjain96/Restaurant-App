@@ -4,13 +4,15 @@ import ContentPage from "./ContentPage";
 import HomePage from "./HomePage";
 import LoginSignupPage from "./LoginSignupPage";
 import axios from "axios";
+import { BeatLoader } from "react-spinners";
 
 export default function RestaurantHomePage() {
-  let [loadFlag, setLoadFlag] = useState(false);
   let [selectedEntity, setSelectedEntity] = useState("");
   let [flagToggleButton, setFlagToggleButton] = useState(false);
   let [user, setUser] = useState("");
   let [view, setView] = useState("home");
+  let [flagLoad, setFlagLoad] = useState(false);
+  let [message, setMessage] = useState("");
   let menus = [
     {
       name: "Manage",
@@ -77,34 +79,31 @@ export default function RestaurantHomePage() {
     setSession();
   }, []);
   async function setSession() {
-    let response = await axios.get("http://localhost:3000/specials/welcome");
-    if (response.data.role != "new" && response.data.role != "guest") {
-      // user is alreay logged in and has refreshed the page
-      setUser(response.data);
+    setFlagLoad(true);
+    try {
+      let response = await axios.get("http://localhost:3000/specials/welcome");
+      if (response.data.role != "new" && response.data.role != "guest") {
+        // user is alreay logged in and has refreshed the page
+        setUser(response.data);
+      }
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
     }
+    setFlagLoad(false);
+  }
+  function showMessage(message) {
+    setMessage(message);
+    window.setTimeout(() => {
+      setMessage("");
+    }, 3000);
   }
   function handleEntityClick(selectedMenuIndex, selectedIndex) {
-    setLoadFlag(true);
     setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
     setView("content");
-    setLoadFlag(false);
   }
   function handleSideBarMenuClick() {
     setSelectedEntity("");
     setView("home");
-  }
-  async function getListFromBackEnd(collectionName) {
-    // let response = await axios("http://localhost:3000/" + collectionName);
-    let list = response.data;
-    // sort the list by date of update
-    list.sort(function (a, b) {
-      var c = new Date(a.updateDate);
-      var d = new Date(b.updateDate);
-      return d - c;
-      // return b.updateDate - a.updateDate;
-    });
-    setSelectedList(list);
-    setFilteredList(list);
   }
   function handleToggleSidebar() {
     console.log(flagToggleButton);
@@ -119,10 +118,10 @@ export default function RestaurantHomePage() {
     console.log(loggedinUser);
     setView("home");
     // get access level of this user
-    let response = await axios.get(
-      "http://localhost:3000/roles/" + loggedinUser.roleId
-    );
-    loggedinUser.level = response.data.level;
+    // let response = await axios.get(
+    //   "http://localhost:3000/roles/" + loggedinUser.roleId
+    // );
+    // loggedinUser.level = response.data.level;
     setUser(loggedinUser);
   }
   function handleSignoutClick() {
@@ -130,6 +129,16 @@ export default function RestaurantHomePage() {
     setView("home");
     // remove jwt token from backend
     let response = axios.post("http://localhost:3000/users/signout");
+  }
+  function handleCloseLoginSignupPageClose() {
+    setView("home");
+  }
+  if (flagLoad) {
+    return (
+      <div className="my-5 text-center">
+        <BeatLoader size={24} color={"blue"} />
+      </div>
+    );
   }
   return (
     <div className="row justify-content-center p-4">
@@ -151,16 +160,21 @@ export default function RestaurantHomePage() {
       {/* <div className="col-10 ">
         <NavBar />
       </div> */}
-      {view == "home" && <HomePage user={user} />}
-      {!user && view == "loginSignup" && (
-        <LoginSignupPage setLoggedinUser={setLoggedinUser} />
-      )}
-      {view == "content" && (
-        <div className={flagToggleButton ? "col-9" : "col-12"}>
-          <ContentPage selectedEntity={selectedEntity} />
-        </div>
-      )}
-      {/* <div className="col-10 ">{true && <Content />}</div> */}
+      <div className={flagToggleButton ? "col-10" : "col-12"}>
+        {message && (
+          <div className="text-center bg-danger text-white w-50 mx-auto mb-2 p-1">
+            {message.toUpperCase()}
+          </div>
+        )}
+        {view == "home" && <HomePage user={user} />}
+        {!user && view == "loginSignup" && (
+          <LoginSignupPage
+            setLoggedinUser={setLoggedinUser}
+            onCloseLoginSignupPageClose={handleCloseLoginSignupPageClose}
+          />
+        )}
+        {view == "content" && <ContentPage selectedEntity={selectedEntity} />}
+      </div>
     </div>
   );
 }

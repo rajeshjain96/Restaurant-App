@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.get("/", auntheticateUser, async (req, res, next) => {
+router.get("/", auntheticateUser, logActivity, async (req, res) => {
   try {
     if (req.tokenData.role == "Admin") {
       let list = await UserService.getAllUsers();
@@ -26,9 +26,7 @@ router.get("/", auntheticateUser, async (req, res, next) => {
     } else {
       res.status(200).json([]);
     }
-  } catch (error) {
-    next(error); // Send error to middleware
-  }
+  } catch (error) {}
 });
 router.get("/:id", async (req, res, next) => {
   try {
@@ -90,8 +88,8 @@ router.post("/login", async (req, res, next) => {
     // if successful login, assign token
     if (obj.result == "validUser") {
       // get role - level of the user
-      let role=await RoleService.getRoleById(obj.user.roleId);
-      obj.user.level=role.level;
+      let role = await RoleService.getRoleById(obj.user.roleId);
+      obj.user.level = role.level;
       const token = jwt.sign(obj.user, SECRET_KEY, { expiresIn: "1h" });
       res.cookie("token", token, {
         httpOnly: true,
