@@ -101,7 +101,11 @@ export default function LoginSignupPage(props) {
     <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
       <div className="card shadow w-100" style={{ maxWidth: "400px" }}>
         <div className="card-body">
-          <div className="text-end"><button onClick={handleCloseLoginSignupPageClose}><i class="bi bi-x-lg"></i></button></div>
+          <div className="text-end">
+            <button onClick={handleCloseLoginSignupPageClose}>
+              <i className="bi bi-x-lg"></i>
+            </button>
+          </div>
           <div className="text-center text-danger my-3">{message}</div>
           <ul className="nav nav-tabs mb-4" role="tablist">
             <li

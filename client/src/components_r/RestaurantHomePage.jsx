@@ -5,6 +5,8 @@ import HomePage from "./HomePage";
 import LoginSignupPage from "./LoginSignupPage";
 import axios from "axios";
 import { BeatLoader } from "react-spinners";
+import DatePicker from "react-datepicker";
+
 
 export default function RestaurantHomePage() {
   let [selectedEntity, setSelectedEntity] = useState("");
@@ -66,7 +68,7 @@ export default function RestaurantHomePage() {
       name: "Reports",
       entities: [
         {
-          name: "Activities",
+          name: "Activity Report",
           singularName: "Activity",
           dbCollection: "activities",
           addFacility: false,
@@ -141,40 +143,42 @@ export default function RestaurantHomePage() {
     );
   }
   return (
-    <div className="row justify-content-center p-4">
-      {true && (
-        <div className="col-2 ">
-          <SideBar
-            // entities={entities}
-            user={user}
-            menus={menus}
-            flagToggleButton={flagToggleButton}
-            onEntityClick={handleEntityClick}
-            onSideBarMenuClick={handleSideBarMenuClick}
-            onToggleSidebar={handleToggleSidebar}
-            onLogInSignupButtonClick={handleLogInSignupButtonClick}
-            onSignoutClick={handleSignoutClick}
-          />
-        </div>
-      )}
-      {/* <div className="col-10 ">
-        <NavBar />
-      </div> */}
-      <div className={flagToggleButton ? "col-10" : "col-12"}>
-        {message && (
-          <div className="text-center bg-danger text-white w-50 mx-auto mb-2 p-1">
-            {message.toUpperCase()}
+    <>
+      <div className="row justify-content-center p-4">
+        {true && (
+          <div className="col-2 ">
+            <SideBar
+              // entities={entities}
+              user={user}
+              menus={menus}
+              flagToggleButton={flagToggleButton}
+              onEntityClick={handleEntityClick}
+              onSideBarMenuClick={handleSideBarMenuClick}
+              onToggleSidebar={handleToggleSidebar}
+              onLogInSignupButtonClick={handleLogInSignupButtonClick}
+              onSignoutClick={handleSignoutClick}
+            />
           </div>
         )}
-        {view == "home" && <HomePage user={user} />}
-        {!user && view == "loginSignup" && (
-          <LoginSignupPage
-            setLoggedinUser={setLoggedinUser}
-            onCloseLoginSignupPageClose={handleCloseLoginSignupPageClose}
-          />
-        )}
-        {view == "content" && <ContentPage selectedEntity={selectedEntity} />}
+        {/* <div className="col-10 ">
+        <NavBar />
+      </div> */}
+        <div className={flagToggleButton ? "col-10" : "col-12"}>
+          {message && (
+            <div className="text-center bg-danger text-white w-50 mx-auto mb-2 p-1">
+              {message.toUpperCase()}
+            </div>
+          )}
+          {view == "home" && <HomePage user={user} />}
+          {!user && view == "loginSignup" && (
+            <LoginSignupPage
+              setLoggedinUser={setLoggedinUser}
+              onCloseLoginSignupPageClose={handleCloseLoginSignupPageClose}
+            />
+          )}
+          {view == "content" && <ContentPage selectedEntity={selectedEntity} />}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
