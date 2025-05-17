@@ -48,11 +48,11 @@ async function checkUser(obj) {
     return { result: "na" };
   } else if (
     obj.password &&
-    userObj.password == "" &&
-    userObj.status == "active"
+    userObj.password == ""
   ) {
     //First time signup by user, password is being set by the user
     userObj.password = obj.password;
+    userObj.status="active";
     userObj._id = userObj._id.toString();
     await updateUser(userObj);
     return { result: "signupSuccess" };
@@ -76,7 +76,7 @@ async function checkUserTryingToLogIn(obj) {
     return { result: "na" };
   } else if (userObj.status == "disabled") {
     return { result: "disabled" };
-  } else if (userObj.password == "" && userObj.status == "active") {
+  } else if (userObj.password == "") {
     //First time login by user, he/she needs to signup first
     return { result: "signupFirst" };
   } else if (userObj.password != obj.password) {
@@ -90,7 +90,9 @@ async function checkUserTryingToLogIn(obj) {
     delete userObj.status;
     // delete userObj._id;
     // get role-level
-    console.log("Logged in success.. " + userObj.emailId+" "+userObj.roleId);
+    console.log(
+      "Logged in success.. " + userObj.emailId + " " + userObj.roleId
+    );
     return { user: userObj, result: "validUser" };
   }
   // return userObj;
@@ -106,6 +108,9 @@ async function updateUser(obj) {
   const collection = db.collection("users");
   let id = obj._id;
   delete obj._id;
+  if (obj.status == "forgotPassword") {
+    obj.password = "";
+  }
   obj = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     { $set: obj }

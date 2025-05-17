@@ -135,3 +135,14 @@
 2025-05-17T06:44:56.955Z [ERROR]: guest encountered error during POST /users/login — hex string must be 24 characters
 2025-05-17T06:45:45.826Z [INFO]: Rajesh Jain-->GET--->roles
 2025-05-17T06:46:43.961Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:50:32.479Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:50:43.146Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:50:43.327Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:56:10.574Z [INFO]: Dummy Person-->GET--->roles
+2025-05-17T08:56:24.867Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:56:26.375Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:56:26.580Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T08:56:33.609Z [INFO]: Rajesh Jain-->PUT--->users
+2025-05-17T09:10:24.919Z [INFO]: Dummy Person-->GET--->roles
+2025-05-17T09:10:33.070Z [INFO]: Dummy Person-->GET--->customers
+2025-05-17T09:10:33.104Z [INFO]: Dummy Person-->GET--->customers

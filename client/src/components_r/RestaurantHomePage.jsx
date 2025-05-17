@@ -73,13 +73,13 @@ export default function RestaurantHomePage() {
       ],
     },
   ];
-  useEffect(()=>{
+  useEffect(() => {
     setSession();
-  },[])
+  }, []);
   async function setSession() {
-    let response=await axios.get("http://localhost:3000/specials/welcome");
-    if(response.data.role!="new" && response.data.role!="guest")
-    {// user is alreay logged in and has refreshed the page
+    let response = await axios.get("http://localhost:3000/specials/welcome");
+    if (response.data.role != "new" && response.data.role != "guest") {
+      // user is alreay logged in and has refreshed the page
       setUser(response.data);
     }
   }
@@ -129,7 +129,7 @@ export default function RestaurantHomePage() {
     setUser("");
     setView("home");
     // remove jwt token from backend
-    let response=axios.post("http://localhost:3000/users/signout")
+    let response = axios.post("http://localhost:3000/users/signout");
   }
   return (
     <div className="row justify-content-center p-4">
