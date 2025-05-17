@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = "aaappuuqq";
 const router = express.Router();
 const UserService = require("../services/user.service");
+const RoleService = require("../services/role.service");
 const multer = require("multer");
 const logger = require("../logger");
 
@@ -88,6 +89,9 @@ router.post("/login", async (req, res, next) => {
     obj = await UserService.checkUserTryingToLogIn(obj);
     // if successful login, assign token
     if (obj.result == "validUser") {
+      // get role - level of the user
+      let role=await RoleService.getRoleById(obj.user.roleId);
+      obj.user.level=role.level;
       const token = jwt.sign(obj.user, SECRET_KEY, { expiresIn: "1h" });
       res.cookie("token", token, {
         httpOnly: true,
@@ -117,17 +121,14 @@ router.put(
     }
   }
 );
-router.delete("/:id", auntheticateUser, logActivity, async (req, res,next) => {
-  try
-{
-  let id = req.params.id;
-  obj = await UserService.deleteUser(id);
-  res.json(obj);
-}
-catch(error)
- {
-  next(error); // Send error to middleware
- }
+router.delete("/:id", auntheticateUser, logActivity, async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    obj = await UserService.deleteUser(id);
+    res.json(obj);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
 });
 //================
 function auntheticateUser(req, res, next) {

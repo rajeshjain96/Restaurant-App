@@ -78,7 +78,10 @@ export default function RestaurantHomePage() {
   },[])
   async function setSession() {
     let response=await axios.get("http://localhost:3000/specials/welcome");
-    console.log(response.data);
+    if(response.data.role!="new" && response.data.role!="guest")
+    {// user is alreay logged in and has refreshed the page
+      setUser(response.data);
+    }
   }
   function handleEntityClick(selectedMenuIndex, selectedIndex) {
     setLoadFlag(true);
@@ -119,9 +122,7 @@ export default function RestaurantHomePage() {
     let response = await axios.get(
       "http://localhost:3000/roles/" + loggedinUser.roleId
     );
-    console.log(response);
     loggedinUser.level = response.data.level;
-    console.log(loggedinUser);
     setUser(loggedinUser);
   }
   function handleSignoutClick() {

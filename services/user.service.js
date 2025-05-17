@@ -89,7 +89,8 @@ async function checkUserTryingToLogIn(obj) {
     // delete userObj.roleId;
     delete userObj.status;
     // delete userObj._id;
-    console.log("Logged in success.. " + userObj.emailId);
+    // get role-level
+    console.log("Logged in success.. " + userObj.emailId+" "+userObj.roleId);
     return { user: userObj, result: "validUser" };
   }
   // return userObj;

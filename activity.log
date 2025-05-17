@@ -108,3 +108,30 @@
 2025-05-16T13:00:52.794Z [WARN]: Unauthorized way to fetch data -->POST--->customers
 2025-05-16T13:19:13.535Z [WARN]: Unauthorized operation -->GET--->customers
 2025-05-16T13:21:02.429Z [ERROR]: guest encountered error during GET /users/abcd — hex string must be 24 characters
+2025-05-16T13:48:00.627Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T05:22:18.606Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:22:18.620Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:22:22.612Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:22:22.619Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:22:38.130Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:22:38.134Z [ERROR]: guest encountered error during GET /specials/welcome — logger is not defined
+2025-05-17T05:23:45.765Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:23:45.777Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:25:23.396Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:25:23.405Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:25:45.607Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:25:45.610Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:26:51.554Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:26:51.579Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:27:31.225Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:27:31.232Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:28:01.603Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:28:01.610Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:28:21.369Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:28:21.371Z [ERROR]: guest encountered error during GET /specials/welcome — Cannot read properties of undefined (reading 'name')
+2025-05-17T05:29:53.411Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T05:43:47.705Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T06:41:15.374Z [ERROR]: guest encountered error during POST /users/login — hex string must be 24 characters
+2025-05-17T06:44:56.955Z [ERROR]: guest encountered error during POST /users/login — hex string must be 24 characters
+2025-05-17T06:45:45.826Z [INFO]: Rajesh Jain-->GET--->roles
+2025-05-17T06:46:43.961Z [INFO]: Rajesh Jain-->GET--->roles
