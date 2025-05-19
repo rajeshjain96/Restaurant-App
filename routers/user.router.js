@@ -90,7 +90,9 @@ router.post("/login", async (req, res, next) => {
       // get role - level of the user
       let role = await RoleService.getRoleById(obj.user.roleId);
       obj.user.level = role.level;
-      const token = jwt.sign(obj.user, SECRET_KEY, { expiresIn: "1h" });
+      const token = jwt.sign(obj.user, process.env.SECRET_KEY, {
+        expiresIn: "1h",
+      });
       res.cookie("token", token, {
         httpOnly: true,
         secure: false, // Set to true in production with HTTPS
@@ -138,7 +140,7 @@ function auntheticateUser(req, res, next) {
     return; //**Important */
     // return res.sendStatus(401); // Unauthorized
   }
-  jwt.verify(token, SECRET_KEY, (err, tokenData) => {
+  jwt.verify(token, process.env.SECRET_KEY, (err, tokenData) => {
     if (err) {
       // There might be tempering with the token... but before responding let us add to log
       req.activity = "Forbidden";

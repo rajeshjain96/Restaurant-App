@@ -1,6 +1,7 @@
 const express = require("express");
 var cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();
 const { app } = require("./init.js");
 var cors = require("cors");
 const productRouter = require("./routers/product.router.js");
@@ -14,8 +15,6 @@ const fileRouter = require("./routers/file.router.js");
 const specialRouter = require("./routers/special.router.js");
 const logger = require("./logger");
 const errorLogger = require("./errorLogger");
-const SECRET_KEY = "aaappuuqq";
-// app.use(cors());
 app.use(cors({ origin: "http://localhost:5173", credentials: true })); // allow cookies
 app.use(express.json());
 app.use(cookieParser());
@@ -31,6 +30,7 @@ app.use("/staff", staffRouter);
 app.use("/files", fileRouter);
 app.use("/uploadedImages", express.static("uploads"));
 app.use(errorLogger); // This should be the last middleware.
+
 function auntheticateUser(req, res, next) {
   const token = req.cookies.token;
   if (!token) {
@@ -40,7 +40,7 @@ function auntheticateUser(req, res, next) {
     return; //**Important */
     // return res.sendStatus(401); // Unauthorized
   }
-  jwt.verify(token, SECRET_KEY, (err, tokenData) => {
+  jwt.verify(token, process.env.SECRET_KEY, (err, tokenData) => {
     if (err) {
       // There might be tempering with the token... but before responding let us add to log
       req.activity = "Forbidden";

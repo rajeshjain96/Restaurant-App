@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = "aaappuuqq";
+const dotenv = require("dotenv").config();
 const router = express.Router();
 const logger = require("../logger");
 
@@ -10,7 +10,7 @@ router.get("/welcome", async (req, res, next) => {
   if (!token) {
     // assign session/token
     let obj = { role: "guest", name: "guest" };
-    token = jwt.sign(obj, SECRET_KEY, { expiresIn: "1h" });
+    token = jwt.sign(obj, process.env.SECRET_KEY, { expiresIn: "1h" });
     res.cookie("token", token, {
       httpOnly: true,
       secure: false, // Set to true in production with HTTPS
@@ -21,7 +21,7 @@ router.get("/welcome", async (req, res, next) => {
   } else {
     // check whether user is already logged in
     // so first get tokenData
-    jwt.verify(token, SECRET_KEY, (err, tokenData) => {
+    jwt.verify(token, process.env.SECRET_KEY, (err, tokenData) => {
       if (err) {
         // There might be tempering with the token... but before responding let us add to log
         req.activity = "Forbidden";

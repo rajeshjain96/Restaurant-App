@@ -1,11 +1,9 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const dotenv = require("dotenv").config();
 // const mongodb = require("mongodb");
 // const url = "mongodb://127.0.0.1:27017";
-const url =
-  "mongodb+srv://rjacpune:rjacPune411041@cluster0.fwt9kiy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-const client = new MongoClient(url);
+const client = new MongoClient(process.env.MONGODB_URL);
 const dbName = "ecommdb";
 
 let db;
@@ -22,6 +20,7 @@ async function connectToDatabase() {
       console.log("Server started at port number 3000.. .");
     });
   } catch (err) {
+    
     console.log(err);
   }
 }

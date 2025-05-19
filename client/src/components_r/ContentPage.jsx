@@ -9,6 +9,9 @@ export default function ContentPage(props) {
   let { flagToggleButton } = props;
   return (
     <>
+     {selectedEntity.isReady == false && (
+        <h5 className="text-center">Work in Progress !</h5>
+      )}
       {selectedEntity.name == "Products" && (
         <AdminProducts
           selectedEntity={selectedEntity}

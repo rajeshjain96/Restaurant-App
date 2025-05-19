@@ -5,20 +5,16 @@ export default function SideBar(props) {
   let { menus } = props;
   let { user } = props;
   let { flagToggleButton } = props;
-  let [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
-  let [selectedEntityIndex, setSelectedEntityIndex] = useState(-1);
+  let { selectedMenuIndex } = props;
+  let { selectedEntityIndex } = props;
+  // let [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
+  // let [selectedEntityIndex, setSelectedEntityIndex] = useState(-1);
   function handleSideBarMenuClick(index) {
-    if (selectedMenuIndex == index) {
-      setSelectedMenuIndex(-1);
-    } else {
-      setSelectedMenuIndex(index);
-    }
-    setSelectedEntityIndex(-1);
     props.onSideBarMenuClick(index);
   }
   function handleSideBarEntityClick(index) {
-    setSelectedEntityIndex(index);
-    props.onEntityClick(selectedMenuIndex, index);
+    // setSelectedEntityIndex(index);
+    props.onEntityClick(index);
   }
   function toggleSidebar() {
     // console.log(flagToggleButton);
@@ -34,10 +30,8 @@ export default function SideBar(props) {
   function handleSignoutClick() {
     props.onSignoutClick();
   }
-  let dashboardList = ["Manage Data", "Settings", "Reports"];
   return (
     <>
-      {/* <div className="row bg-danger text-start container-sidebar myborder"> */}
       <button className="open-btn bg-primary " onClick={toggleSidebar}>
         ☰
       </button>
@@ -60,7 +54,7 @@ export default function SideBar(props) {
                   {e.accessLevel >= user.level && (
                     <button
                       className={
-                        "btn btn-sidebar my-2 border " +
+                        "btn btn-sidebar my-1 border " +
                         (index == selectedMenuIndex
                           ? "bg-dark text-white"
                           : "bg-dark text-white")
@@ -79,7 +73,7 @@ export default function SideBar(props) {
                       {ee.accessLevel >= user.level && (
                         <button
                           className={
-                            "btn btn-sidebar ms-3 my-2 border " +
+                            "btn btn-sidebar ms-3 my-1 border " +
                             (indexx == selectedEntityIndex
                               ? "bg-white text-primary"
                               : "text-white")
@@ -123,8 +117,6 @@ export default function SideBar(props) {
             </>
           )}
         </div>
-
-        {/* col-11 ends */}
       </div>
     </>
   );
