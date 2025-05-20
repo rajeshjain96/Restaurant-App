@@ -72,7 +72,7 @@ export default function AdminRoles(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios("http://localhost:3000/roles");
+      let response = await axios(import.meta.env.VITE_API_URL + "/roles");
       let pList = await response.data;
       setRoleList(pList);
       setFilteredRoleList(pList);
@@ -97,7 +97,7 @@ export default function AdminRoles(props) {
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          "http://localhost:3000/roles",
+          import.meta.env.VITE_API_URL + "/roles",
           roleForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -121,9 +121,13 @@ export default function AdminRoles(props) {
       // await updateBackendRole(role);
       setFlagLoad(true);
       try {
-        let response = await axios.put("http://localhost:3000/roles", role, {
-          headers: { "Content-type": "multipart/form-data" },
-        });
+        let response = await axios.put(
+          import.meta.env.VITE_API_URL + "/roles",
+          role,
+          {
+            headers: { "Content-type": "multipart/form-data" },
+          }
+        );
         let r = await response.data;
         message = "Role Updated successfully";
         // update the role list now.
@@ -170,7 +174,7 @@ export default function AdminRoles(props) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        "http://localhost:3000/roles/" + role._id
+        import.meta.env.VITE_API_URL + "/roles/" + role._id
       );
       let r = await response.data;
       message = `Role - ${role.name} deleted successfully.`;

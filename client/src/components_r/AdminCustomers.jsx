@@ -88,7 +88,7 @@ export default function AdminCustomers(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios("http://localhost:3000/customers");
+      let response = await axios(import.meta.env.VITE_API_URL + "/customers");
       let pList = await response.data;
 
       setCustomerList(pList);
@@ -113,7 +113,7 @@ export default function AdminCustomers(props) {
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          "http://localhost:3000/customers",
+          import.meta.env.VITE_API_URL + "/customers",
           customerForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -139,7 +139,7 @@ export default function AdminCustomers(props) {
       setFlagLoad(true);
       try {
         let response = await axios.put(
-          "http://localhost:3000/customers",
+          import.meta.env.VITE_API_URL + "/customers",
           customer,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -189,7 +189,7 @@ export default function AdminCustomers(props) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        "http://localhost:3000/customers/" + customer._id
+        import.meta.env.VITE_API_URL + "/customers/" + customer._id
       );
       let r = await response.data;
       message = `Customer - ${customer.name} deleted successfully.`;

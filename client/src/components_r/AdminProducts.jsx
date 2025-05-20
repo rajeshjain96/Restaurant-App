@@ -96,9 +96,9 @@ export default function AdminProducts(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios("http://localhost:3000/products");
+      let response = await axios(import.meta.env.VITE_API_URL + "/products");
       let pList = await response.data;
-      response = await axios("http://localhost:3000/categories");
+      response = await axios(import.meta.env.VITE_API_URL + "/categories");
       let cList = await response.data;
       // In the productList, add a parameter - category
       pList.forEach((product) => {
@@ -134,7 +134,7 @@ export default function AdminProducts(props) {
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          "http://localhost:3000/products",
+          import.meta.env.VITE_API_URL + "/products",
           productForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -160,7 +160,7 @@ export default function AdminProducts(props) {
       setFlagLoad(true);
       try {
         let response = await axios.put(
-          "http://localhost:3000/products",
+          import.meta.env.VITE_API_URL + "/products",
           product,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -209,7 +209,7 @@ export default function AdminProducts(props) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        "http://localhost:3000/products/" + product._id
+        import.meta.env.VITE_API_URL+"/products/" + product._id
       );
       let r = await response.data;
       message = `Product - ${product.name} deleted successfully.`;

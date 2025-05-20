@@ -25,54 +25,54 @@ export default function RestaurantHomePage() {
           name: "Products",
           singularName: "Product",
           addFacility: true,
-          isReady:true,
+          isReady: true,
           accessLevel: "D",
         },
         {
           name: "Customers",
           singularName: "Customer",
           addFacility: true,
-          isReady:true,
+          isReady: true,
           accessLevel: "D",
         },
         {
           name: "Product Categories",
           singularName: "Category",
           addFacility: true,
-          isReady:false,
+          isReady: false,
           accessLevel: "A",
         },
         {
           name: "Site Visits",
           singularName: "Site Visit",
           addFacility: true,
-          isReady:false,
+          isReady: false,
           accessLevel: "D",
         },
         {
           name: "Quotations",
           singularName: "Quotation",
           addFacility: true,
-          isReady:false,
+          isReady: false,
           accessLevel: "D",
         },
         {
           name: "Purchase Orders",
           singularName: "Purchase order",
-          isReady:false,
+          isReady: false,
           accessLevel: "D",
         },
         {
           name: "Material Dispatch",
           singularName: "Material Dispatch",
-          isReady:false,
+          isReady: false,
           addFacility: true,
           accessLevel: "D",
         },
         {
           name: "Site Installations",
           singularName: "Site Installation",
-          isReady:false,
+          isReady: false,
           addFacility: true,
           accessLevel: "D",
         },
@@ -80,7 +80,7 @@ export default function RestaurantHomePage() {
           name: "Projects done",
           singularName: "Projects done",
           addFacility: true,
-          isReady:false,
+          isReady: false,
           accessLevel: "D",
         },
       ],
@@ -125,7 +125,9 @@ export default function RestaurantHomePage() {
   async function setSession() {
     setFlagLoad(true);
     try {
-      let response = await axios.get("http://localhost:3000/specials/welcome");
+      let response = await axios.get(
+        import.meta.env.VITE_API_URL + "/specials/welcome"
+      );
       if (response.data.role != "new" && response.data.role != "guest") {
         // user is alreay logged in and has refreshed the page
         setUser(response.data);
@@ -191,7 +193,7 @@ export default function RestaurantHomePage() {
     setUser("");
     setView("home");
     // remove jwt token from backend
-    let response = axios.post("http://localhost:3000/users/signout");
+    let response = axios.post(import.meta.env.VITE_API_URL + "/users/signout");
   }
   function handleCloseLoginSignupPageClose() {
     setView("home");

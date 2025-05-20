@@ -98,9 +98,9 @@ export default function AdminUsers(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios("http://localhost:3000/users");
+      let response = await axios(import.meta.env.VITE_API_URL + "/users");
       let pList = await response.data;
-      response = await axios("http://localhost:3000/roles");
+      response = await axios(import.meta.env.VITE_API_URL + "/roles");
       let rList = await response.data;
       // In the userList, add a parameter - role
       pList.forEach((user, index) => {
@@ -136,7 +136,7 @@ export default function AdminUsers(props) {
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          "http://localhost:3000/users",
+          import.meta.env.VITE_API_URL + "/users",
           userForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
@@ -160,9 +160,13 @@ export default function AdminUsers(props) {
       user._id = userToBeEdited._id; // The form does not have id field
       setFlagLoad(true);
       try {
-        let response = await axios.put("http://localhost:3000/users", user, {
-          headers: { "Content-type": "multipart/form-data" },
-        });
+        let response = await axios.put(
+          import.meta.env.VITE_API_URL + "/users",
+          user,
+          {
+            headers: { "Content-type": "multipart/form-data" },
+          }
+        );
         let r = await response.data;
         message = "User Updated successfully";
         // update the user list now.
@@ -208,7 +212,7 @@ export default function AdminUsers(props) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        "http://localhost:3000/users/" + user._id
+        import.meta.env.VITE_API_URL + "/users/" + user._id
       );
       let r = await response.data;
       message = `User - ${user.name} deleted successfully.`;

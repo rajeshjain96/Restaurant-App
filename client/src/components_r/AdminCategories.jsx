@@ -68,7 +68,7 @@ export default function AdminCategories(props) {
   }, []);
   async function getData() {
     setLoadFlag(true);
-    let response = await axios("http://localhost:3000/categories");
+    let response = await axios(import.meta.env.VITE_API_URL + "/categories");
     let list = await response.data;
     setCategoryList(list);
     setFilteredCategoryList(list);
@@ -88,7 +88,7 @@ export default function AdminCategories(props) {
     if (action == "add") {
       // category = await addCategoryToBackend(category);
       let response = await axios.post(
-        "http://localhost:3000/categories",
+        import.meta.env.VITE_API_URL + "/categories",
         categoryForBackEnd
       );
       category._id = await response.data.insertedId;
@@ -105,7 +105,7 @@ export default function AdminCategories(props) {
       category._id = categoryToBeEdited._id; // The form does not have id field
       // await updateBackendCategory(category);
       let response = await axios.put(
-        "http://localhost:3000/categories",
+        import.meta.env.VITE_API_URL + "/categories",
         categoryForBackEnd
       );
       let r = await response.data;
@@ -147,7 +147,7 @@ export default function AdminCategories(props) {
   async function handleDeleteButtonClick(ans, category) {
     // await deleteBackendCategory(category.id);
     let response = await axios.delete(
-      "http://localhost:3000/categories/" + category._id
+      import.meta.env.VITE_API_URL + "/categories/" + category._id
     );
     let r = await response.data;
     message = `Category - ${category.name} deleted successfully.`;
