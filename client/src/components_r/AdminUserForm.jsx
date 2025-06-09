@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
-import FileUpload from "./FileUpload.jsx";
+import FileUpload from "./SingleFileUpload.jsx";
 export default function AdminUserForm(props) {
   let [user, setUser] = useState("");
   let [errorUser, setErrorUser] = useState(props.userValidations);

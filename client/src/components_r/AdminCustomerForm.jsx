@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
-import FileUpload from "./FileUpload.jsx";
+import FileUpload from "./SingleFileUpload.jsx";
 export default function AdminCustomerForm(props) {
   let [customer, setCustomer] = useState("");
   let [errorCustomer, setErrorCustomer] = useState(props.customerValidations);
@@ -131,7 +131,6 @@ export default function AdminCustomerForm(props) {
     setCustomer({ ...customer, category: category, categoryId: categoryId });
   }
 
- 
   function handleCancelFormButton() {
     props.onCancelFormButton();
   }

@@ -1,0 +1,8 @@
+9/6/2025, 1:47:19 pm — [ERROR] — guest encountered error during GET /products — read ECONNRESET
+9/6/2025, 1:47:19 pm — [ERROR] — guest encountered error during GET /products — read ECONNRESET
+9/6/2025, 2:08:45 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field
+9/6/2025, 2:09:22 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field
+9/6/2025, 2:40:42 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field
+9/6/2025, 2:42:03 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field
+9/6/2025, 2:45:47 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field
+9/6/2025, 2:47:22 pm — [ERROR] — guest encountered error during PUT /products — Unexpected field

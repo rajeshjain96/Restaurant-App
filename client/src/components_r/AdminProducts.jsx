@@ -31,8 +31,18 @@ export default function AdminProducts(props) {
     { attribute: "categoryId", type: "relationalId" },
     { attribute: "info" },
     { attribute: "price" },
-    { attribute: "image", type: "file" },
-    // instock: 1,
+    {
+      attribute: "image",
+      type: "singleFile",
+      allowedFileType: "image",
+      allowedSize: 1,
+    },
+    // {
+    //   attribute: "productImages",
+    //   type: "multiFile",
+    //   fileTypes: ["image", "pdf"],
+    // },
+    // // instock: 1,
     // rating: 5,
   ];
   let productValidations = {
@@ -62,6 +72,9 @@ export default function AdminProducts(props) {
         } else {
           obj["show"] = false;
         }
+        if (e.type == "singleFile") {
+          obj["type"] = "singleFile";
+        }
         cnt++;
         list.push(obj);
       }
@@ -83,7 +96,7 @@ export default function AdminProducts(props) {
     let list = [];
     productSchema.forEach((e, index) => {
       let obj = {};
-      if (e.type == "file") {
+      if (e.type == "singleFile") {
         obj["fileAttributeName"] = e.attribute;
         list.push(obj);
       }
@@ -209,7 +222,7 @@ export default function AdminProducts(props) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        import.meta.env.VITE_API_URL+"/products/" + product._id
+        import.meta.env.VITE_API_URL + "/products/" + product._id
       );
       let r = await response.data;
       message = `Product - ${product.name} deleted successfully.`;

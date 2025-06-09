@@ -28,20 +28,27 @@ router.get("/:id", async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
-router.post("/", upload.single("file"), async (req, res, next) => {
+router.post("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
     obj.addDate = new Date();
     obj.updateDate = new Date();
+    console.log("Product post");
+    console.log(req.body);
+    console.log(req.files);
+
     obj = await ProductService.addProduct(obj);
     res.status(201).json(obj);
   } catch (error) {
     next(error); // Send error to middleware
   }
 });
-router.put("/", upload.single("file"), async (req, res, next) => {
+router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
+    console.log("Product put");
+    console.log(req.body);
+    console.log(req.files);
     obj.updateDate = new Date();
     obj = await ProductService.updateProduct(obj);
     res.status(200).json(obj);

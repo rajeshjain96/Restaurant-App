@@ -5,7 +5,7 @@ import HomePage from "./HomePage";
 import LoginSignupPage from "./LoginSignupPage";
 import axios from "axios";
 import { BeatLoader } from "react-spinners";
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker";
 
 export default function RestaurantHomePage() {
   let [selectedEntity, setSelectedEntity] = useState("");
@@ -39,7 +39,7 @@ export default function RestaurantHomePage() {
           name: "Product Categories",
           singularName: "Category",
           addFacility: true,
-          isReady: false,
+          isReady: true,
           accessLevel: "A",
         },
         {

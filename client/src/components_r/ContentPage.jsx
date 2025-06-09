@@ -1,3 +1,4 @@
+import AdminCategories from "./AdminCategories";
 import AdminCustomers from "./AdminCustomers";
 import AdminProducts from "./AdminProducts";
 import AdminReportActivities from "./AdminReportActivities";
@@ -9,7 +10,7 @@ export default function ContentPage(props) {
   let { flagToggleButton } = props;
   return (
     <>
-     {selectedEntity.isReady == false && (
+      {selectedEntity.isReady == false && (
         <h5 className="text-center">Work in Progress !</h5>
       )}
       {selectedEntity.name == "Products" && (
@@ -20,6 +21,12 @@ export default function ContentPage(props) {
       )}
       {selectedEntity.name == "Customers" && (
         <AdminCustomers
+          selectedEntity={selectedEntity}
+          flagToggleButton={flagToggleButton}
+        />
+      )}
+      {selectedEntity.name == "Product Categories" && (
+        <AdminCategories
           selectedEntity={selectedEntity}
           flagToggleButton={flagToggleButton}
         />

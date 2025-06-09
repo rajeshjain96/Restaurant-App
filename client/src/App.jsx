@@ -7,6 +7,10 @@ import EComm from "./components_Ecomm/EComm";
 import SamplePdfGenerator from "./components_r/SamplePdfGenerator";
 import TableExportOnly from "./components_r/TableExportOnly";
 import axios from "axios";
+import UploadForm from "./components_r/UploadForm";
+import FileUpload from "./components_r/FileUpload";
+import EditStudentImages from "./EditStudentImages";
+import StudentList from "./components_r/StudentList";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -18,8 +22,11 @@ function App() {
     commented on date: 05.04.2025*/}
       {/* <Home /> */}
       {/* Restaurant App */}
+      {/* <FileUpload /> */}
       <RestaurantHomePage />
-
+      {/* <EditStudentImages /> */}
+      {/* <StudentList /> */}
+      {/* <UploadForm /> */}
       {/* The following component tried on 14.05 for pdf file creation */}
       {/* <SamplePdfGenerator /> */}
       {/* <TableExportOnly /> */}

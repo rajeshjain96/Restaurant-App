@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "../SideBar.css";
 
 export default function SideBar(props) {
@@ -49,8 +49,8 @@ export default function SideBar(props) {
           </div>
           {user &&
             menus.map((e, index) => (
-              <>
-                <div className="text-start" key={index}>
+              <React.Fragment key={index}>
+                <div className="text-start">
                   {e.accessLevel >= user.level && (
                     <button
                       className={
@@ -87,7 +87,7 @@ export default function SideBar(props) {
                       )}
                     </div>
                   ))}
-              </>
+              </React.Fragment>
             ))}
           {user && (
             <>

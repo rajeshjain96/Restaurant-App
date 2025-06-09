@@ -10,13 +10,15 @@ export default function AdminCategories(props) {
   let [action, setAction] = useState("list");
   let [filteredCategoryList, setFilteredCategoryList] = useState([]);
   let [categoryToBeEdited, setCategoryToBeEdited] = useState("");
-  let [loadFlag, setLoadFlag] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
+  let { flagToggleButton } = props;
+
   let categorySchema = [
     { attribute: "name" },
     { attribute: "info" },
@@ -45,7 +47,7 @@ export default function AdminCategories(props) {
       if (!e.type) {
         // do not show id of relational data.
         obj["attribute"] = e.attribute;
-        if (cnt < 4) {
+        if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
@@ -59,7 +61,11 @@ export default function AdminCategories(props) {
   function getEmptyCategory() {
     let eCategory = {};
     categorySchema.forEach((e, index) => {
-      eCategory[e["attribute"]] = "";
+      if (e["defaultValue"]) {
+        eCategory[e["attribute"]] = e["defaultValue"];
+      } else {
+        eCategory[e["attribute"]] = "";
+      }
     });
     return eCategory;
   }
@@ -67,12 +73,16 @@ export default function AdminCategories(props) {
     getData();
   }, []);
   async function getData() {
-    setLoadFlag(true);
-    let response = await axios(import.meta.env.VITE_API_URL + "/categories");
-    let list = await response.data;
-    setCategoryList(list);
-    setFilteredCategoryList(list);
-    setLoadFlag(false);
+    setFlagLoad(true);
+    try {
+      let response = await axios(import.meta.env.VITE_API_URL + "/categories");
+      let cList = await response.data;
+      setCategoryList(cList);
+      setFilteredCategoryList(cList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(category) {
     let message;
@@ -86,44 +96,55 @@ export default function AdminCategories(props) {
       });
     }
     if (action == "add") {
-      // category = await addCategoryToBackend(category);
-      let response = await axios.post(
-        import.meta.env.VITE_API_URL + "/categories",
-        categoryForBackEnd
-      );
-      category._id = await response.data.insertedId;
-      message = "Category added successfully";
-      // update the category list now.
-      let prList = [...categoryList];
-      prList.push(category);
-      setCategoryList(prList);
-
-      let fprList = [...filteredCategoryList];
-      fprList.push(category);
-      setFilteredCategoryList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.post(
+          import.meta.env.VITE_API_URL + "/categories",
+          categoryForBackEnd
+        );
+        category._id = await response.data.insertedId;
+        message = "Category added successfully";
+        // update the category list now.
+        let prList = [...categoryList];
+        prList.push(category);
+        setCategoryList(prList);
+        let fprList = [...filteredCategoryList];
+        fprList.push(category);
+        setFilteredCategoryList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     } else if (action == "update") {
       category._id = categoryToBeEdited._id; // The form does not have id field
-      // await updateBackendCategory(category);
-      let response = await axios.put(
-        import.meta.env.VITE_API_URL + "/categories",
-        categoryForBackEnd
-      );
-      let r = await response.data;
-      message = "Category Updated successfully";
-      // update the category list now.
-      let prList = categoryList.map((e, index) => {
-        if (e._id == category._id) return category;
-        return e;
-      });
-      let fprList = filteredCategoryList.map((e, index) => {
-        if (e._id == category._id) return category;
-        return e;
-      });
-      setCategoryList(prList);
-      setFilteredCategoryList(fprList);
+      setFlagLoad(true);
+      try {
+        let response = await axios.put(
+          import.meta.env.VITE_API_URL + "/categories",
+          categoryForBackEnd
+        );
+        let r = await response.data;
+        message = "Category Updated successfully";
+        // update the category list now.
+        let prList = categoryList.map((e, index) => {
+          if (e._id == category._id) return category;
+          return e;
+        });
+        let fprList = filteredCategoryList.map((e, index) => {
+          if (e._id == category._id) return category;
+          return e;
+        });
+        setCategoryList(prList);
+        setFilteredCategoryList(fprList);
+        showMessage(message);
+        setAction("list");
+      } catch (error) {
+        showMessage("Something went wrong, refresh the page");
+      }
+      setFlagLoad(false);
     }
-    showMessage(message);
-    setAction("list");
   }
   function handleFormCloseClick() {
     props.onFormCloseClick();
@@ -145,19 +166,23 @@ export default function AdminCategories(props) {
     }, 3000);
   }
   async function handleDeleteButtonClick(ans, category) {
-    // await deleteBackendCategory(category.id);
-    let response = await axios.delete(
-      import.meta.env.VITE_API_URL + "/categories/" + category._id
-    );
-    let r = await response.data;
-    message = `Category - ${category.name} deleted successfully.`;
-    //update the category list now.
-    let prList = categoryList.filter((e, index) => e._id != category._id);
-    setCategoryList(prList);
-
-    let fprList = categoryList.filter((e, index) => e._id != category._id);
-    setFilteredCategoryList(fprList);
-    showMessage(message);
+    setFlagLoad(true);
+    try {
+      let response = await axios.delete(
+        import.meta.env.VITE_API_URL + "/categories/" + category._id
+      );
+      let r = await response.data;
+      message = `Category - ${category.name} deleted successfully.`;
+      //update the category list now.
+      let prList = categoryList.filter((e, index) => e._id != category._id);
+      setCategoryList(prList);
+      let fprList = categoryList.filter((e, index) => e._id != category._id);
+      setFilteredCategoryList(fprList);
+      showMessage(message);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
   }
   function handleListCheckBoxClick(checked, selectedIndex) {
     // Minimum 1 field should be shown
@@ -290,7 +315,7 @@ export default function AdminCategories(props) {
   function handleChangeImageCancelClick(index) {
     props.onChangeImageCancelClick(index);
   }
-  if (loadFlag) {
+  if (flagLoad) {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />
@@ -330,23 +355,7 @@ export default function AdminCategories(props) {
         </div>
       )}
       {action == "list" && filteredCategoryList.length != 0 && (
-        <div className="row  my-2 mx-auto border border-2 border-secondary p-1">
-          <div className="col-1">
-            <a
-              href="#"
-              onClick={() => {
-                handleSrNoClick();
-              }}
-            >
-              S N.{" "}
-              {sortedField == "updateDate" && direction && (
-                <i className="bi bi-arrow-up"></i>
-              )}
-              {sortedField == "updateDate" && !direction && (
-                <i className="bi bi-arrow-down"></i>
-              )}
-            </a>
-          </div>
+        <div className="row  my-2 mx-auto  p-1">
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
               <input

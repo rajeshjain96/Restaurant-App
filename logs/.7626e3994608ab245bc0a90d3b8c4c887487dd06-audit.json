@@ -19,6 +19,26 @@
             "date": 1747747052573,
             "name": "C:\\RestaurantApp\\logs\\error-2025-05-20.log",
             "hash": "eee30b59c93503c3f19892fbd6184e4ba6db3ef1470d01cf5f38eb8307cddbc3"
+        },
+        {
+            "date": 1748942153263,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-03.log",
+            "hash": "9b9fb8a1db6dc7dbd91fb15cdc9b3c3f006823b96ffe9839962522f73804815f"
+        },
+        {
+            "date": 1749094922037,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-05.log",
+            "hash": "a3913dde688d6571e4d3764fc68b5113384f8a1f125213fbd319e64b15b0cb92"
+        },
+        {
+            "date": 1749191733255,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-06.log",
+            "hash": "ddf827382202ff19d2fdf1c93e5247edacfecf17e9ae79cd314c1ab8d9a86b50"
+        },
+        {
+            "date": 1749455635560,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-09.log",
+            "hash": "327788af85ca3e3f66086961e207360f93ca61257fc72d453e553b081ab7698b"
         }
     ],
     "hashType": "sha256"

@@ -89,10 +89,10 @@ export default function AdminCustomers(props) {
     setFlagLoad(true);
     try {
       let response = await axios(import.meta.env.VITE_API_URL + "/customers");
-      let pList = await response.data;
+      let cList = await response.data;
 
-      setCustomerList(pList);
-      setFilteredCustomerList(pList);
+      setCustomerList(cList);
+      setFilteredCustomerList(cList);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
     }

@@ -31,7 +31,6 @@ export default function AProduct(props) {
     let obj = selectedEntity.attributes[index].optionList.find(
       (e, i) => e._id == id
     );
-
     return obj.name;
   }
   return (
@@ -51,7 +50,19 @@ export default function AProduct(props) {
           (e, index) =>
             e.show && (
               <div key={index} className="col-2">
-                {product[e.attribute]}
+                <>
+                  {e.type != "singleFile" && product[e.attribute]}
+                  {e.type == "singleFile" && (
+                    <img
+                      className="img-fluid"
+                      src={
+                        import.meta.env.VITE_API_URL +
+                        "/uploadedImages/" +
+                        product[e.attribute]
+                      }
+                    />
+                  )}
+                </>
               </div>
             )
         )}

@@ -15,7 +15,7 @@ const fileRouter = require("./routers/file.router.js");
 const specialRouter = require("./routers/special.router.js");
 const logger = require("./logger");
 const errorLogger = require("./errorLogger");
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); // allow cookies
+app.use(cors({ origin: "http://localhost:5174", credentials: true })); // allow cookies
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
