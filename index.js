@@ -5,6 +5,7 @@ const dotenv = require("dotenv").config();
 const { app } = require("./init.js");
 var cors = require("cors");
 const productRouter = require("./routers/product.router.js");
+const QuotationRouter = require("./routers/quotation.router.js");
 const customerRouter = require("./routers/customer.router.js");
 const fruitRouter = require("./routers/fruits.router.js");
 const userRouter = require("./routers/user.router.js");
@@ -15,7 +16,7 @@ const fileRouter = require("./routers/file.router.js");
 const specialRouter = require("./routers/special.router.js");
 const logger = require("./logger");
 const errorLogger = require("./errorLogger");
-app.use(cors({ origin: "http://localhost:5174", credentials: true })); // allow cookies
+app.use(cors({ origin: "http://localhost:5173", credentials: true })); // allow cookies
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/specials", specialRouter); // authentication not required
 app.use("/users", userRouter); // authentication done inside this file
 app.use("/products", auntheticateUser, logActivity, productRouter);
+app.use("/quotations", auntheticateUser, logActivity, QuotationRouter);
 app.use("/customers", auntheticateUser, logActivity, customerRouter);
 app.use("/roles", auntheticateUser, logActivity, roleRouter);
 app.use("/categories", categoryRouter);

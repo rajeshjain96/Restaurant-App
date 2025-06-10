@@ -53,7 +53,7 @@ export default function RestaurantHomePage() {
           name: "Quotations",
           singularName: "Quotation",
           addFacility: true,
-          isReady: false,
+          isReady: true,
           accessLevel: "D",
         },
         {

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminProductForm from "./AdminProductForm";
+import AdminQuotationForm from "./AdminQuotationForm";
 import { BeatLoader } from "react-spinners";
-import AProduct from "./AProduct";
+import AQuotation from "./AQuotation";
 import axios from "axios";
 
-export default function AdminProducts(props) {
-  let [productList, setProductList] = useState([]);
+export default function AdminQuotations(props) {
+  let [quotationList, setQuotationList] = useState([]);
   let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredProductList, setFilteredProductList] = useState([]);
-  let [productToBeEdited, setProductToBeEdited] = useState("");
+  let [filteredQuotationList, setFilteredQuotationList] = useState([]);
+  let [quotationToBeEdited, setQuotationToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
@@ -20,49 +20,41 @@ export default function AdminProducts(props) {
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
 
-  let productSchema = [
+  let quotationSchema = [
     { attribute: "name" },
     {
-      attribute: "category",
-      relationalData: true,
-      list: "categoryList",
-      relatedId: "categoryId",
-    },
-    { attribute: "categoryId", type: "relationalId" },
-    { attribute: "info" },
-    { attribute: "price" },
-    {
-      attribute: "image",
+      attribute: "firstPage",
       type: "singleFile",
       allowedFileType: "image",
-      allowedSize: 1,
+      allowedSize: 2,
+    },
+    {
+      attribute: "secondPage",
+      type: "singleFile",
+      allowedFileType: "pdf",
+      allowedSize: 2,
     },
     // {
-    //   attribute: "productImages",
+    //   attribute: "quotationImages",
     //   type: "multiFile",
     //   fileTypes: ["image", "pdf"],
     // },
     // // instock: 1,
     // rating: 5,
   ];
-  let productValidations = {
+  let quotationValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
-    info: { message: "", onlyDigits: false },
-    price: {
-      message: "",
-      mxLen: 30,
-      mnLen: 2,
-      onlyDigits: false,
-    },
-    image: { message: "" },
-    category: { message: "" },
+    firstPage: { message: "" },
+    secondPage: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromProductSchema());
-  let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getShowInListFromProductSchema() {
+  let [showInList, setShowInList] = useState(
+    getShowInListFromQuotationSchema()
+  );
+  let [emptyQuotation, setEmptyQuotation] = useState(getEmptyQuotation());
+  function getShowInListFromQuotationSchema() {
     let list = [];
     let cnt = 0;
-    productSchema.forEach((e, index) => {
+    quotationSchema.forEach((e, index) => {
       let obj = {};
       if (e.type != "relationalId") {
         // do not show id of relational data.
@@ -74,7 +66,7 @@ export default function AdminProducts(props) {
         }
         if (e.type == "singleFile") {
           obj["type"] = "singleFile";
-          obj["allowedFileType"] = e.allowedFileType;
+            obj["allowedFileType"] = e.allowedFileType;
         }
         cnt++;
         list.push(obj);
@@ -82,20 +74,20 @@ export default function AdminProducts(props) {
     });
     return list;
   }
-  function getEmptyProduct() {
-    let eProduct = {};
-    productSchema.forEach((e, index) => {
+  function getEmptyQuotation() {
+    let eQuotation = {};
+    quotationSchema.forEach((e, index) => {
       if (e["defaultValue"]) {
-        eProduct[e["attribute"]] = e["defaultValue"];
+        eQuotation[e["attribute"]] = e["defaultValue"];
       } else {
-        eProduct[e["attribute"]] = "";
+        eQuotation[e["attribute"]] = "";
       }
     });
-    return eProduct;
+    return eQuotation;
   }
-  function getFileListFromProductSchema() {
+  function getFileListFromQuotationSchema() {
     let list = [];
-    productSchema.forEach((e, index) => {
+    quotationSchema.forEach((e, index) => {
       let obj = {};
       if (e.type == "singleFile") {
         obj["fileAttributeName"] = e.attribute;
@@ -110,58 +102,45 @@ export default function AdminProducts(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios(import.meta.env.VITE_API_URL + "/products");
+      let response = await axios(import.meta.env.VITE_API_URL + "/quotations");
       let pList = await response.data;
-      response = await axios(import.meta.env.VITE_API_URL + "/categories");
-      let cList = await response.data;
-      // In the productList, add a parameter - category
-      pList.forEach((product) => {
-        // get category (string) from categoryId
-        for (let i = 0; i < cList.length; i++) {
-          if (product.categoryId == cList[i]._id) {
-            product.category = cList[i].name;
-            break;
-          }
-        } //for
-      });
-      setProductList(pList);
-      setFilteredProductList(pList);
-      setCategoryList(cList);
+      setQuotationList(pList);
+      setFilteredQuotationList(pList);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
-  async function handleFormSubmit(product) {
+  async function handleFormSubmit(quotation) {
     let message;
     // now remove relational data
-    let productForBackEnd = { ...product };
-    for (let key in productForBackEnd) {
-      productSchema.forEach((e, index) => {
+    let quotationForBackEnd = { ...quotation };
+    for (let key in quotationForBackEnd) {
+      quotationSchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete productForBackEnd[key];
+          delete quotationForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // product = await addProductToBackend(product);
+      // quotation = await addQuotationToBackend(quotation);
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          import.meta.env.VITE_API_URL + "/products",
-          productForBackEnd,
+          import.meta.env.VITE_API_URL + "/quotations",
+          quotationForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        product._id = await response.data.insertedId;
-        message = "Product added successfully";
-        // update the product list now.
-        let prList = [...productList];
-        prList.push(product);
-        setProductList(prList);
+        quotation._id = await response.data.insertedId;
+        message = "Quotation added successfully";
+        // update the quotation list now.
+        let prList = [...quotationList];
+        prList.push(quotation);
+        setQuotationList(prList);
 
-        let fprList = [...filteredProductList];
-        fprList.push(product);
-        setFilteredProductList(fprList);
+        let fprList = [...filteredQuotationList];
+        fprList.push(quotation);
+        setFilteredQuotationList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
@@ -170,27 +149,27 @@ export default function AdminProducts(props) {
       setFlagLoad(false);
     } //...add
     else if (action == "update") {
-      product._id = productToBeEdited._id; // The form does not have id field
+      quotation._id = quotationToBeEdited._id; // The form does not have id field
       setFlagLoad(true);
       try {
         let response = await axios.put(
-          import.meta.env.VITE_API_URL + "/products",
-          product,
+          import.meta.env.VITE_API_URL + "/quotations",
+          quotation,
           { headers: { "Content-type": "multipart/form-data" } }
         );
         let r = await response.data;
-        message = "Product Updated successfully";
-        // update the product list now.
-        let prList = productList.map((e, index) => {
-          if (e._id == product._id) return product;
+        message = "Quotation Updated successfully";
+        // update the quotation list now.
+        let prList = quotationList.map((e, index) => {
+          if (e._id == quotation._id) return quotation;
           return e;
         });
-        let fprList = filteredProductList.map((e, index) => {
-          if (e._id == product._id) return product;
+        let fprList = filteredQuotationList.map((e, index) => {
+          if (e._id == quotation._id) return quotation;
           return e;
         });
-        setProductList(prList);
-        setFilteredProductList(fprList);
+        setQuotationList(prList);
+        setFilteredQuotationList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
@@ -208,9 +187,9 @@ export default function AdminProducts(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(product) {
+  function handleEditButtonClick(quotation) {
     setAction("update");
-    setProductToBeEdited(product);
+    setQuotationToBeEdited(quotation);
   }
   function showMessage(message) {
     setMessage(message);
@@ -218,21 +197,21 @@ export default function AdminProducts(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, product) {
-    // await deleteBackendProduct(product.id);
+  async function handleDeleteButtonClick(ans, quotation) {
+    // await deleteBackendQuotation(quotation.id);
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        import.meta.env.VITE_API_URL + "/products/" + product._id
+        import.meta.env.VITE_API_URL + "/quotations/" + quotation._id
       );
       let r = await response.data;
-      message = `Product - ${product.name} deleted successfully.`;
-      //update the product list now.
-      let prList = productList.filter((e, index) => e._id != product._id);
-      setProductList(prList);
+      message = `Quotation - ${quotation.name} deleted successfully.`;
+      //update the quotation list now.
+      let prList = quotationList.filter((e, index) => e._id != quotation._id);
+      setQuotationList(prList);
 
-      let fprList = productList.filter((e, index) => e._id != product._id);
-      setFilteredProductList(fprList);
+      let fprList = quotationList.filter((e, index) => e._id != quotation._id);
+      setFilteredQuotationList(fprList);
       showMessage(message);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
@@ -278,7 +257,7 @@ export default function AdminProducts(props) {
       // different field
       d = false;
     }
-    let list = [...filteredProductList];
+    let list = [...filteredQuotationList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -303,7 +282,7 @@ export default function AdminProducts(props) {
         return 0;
       });
     }
-    setFilteredProductList(list);
+    setFilteredQuotationList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -315,7 +294,7 @@ export default function AdminProducts(props) {
       d = false;
     }
 
-    let list = [...filteredProductList];
+    let list = [...filteredQuotationList];
     setDirection(!direction);
     if (d == false) {
       //in ascending order
@@ -341,7 +320,7 @@ export default function AdminProducts(props) {
       });
     }
     // setSelectedList(list);
-    setFilteredProductList(list);
+    setFilteredQuotationList(list);
     setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
@@ -359,13 +338,13 @@ export default function AdminProducts(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredProductList(productList);
+      setFilteredQuotationList(quotationList);
       return;
     }
-    let searchedProducts = [];
-    // searchedProducts = filterByName(query);
-    searchedProducts = filterByShowInListAttributes(query);
-    setFilteredProductList(searchedProducts);
+    let searchedQuotations = [];
+    // searchedQuotations = filterByName(query);
+    searchedQuotations = filterByShowInListAttributes(query);
+    setFilteredQuotationList(searchedQuotations);
   }
   function filterByName(query) {
     let fList = [];
@@ -380,17 +359,17 @@ export default function AdminProducts(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < productList.length; i++) {
+    for (let i = 0; i < quotationList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            productList[i][parameterName] &&
-            productList[i][parameterName]
+            quotationList[i][parameterName] &&
+            quotationList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(productList[i]);
+            fList.push(quotationList[i]);
             break;
           }
         }
@@ -425,27 +404,26 @@ export default function AdminProducts(props) {
         message={message}
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
-        filteredList={filteredProductList}
+        filteredList={filteredQuotationList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredProductList.length == 0 && productList.length != 0 && (
+      {filteredQuotationList.length == 0 && quotationList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {productList.length == 0 && (
+      {quotationList.length == 0 && (
         <div className="text-center">List is empty</div>
       )}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminProductForm
-            productSchema={productSchema}
-            productValidations={productValidations}
-            emptyProduct={emptyProduct}
-            categoryList={categoryList}
+          <AdminQuotationForm
+            quotationSchema={quotationSchema}
+            quotationValidations={quotationValidations}
+            emptyQuotation={emptyQuotation}
             selectedEntity={selectedEntity}
-            productToBeEdited={productToBeEdited}
+            quotationToBeEdited={quotationToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
@@ -454,7 +432,7 @@ export default function AdminProducts(props) {
           />
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredQuotationList.length != 0 && (
         <div className="row  my-2 mx-auto p-1">
           <div className="col-1">
             <a
@@ -480,7 +458,7 @@ export default function AdminProducts(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredQuotationList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -528,15 +506,15 @@ export default function AdminProducts(props) {
         </div>
       )}
       {action == "list" &&
-        filteredProductList.length != 0 &&
-        filteredProductList.map((e, index) => (
-          <AProduct
-            product={e}
+        filteredQuotationList.length != 0 &&
+        filteredQuotationList.map((e, index) => (
+          <AQuotation
+            quotation={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredProductList.length}
+            listSize={filteredQuotationList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

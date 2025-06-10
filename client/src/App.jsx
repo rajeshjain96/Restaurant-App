@@ -11,6 +11,7 @@ import UploadForm from "./components_r/UploadForm";
 import FileUpload from "./components_r/FileUpload";
 import EditStudentImages from "./EditStudentImages";
 import StudentList from "./components_r/StudentList";
+import PdfViewer from "./components_r/PdfViewer";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -24,8 +25,12 @@ function App() {
       {/* Restaurant App */}
       {/* <FileUpload /> */}
       <RestaurantHomePage />
-      {/* <EditStudentImages /> */}
-      {/* <StudentList /> */}
+      {/* <PdfViewer /> */}
+      {/* <div className="App">
+        <PdfViewer />
+      </div>
+      <EditStudentImages />
+      <StudentList /> */}
       {/* <UploadForm /> */}
       {/* The following component tried on 14.05 for pdf file creation */}
       {/* <SamplePdfGenerator /> */}

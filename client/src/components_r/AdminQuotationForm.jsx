@@ -3,19 +3,20 @@ import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
 // import FileUpload from "./SingleFileUpload.jsx";
 import SingleFileUpload from "./SingleFileUpload.jsx";
-export default function AdminProductForm(props) {
-  let [product, setProduct] = useState("");
-  let [errorProduct, setErrorProduct] = useState(props.productValidations);
+export default function AdminQuotationForm(props) {
+  let [quotation, setQuotation] = useState("");
+  let [errorQuotation, setErrorQuotation] = useState(
+    props.quotationValidations
+  );
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let { action } = props;
   let { selectedEntity } = props;
-  let { categoryList } = props;
   let [singleFileList, setSingleFileList] = useState(
-    getSingleFileListFromProductSchema()
+    getSingleFileListFromQuotationSchema()
   );
-  function getSingleFileListFromProductSchema() {
+  function getSingleFileListFromQuotationSchema() {
     let list = [];
-    props.productSchema.forEach((e, index) => {
+    props.quotationSchema.forEach((e, index) => {
       let obj = {};
       if (e.type == "singleFile") {
         obj["fileAttributeName"] = e.attribute;
@@ -33,49 +34,49 @@ export default function AdminProductForm(props) {
   function init() {
     let { action } = props;
     if (action === "add") {
-      // emptyProduct.category = props.categoryToRetain;
-      // emptyProduct.categoryId = props.categoryIdToRetain;
-      setProduct(props.emptyProduct);
+      // emptyQuotation.category = props.categoryToRetain;
+      // emptyQuotation.categoryId = props.categoryIdToRetain;
+      setQuotation(props.emptyQuotation);
     } else if (action === "update") {
       // in edit mode, keep the update button enabled at the beginning
       setFlagFormInvalid(false);
-      setProduct(props.productToBeEdited);
+      setQuotation(props.quotationToBeEdited);
     }
   }
   function handleTextFieldChange(event) {
     let name = event.target.name;
-    setProduct({ ...product, [name]: event.target.value });
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    setQuotation({ ...quotation, [name]: event.target.value });
+    let message = fieldValidate(event, errorQuotation);
+    let errQuotation = { ...errorQuotation };
+    errorQuotation[`${name}`].message = message;
+    setErrorQuotation(errQuotation);
   }
   function handleBlur(event) {
     let name = event.target.name;
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    let message = fieldValidate(event, errorQuotation);
+    let errQuotation = { ...errorQuotation };
+    errorQuotation[`${name}`].message = message;
+    setErrorQuotation(errQuotation);
   }
   function handleFocus(event) {
     setFlagFormInvalid(false);
   }
   function checkAllErrors() {
-    for (let field in errorProduct) {
-      if (errorProduct[field].message !== "") {
+    for (let field in errorQuotation) {
+      if (errorQuotation[field].message !== "") {
         return true;
       } //if
     } //for
-    let errProduct = { ...errorProduct };
+    let errQuotation = { ...errorQuotation };
     let flag = false;
-    for (let field in product) {
-      if (errorProduct[field] && product[field] == "") {
+    for (let field in quotation) {
+      if (errorQuotation[field] && quotation[field] == "") {
         flag = true;
-        errProduct[field].message = "Required...";
+        errQuotation[field].message = "Required...";
       } //if
     } //for
     if (flag) {
-      setErrorProduct(errProduct);
+      setErrorQuotation(errQuotation);
       return true;
     }
     return false;
@@ -91,7 +92,7 @@ export default function AdminProductForm(props) {
     setFlagFormInvalid(false);
     if (action == "update") {
       // There might be files in this form, add those also
-      let pr = { ...product };
+      let pr = { ...quotation };
       for (let i = 0; i < singleFileList.length; i++) {
         let fAName = singleFileList[i].fileAttributeName;
         if (pr[fAName + "New"]) {
@@ -101,30 +102,31 @@ export default function AdminProductForm(props) {
           delete pr[fAName + "New"];
         }
       } //for
-      setProduct(pr);
+      setQuotation(pr);
       props.onFormSubmit(pr);
+    } else if (action == "add") {
+      props.onFormSubmit(quotation);
     }
   };
   function handleFileChange(selectedFile, fileIndex, message) {
     setFlagFormInvalid(false);
-    if (action == "add") {
-      setProduct({
-        ...product,
-        ["file" + fileIndex]: selectedFile,
-        [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
-      });
-      let errProduct = { ...errorProduct };
-      errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
-      setErrorProduct(errProduct);
-      // setErrorProduct({ ...errorProduct, message: message });
-    }
+    setQuotation({
+      ...quotation,
+      ["file" + fileIndex]: selectedFile,
+      [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
+    });
+    let errQuotation = { ...errorQuotation };
+    errQuotation[singleFileList[fileIndex].fileAttributeName].message = message;
+    setErrorQuotation(errQuotation);
   }
   function handleFileRemove(selectedFile, fileIndex, message) {
     if (action == "add") {
       setFlagFormInvalid(false);
+
       setQuotation({
         ...quotation,
         [singleFileList[fileIndex].fileAttributeName]: "",
+        // [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
       });
       let errQuotation = { ...errorQuotation };
       errQuotation[singleFileList[fileIndex].fileAttributeName].message =
@@ -140,8 +142,10 @@ export default function AdminProductForm(props) {
       }
       setQuotation({
         ...quotation,
+        // file: file,
         ["file" + fileIndex]: selectedFile,
         [singleFileList[fileIndex].fileAttributeName + "New"]: newFileName,
+        // [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
       });
       let errQuotation = { ...errorQuotation };
       errQuotation[singleFileList[fileIndex].fileAttributeName].message =
@@ -157,28 +161,28 @@ export default function AdminProductForm(props) {
       // user selected a new file but then deselected
       newFileName = "";
     }
-    setProduct({
-      ...product,
+    setQuotation({
+      ...quotation,
       // file: file,
       ["file" + fileIndex]: selectedFile,
       [singleFileList[fileIndex].fileAttributeName + "New"]: newFileName,
       // [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
     });
-    let errProduct = { ...errorProduct };
-    errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
-    setErrorProduct(errProduct);
+    let errQuotation = { ...errorQuotation };
+    errQuotation[singleFileList[fileIndex].fileAttributeName].message = message;
+    setErrorQuotation(errQuotation);
   }
 
   // This one is old logic
   // function handleFileChange(file, fileIndex) {
   //   if (action == "add") {
-  //     setProduct({
-  //       ...product,
+  //     setQuotation({
+  //       ...quotation,
   //       file: file,
   //       [singleFileList[fileIndex].fileAttributeName]: file.name,
   //     });
   //   } else if (action == "update") {
-  //     // setProduct({ ...product, newFile: file, newImage: file.name });
+  //     // setQuotation({ ...quotation, newFile: file, newImage: file.name });
   //     // props.onFileChangeInUpdateMode(file, fileIndex);
   //     let fl = [...singleFileList];
   //     fl[fileIndex]["newFileName"] = file.name;
@@ -194,22 +198,6 @@ export default function AdminProductForm(props) {
       setSingleFileList(fl);
     }
   }
-  function handleSelectCategoryChange(event) {
-    let index = event.target.selectedIndex; // get selected index, instead of selected value
-    var optionElement = event.target.childNodes[index];
-    var selectedCategoryId = optionElement.getAttribute("id");
-    let category = event.target.value.trim();
-    let categoryId = selectedCategoryId;
-    setProduct({ ...product, category: category, categoryId: categoryId });
-  }
-
-  let optionsCategory = categoryList.map((category, index) =>
-    category.rating != 1 ? (
-      <option value={category.name} key={index} id={category._id}>
-        {category.name}
-      </option>
-    ) : null
-  );
 
   return (
     <div className="p-2">
@@ -225,103 +213,63 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="name"
-                value={product.name}
+                value={quotation.name}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter product name"
+                placeholder="Enter quotation name"
               />
             </div>
             <div className="">
-              {errorProduct.name.message ? (
-                <span className="text-danger">{errorProduct.name.message}</span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Price</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="price"
-                value={product.price}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter price in Rs."
-              />
-            </div>
-            <div className="">
-              {errorProduct.price.message ? (
+              {errorQuotation.name.message ? (
                 <span className="text-danger">
-                  {errorProduct.price.message}
+                  {errorQuotation.name.message}
                 </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Information</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="info"
-                value={product.info}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter information"
-              />
-            </div>
-            <div className="">
-              {errorProduct.info.message ? (
-                <span className="text-danger">{errorProduct.info.message}</span>
               ) : null}
             </div>
           </div>
           <div className="col-12 my-2">
             <div className="text-bold my-1">
-              <label>Image</label>
+              <label>First Page (Image)</label>
             </div>
             <SingleFileUpload
               singleFileList={singleFileList}
               action={action}
-              name="image"
-              fileName={product.image}
+              name="firstPage"
+              fileName={quotation.firstPage}
               onFileChange={handleFileChange}
               onFileChangeUpdateMode={handleFileChangeUpdateMode}
               onCancelChangeImageClick={handleCancelChangeImageClick}
               onFileRemove={handleFileRemove}
             />
             <div className="">
-              {errorProduct.image.message ? (
+              {errorQuotation.firstPage.message ? (
                 <span className="text-danger">
-                  {errorProduct.image.message}
+                  {errorQuotation.firstPage.message}
                 </span>
               ) : null}
             </div>
           </div>
-          <div className="col-6 my-2">
+          <div className="col-12 my-2">
             <div className="text-bold my-1">
-              <label>Category</label>
+              <label>Second Page (Pdf)</label>
             </div>
-            <div className="px-0">
-              <select
-                className="form-control"
-                name="category"
-                value={product.category}
-                onChange={handleSelectCategoryChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-              >
-                <option> Select Category </option>
-                {optionsCategory}
-              </select>
+            <SingleFileUpload
+              singleFileList={singleFileList}
+              action={action}
+              name="secondPage"
+              fileName={quotation.secondPage}
+              onFileChange={handleFileChange}
+              onFileChangeUpdateMode={handleFileChangeUpdateMode}
+              onCancelChangeImageClick={handleCancelChangeImageClick}
+              onFileRemove={handleFileRemove}
+            />
+            <div className="">
+              {errorQuotation.secondPage.message ? (
+                <span className="text-danger">
+                  {errorQuotation.secondPage.message}
+                </span>
+              ) : null}
             </div>
           </div>
           <div className="col-12">

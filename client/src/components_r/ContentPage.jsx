@@ -1,6 +1,7 @@
 import AdminCategories from "./AdminCategories";
 import AdminCustomers from "./AdminCustomers";
 import AdminProducts from "./AdminProducts";
+import AdminQuotations from "./AdminQuotations";
 import AdminReportActivities from "./AdminReportActivities";
 import AdminRoles from "./AdminRoles";
 import AdminUsers from "./AdminUsers";
@@ -27,6 +28,12 @@ export default function ContentPage(props) {
       )}
       {selectedEntity.name == "Product Categories" && (
         <AdminCategories
+          selectedEntity={selectedEntity}
+          flagToggleButton={flagToggleButton}
+        />
+      )}
+      {selectedEntity.name == "Quotations" && (
+        <AdminQuotations
           selectedEntity={selectedEntity}
           flagToggleButton={flagToggleButton}
         />

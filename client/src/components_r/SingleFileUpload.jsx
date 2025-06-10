@@ -14,6 +14,7 @@ export default function SingleFileUpload(props) {
   let [flagImageChange, setFlagImageChange] = useState("");
   let [image, setImage] = useState("");
   let [fileIndex, setFileIndex] = useState(getFileIndex());
+  const buttonARef = useRef(null);
   const buttonBRef = useRef(null);
 
   function getFileIndex() {
@@ -30,55 +31,49 @@ export default function SingleFileUpload(props) {
       buttonBRef.current.click(); // trigger Button B click
     }
   }
-  function handleCancelChangeImageClick() {
-    // setMessage("");
-    setFile("");
-    setPreviewImage("");
-    setFlagImageChange(false);
-    props.onCancelChangeImageClick(product);
-  }
   function fileChangedHandler(event) {
     let file = event.target.files[0];
-    if (!file) {
-      // setMessage("");
-      setPreviewImage("");
-      return;
-    }
-    // obj["fileAttributeName"] = e.attribute;
-    //   obj["allowedFileType"] = e.allowedFileType;
-    //   obj["allowedSize"] = e.allowedSize;
-    //   list.push(obj);
-    let fileType = file.type.substring(0, file.type.indexOf("/"));
-    if (fileType != "image") {
-      // setMessage("Invalid file...");
-      setFile("");
-    }
-    //  else if (file.size > 5000) {
-    //   setState({ message: "File-size should be below 5kb" });
-    // }
-    else {
-      // setMessage("");
-      let previewImage = URL.createObjectURL(file);
-      setFile(file);
-      setPreviewImage(previewImage);
-      props.onFileChange(file, fileIndex);
-    }
-  }
-  function fileChangedHandlerUpdateMode(event) {
-    let file = event.target.files[0];
-    console.log(file);
-
+    let previewImage;
     let message = "";
     if (!file) {
       // setMessage("");
       setPreviewImage("");
       return;
     }
-    // obj["fileAttributeName"] = e.attribute;
-    //   obj["allowedFileType"] = e.allowedFileType;
-    //   obj["allowedSize"] = e.allowedSize;
-    //   list.push(obj);
-    console.log(singleFileList[fileIndex].allowedFileType);
+    // image/jpeg, image/png, application/pdf, video/mp4,
+    //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    if (file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1) {
+      message =
+        "The file-type should be " + singleFileList[fileIndex].allowedFileType;
+      if (singleFileList[fileIndex].allowedFileType == "image")
+        previewImage = URL.createObjectURL(file);
+    } else if (
+      file.size >
+      singleFileList[fileIndex].allowedSize * 1024 * 1024
+    ) {
+      message =
+        "The file-size should be maximum " +
+        singleFileList[fileIndex].allowedSize +
+        " MB";
+      if (singleFileList[fileIndex].allowedFileType == "image")
+        previewImage = URL.createObjectURL(file);
+    } else {
+      if (singleFileList[fileIndex].allowedFileType == "image")
+        previewImage = URL.createObjectURL(file);
+    }
+    setFile(file);
+    setPreviewImage(previewImage);
+    setPreviewExistingImage(false);
+    props.onFileChange(file, fileIndex, message);
+  }
+  function fileChangedHandlerUpdateMode(event) {
+    let file = event.target.files[0];
+    let message = "";
+    if (!file) {
+      // setMessage("");
+      setPreviewImage("");
+      return;
+    }
     // image/jpeg, image/png, application/pdf, video/mp4,
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     if (file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1) {
@@ -112,7 +107,12 @@ export default function SingleFileUpload(props) {
     setFile(null);
     setPreviewImage(null);
     setPreviewExistingImage(true);
-    props.onFileChangeUpdateMode(null, fileIndex, "");
+    if (action == "add") {
+      if (buttonARef.current) {
+        buttonARef.current.value = ""; //
+      }
+    }
+    props.onFileRemove(null, fileIndex, "");
   }
   function handleSaveProductImage() {
     let { product } = props;
@@ -170,7 +170,7 @@ export default function SingleFileUpload(props) {
                 className=""
                 type="file"
                 name="file"
-                // ref={buttonBRef}
+                ref={buttonARef}
                 onChange={fileChangedHandler}
               />
             </div>
