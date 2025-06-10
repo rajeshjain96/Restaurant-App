@@ -5,8 +5,6 @@ import HomePage from "./HomePage";
 import LoginSignupPage from "./LoginSignupPage";
 import axios from "axios";
 import { BeatLoader } from "react-spinners";
-// import DatePicker from "react-datepicker";
-
 export default function RestaurantHomePage() {
   let [selectedEntity, setSelectedEntity] = useState("");
   let [flagToggleButton, setFlagToggleButton] = useState(false);
@@ -24,6 +22,13 @@ export default function RestaurantHomePage() {
         {
           name: "Products",
           singularName: "Product",
+          addFacility: true,
+          isReady: true,
+          accessLevel: "D",
+        },
+        {
+          name: "Enquiries",
+          singularName: "Enquiry",
           addFacility: true,
           isReady: true,
           accessLevel: "D",

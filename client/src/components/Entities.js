@@ -1,5 +1,3 @@
-// import { collection } from "../../../models/category.model";
-
 export let entities = [
   {
     displayName: "Customers",
@@ -16,7 +14,7 @@ export let entities = [
         validations: { message: "", mxLen: 80, mnLen: 3, onlyDigits: false },
       },
       {
-        id: "company",
+        id: "companyName",
         label: "Company Name",
         type: "text",
         placeholder: "Enter company name",

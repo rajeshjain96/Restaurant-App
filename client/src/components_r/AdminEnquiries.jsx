@@ -1,68 +1,53 @@
 import { useEffect, useState } from "react";
 import CommonUtilityBar from "./CommonUtilityBar";
-import AdminProductForm from "./AdminProductForm";
+import AdminEnquiryForm from "./AdminEnquiryForm";
 import { BeatLoader } from "react-spinners";
-import AProduct from "./AProduct";
+import AEnquiry from "./AEnquiry";
 import axios from "axios";
-export default function AdminProducts(props) {
+export default function AdminEnquiries(props) {
+  let [enquiryList, setEnquiryList] = useState([]);
   let [productList, setProductList] = useState([]);
-  let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredProductList, setFilteredProductList] = useState([]);
-  let [productToBeEdited, setProductToBeEdited] = useState("");
+  let [filteredEnquiryList, setFilteredEnquiryList] = useState([]);
+  let [enquiryToBeEdited, setEnquiryToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
-
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-  let productSchema = [
+  let enquirySchema = [
     { attribute: "name" },
     {
-      attribute: "category",
+      attribute: "product",
       relationalData: true,
-      list: "categoryList",
-      relatedId: "categoryId",
+      list: "productList",
+      relatedId: "productId",
     },
-    { attribute: "categoryId", type: "relationalId" },
-    { attribute: "price" },
-    { attribute: "finalPrice" },
-    {
-      attribute: "productImage",
-      type: "singleFile",
-      allowedFileType: "image",
-      allowedSize: 2,
-    },
-    { attribute: "info", type: "text-area" },
+    { attribute: "remarks" },
+    { attribute: "productId", type: "relationalId" },
+    { attribute: "siteLocation" },
+    { attribute: "mobileNumber" },
+    { attribute: "city" },
+    { attribute: "region" },
   ];
 
-  let productValidations = {
+  let enquiryValidations = {
     name: { message: "", mxLen: 200, mnLen: 4, onlyDigits: false },
-    price: {
-      message: "",
-      mxLen: 30,
-      mnLen: 2,
-      onlyDigits: true,
-    },
-    finalPrice: {
-      message: "",
-      mxLen: 30,
-      mnLen: 2,
-      onlyDigits: true,
-    },
-    info: { message: "", mxLen: 1000, mnLen: 4, onlyDigits: false },
-    productImage: { message: "" },
-    category: { message: "" },
+    siteLocation: { message: "", mxLen: 40, mnLen: 4, onlyDigits: false },
+    mobileNumber: { message: "", mxLen: 10, mnLen: 10, onlyDigits: true },
+    city: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
+    region: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
+    remarks: { message: "", mxLen: 200, mnLen: 10, onlyDigits: false },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromProductSchema());
-  let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getShowInListFromProductSchema() {
+  let [showInList, setShowInList] = useState(getShowInListFromEnquirySchema());
+  let [emptyEnquiry, setEmptyEnquiry] = useState(getEmptyEnquiry());
+  function getShowInListFromEnquirySchema() {
     let list = [];
     let cnt = 0;
-    productSchema.forEach((e, index) => {
+    enquirySchema.forEach((e, index) => {
       let obj = {};
       if (e.type != "relationalId") {
         // do not show id of relational data.
@@ -87,16 +72,16 @@ export default function AdminProducts(props) {
     });
     return list;
   }
-  function getEmptyProduct() {
-    let eProduct = {};
-    productSchema.forEach((e, index) => {
+  function getEmptyEnquiry() {
+    let eEnquiry = {};
+    enquirySchema.forEach((e, index) => {
       if (e["defaultValue"]) {
-        eProduct[e["attribute"]] = e["defaultValue"];
+        eEnquiry[e["attribute"]] = e["defaultValue"];
       } else {
-        eProduct[e["attribute"]] = "";
+        eEnquiry[e["attribute"]] = "";
       }
     });
-    return eProduct;
+    return eEnquiry;
   }
   useEffect(() => {
     getData();
@@ -104,57 +89,57 @@ export default function AdminProducts(props) {
   async function getData() {
     setFlagLoad(true);
     try {
-      let response = await axios(import.meta.env.VITE_API_URL + "/products");
+      let response = await axios(import.meta.env.VITE_API_URL + "/enquiries");
+      let eList = await response.data;
+      response = await axios(import.meta.env.VITE_API_URL + "/products");
       let pList = await response.data;
-      response = await axios(import.meta.env.VITE_API_URL + "/categories");
-      let cList = await response.data;
-      // In the productList, add a parameter - category
-      pList.forEach((product) => {
+      // In the enquiryList, add a parameter - product
+      eList.forEach((enquiry) => {
         // get category (string) from categoryId
-        for (let i = 0; i < cList.length; i++) {
-          if (product.categoryId == cList[i]._id) {
-            product.category = cList[i].name;
+        for (let i = 0; i < pList.length; i++) {
+          if (enquiry.productId == pList[i]._id) {
+            enquiry.product = pList[i].name;
             break;
           }
         } //for
       });
+      setEnquiryList(eList);
+      setFilteredEnquiryList(eList);
       setProductList(pList);
-      setFilteredProductList(pList);
-      setCategoryList(cList);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
-  async function handleFormSubmit(product) {
+  async function handleFormSubmit(enquiry) {
     let message;
     // now remove relational data
-    let productForBackEnd = { ...product };
-    for (let key in productForBackEnd) {
-      productSchema.forEach((e, index) => {
+    let enquiryForBackEnd = { ...enquiry };
+    for (let key in enquiryForBackEnd) {
+      enquirySchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
-          delete productForBackEnd[key];
+          delete enquiryForBackEnd[key];
         }
       });
     }
     if (action == "add") {
-      // product = await addProductToBackend(product);
+      // enquiry = await addEnquiryToBackend(enquiry);
       setFlagLoad(true);
       try {
         let response = await axios.post(
-          import.meta.env.VITE_API_URL + "/products",
-          productForBackEnd,
+          import.meta.env.VITE_API_URL + "/enquiries",
+          enquiryForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        product._id = await response.data.insertedId;
-        message = "Product added successfully";
-        // update the product list now.
-        let prList = [...productList];
-        prList.push(product);
-        setProductList(prList);
-        let fprList = [...filteredProductList];
-        fprList.push(product);
-        setFilteredProductList(fprList);
+        enquiry._id = await response.data.insertedId;
+        message = "Enquiry added successfully";
+        // update the enquiry list now.
+        let prList = [...enquiryList];
+        prList.push(enquiry);
+        setEnquiryList(prList);
+        let fprList = [...filteredEnquiryList];
+        fprList.push(enquiry);
+        setFilteredEnquiryList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
@@ -163,27 +148,27 @@ export default function AdminProducts(props) {
       setFlagLoad(false);
     } //...add
     else if (action == "update") {
-      product._id = productToBeEdited._id; // The form does not have id field
+      enquiry._id = enquiryToBeEdited._id; // The form does not have id field
       setFlagLoad(true);
       try {
         let response = await axios.put(
-          import.meta.env.VITE_API_URL + "/products",
-          product,
+          import.meta.env.VITE_API_URL + "/enquiries",
+          enquiry,
           { headers: { "Content-type": "multipart/form-data" } }
         );
         let r = await response.data;
-        message = "Product Updated successfully";
-        // update the product list now.
-        let prList = productList.map((e, index) => {
-          if (e._id == product._id) return product;
+        message = "Enquiry Updated successfully";
+        // update the enquiry list now.
+        let prList = enquiryList.map((e, index) => {
+          if (e._id == enquiry._id) return enquiry;
           return e;
         });
-        let fprList = filteredProductList.map((e, index) => {
-          if (e._id == product._id) return product;
+        let fprList = filteredEnquiryList.map((e, index) => {
+          if (e._id == enquiry._id) return enquiry;
           return e;
         });
-        setProductList(prList);
-        setFilteredProductList(fprList);
+        setEnquiryList(prList);
+        setFilteredEnquiryList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
@@ -201,9 +186,9 @@ export default function AdminProducts(props) {
   function handleAddEntityClick() {
     setAction("add");
   }
-  function handleEditButtonClick(product) {
+  function handleEditButtonClick(enquiry) {
     setAction("update");
-    setProductToBeEdited(product);
+    setEnquiryToBeEdited(enquiry);
   }
   function showMessage(message) {
     setMessage(message);
@@ -211,21 +196,21 @@ export default function AdminProducts(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, product) {
-    // await deleteBackendProduct(product.id);
+  async function handleDeleteButtonClick(ans, enquiry) {
+    // await deleteBackendEnquiry(enquiry.id);
     setFlagLoad(true);
     try {
       let response = await axios.delete(
-        import.meta.env.VITE_API_URL + "/products/" + product._id
+        import.meta.env.VITE_API_URL + "/enquiries/" + enquiry._id
       );
       let r = await response.data;
-      message = `Product - ${product.name} deleted successfully.`;
-      //update the product list now.
-      let prList = productList.filter((e, index) => e._id != product._id);
-      setProductList(prList);
+      message = `Enquiry - ${enquiry.name} deleted successfully.`;
+      //update the enquiry list now.
+      let prList = enquiryList.filter((e, index) => e._id != enquiry._id);
+      setEnquiryList(prList);
 
-      let fprList = productList.filter((e, index) => e._id != product._id);
-      setFilteredProductList(fprList);
+      let fprList = enquiryList.filter((e, index) => e._id != enquiry._id);
+      setFilteredEnquiryList(fprList);
       showMessage(message);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
@@ -271,7 +256,7 @@ export default function AdminProducts(props) {
       // different field
       d = false;
     }
-    let list = [...filteredProductList];
+    let list = [...filteredEnquiryList];
     setDirection(d);
     if (d == false) {
       //in ascending order
@@ -296,7 +281,7 @@ export default function AdminProducts(props) {
         return 0;
       });
     }
-    setFilteredProductList(list);
+    setFilteredEnquiryList(list);
     setSortedField(field);
   }
   function handleSrNoClick() {
@@ -308,7 +293,7 @@ export default function AdminProducts(props) {
       d = false;
     }
 
-    let list = [...filteredProductList];
+    let list = [...filteredEnquiryList];
     setDirection(!direction);
     if (d == false) {
       //in ascending order
@@ -334,7 +319,7 @@ export default function AdminProducts(props) {
       });
     }
     // setSelectedList(list);
-    setFilteredProductList(list);
+    setFilteredEnquiryList(list);
     setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
@@ -348,12 +333,12 @@ export default function AdminProducts(props) {
   function performSearchOperation(searchText) {
     let query = searchText.trim();
     if (query.length == 0) {
-      setFilteredProductList(productList);
+      setFilteredEnquiryList(enquiryList);
       return;
     }
-    let searchedProducts = [];
-    searchedProducts = filterByShowInListAttributes(query);
-    setFilteredProductList(searchedProducts);
+    let searchedEnquiries = [];
+    searchedEnquiries = filterByShowInListAttributes(query);
+    setFilteredEnquiryList(searchedEnquiries);
   }
   function filterByName(query) {
     let fList = [];
@@ -366,17 +351,17 @@ export default function AdminProducts(props) {
   }
   function filterByShowInListAttributes(query) {
     let fList = [];
-    for (let i = 0; i < productList.length; i++) {
+    for (let i = 0; i < enquiryList.length; i++) {
       for (let j = 0; j < showInList.length; j++) {
         if (showInList[j].show) {
           let parameterName = showInList[j].attribute;
           if (
-            productList[i][parameterName] &&
-            productList[i][parameterName]
+            enquiryList[i][parameterName] &&
+            enquiryList[i][parameterName]
               .toLowerCase()
               .includes(query.toLowerCase())
           ) {
-            fList.push(productList[i]);
+            fList.push(enquiryList[i]);
             break;
           }
         }
@@ -404,27 +389,27 @@ export default function AdminProducts(props) {
         message={message}
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
-        filteredList={filteredProductList}
+        filteredList={filteredEnquiryList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
       />
-      {filteredProductList.length == 0 && productList.length != 0 && (
+      {filteredEnquiryList.length == 0 && enquiryList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
-      {productList.length == 0 && (
+      {enquiryList.length == 0 && (
         <div className="text-center">List is empty</div>
       )}
       {(action == "add" || action == "update") && (
         <div className="row">
-          <AdminProductForm
-            productSchema={productSchema}
-            productValidations={productValidations}
-            emptyProduct={emptyProduct}
-            categoryList={categoryList}
+          <AdminEnquiryForm
+            enquirySchema={enquirySchema}
+            enquiryValidations={enquiryValidations}
+            emptyEnquiry={emptyEnquiry}
+            productList={productList}
             selectedEntity={selectedEntity}
-            productToBeEdited={productToBeEdited}
+            enquiryToBeEdited={enquiryToBeEdited}
             action={action}
             flagFormInvalid={flagFormInvalid}
             onFormSubmit={handleFormSubmit}
@@ -433,7 +418,7 @@ export default function AdminProducts(props) {
           />
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredEnquiryList.length != 0 && (
         <div className="row  my-2 mx-auto p-1">
           <div className="col-1">
             <a
@@ -459,7 +444,7 @@ export default function AdminProducts(props) {
           ))}
         </div>
       )}
-      {action == "list" && filteredProductList.length != 0 && (
+      {action == "list" && filteredEnquiryList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
           <div className="col-1">
             <a
@@ -507,15 +492,15 @@ export default function AdminProducts(props) {
         </div>
       )}
       {action == "list" &&
-        filteredProductList.length != 0 &&
-        filteredProductList.map((e, index) => (
-          <AProduct
-            product={e}
+        filteredEnquiryList.length != 0 &&
+        filteredEnquiryList.map((e, index) => (
+          <AEnquiry
+            enquiry={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
             direction={direction}
-            listSize={filteredProductList.length}
+            listSize={filteredEnquiryList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Modal from "./Modal";
 
-export default function AProduct(props) {
+export default function AEnquiry(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
-  let { product } = props;
+  let { enquiry } = props;
   let { showInList } = props;
   let { sortedField } = props;
   let { direction } = props;
@@ -11,9 +11,8 @@ export default function AProduct(props) {
   let { selectedEntity } = props;
   let { listSize } = props;
   function handleEditButtonClick() {
-    props.onEditButtonClick(product);
+    props.onEditButtonClick(enquiry);
   }
-
   function handleDeleteButtonClick() {
     setFlagDeleteButtonPressed(true);
   }
@@ -25,7 +24,7 @@ export default function AProduct(props) {
 
     setFlagDeleteButtonPressed(false);
 
-    props.onDeleteButtonClick(ans, product);
+    props.onDeleteButtonClick(ans, enquiry);
   }
   function getNameFromId(id, index) {
     let obj = selectedEntity.attributes[index].optionList.find(
@@ -34,10 +33,16 @@ export default function AProduct(props) {
     return obj.name;
   }
   function handleToggleText(index) {
-    console.log(index);
-    console.log(showInList[index].flagReadMore);
     props.onToggleText(index);
   }
+  function handleWhatsappClick() {
+    let message = "";
+    let url =
+      `https://api.whatsapp.com/send?phone=${enquiry.mobileNumber}&text=` +
+      message;
+    window.open(url, "_blank");
+  }
+
   return (
     <>
       <div className="row my-2 mx-auto border border-1 border-secondary p-1">
@@ -47,9 +52,8 @@ export default function AProduct(props) {
             : listSize - index}
           .
         </div>
-
         {/* <div key={index} className="col-2">
-          {product.name}
+          {enquiry.name}
         </div> */}
         {showInList.map(
           (e, index) =>
@@ -58,23 +62,23 @@ export default function AProduct(props) {
                 <>
                   {e.type != "singleFile" &&
                     e.type != "text-area" &&
-                    product[e.attribute]}
+                    enquiry[e.attribute]}
                   {e.type == "singleFile" && (
                     <img
                       className="img-fluid"
                       src={
                         import.meta.env.VITE_API_URL +
                         "/uploadedImages/" +
-                        product[e.attribute]
+                        enquiry[e.attribute]
                       }
                     />
                   )}
                   {e.type == "text-area" &&
                     e.flagReadMore &&
-                    product[e.attribute]}
+                    enquiry[e.attribute]}
                   {e.type == "text-area" &&
                     !e.flagReadMore &&
-                    product[e.attribute].slice(0, 50)}
+                    enquiry[e.attribute].slice(0, 50)}
                   {e.type == "text-area" && (
                     <button
                       className="btn btn-link"
@@ -91,17 +95,27 @@ export default function AProduct(props) {
         )}
 
         <div className="col-1">
-          <span onClick={handleEditButtonClick}>
-            <i className="bi bi-pencil-square"></i>
-          </span>
-          &nbsp;{" "}
-          <span onClick={handleDeleteButtonClick}>
-            <i className="bi bi-trash3-fill"></i>
-          </span>
+          <div className="mb-1">
+            <span onClick={handleEditButtonClick}>
+              <i className="bi bi-pencil-square"></i>
+            </span>
+            &nbsp;{" "}
+            <span onClick={handleDeleteButtonClick}>
+              <i className="bi bi-trash3-fill"></i>
+            </span>
+          </div>
+          <div className="">
+            <span onClick={handleWhatsappClick}>
+              <i
+                className="bi bi-whatsapp"
+                style={{ fontSize: "2rem", color: "#25D366" }}
+              ></i>
+            </span>
+          </div>
         </div>
         <div className="col-12 bg-secondary text-center text-white">
           Last updated:{" "}
-          {new Date(product.updateDate).toLocaleString("en-IN", {
+          {new Date(enquiry.updateDate).toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",
           })}
         </div>
@@ -109,7 +123,7 @@ export default function AProduct(props) {
       {flagDeleteButtonPressed && (
         <Modal
           modalText={
-            'Do you really want to delete data of "' + product.name + '".'
+            'Do you really want to delete data of "' + enquiry.name + '".'
           }
           btnGroup={["Yes", "No"]}
           onModalCloseClick={handleModalCloseClick}

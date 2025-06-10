@@ -5,6 +5,7 @@ const dotenv = require("dotenv").config();
 const { app } = require("./init.js");
 var cors = require("cors");
 const productRouter = require("./routers/product.router.js");
+const enquiryRouter = require("./routers/enquiry.router.js");
 const QuotationRouter = require("./routers/quotation.router.js");
 const customerRouter = require("./routers/customer.router.js");
 const fruitRouter = require("./routers/fruits.router.js");
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/specials", specialRouter); // authentication not required
 app.use("/users", userRouter); // authentication done inside this file
 app.use("/products", auntheticateUser, logActivity, productRouter);
+app.use("/enquiries", auntheticateUser, logActivity, enquiryRouter);
 app.use("/quotations", auntheticateUser, logActivity, QuotationRouter);
 app.use("/customers", auntheticateUser, logActivity, customerRouter);
 app.use("/roles", auntheticateUser, logActivity, roleRouter);

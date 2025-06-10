@@ -3,20 +3,20 @@ import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
 // import FileUpload from "./SingleFileUpload.jsx";
 import SingleFileUpload from "./SingleFileUpload.jsx";
-export default function AdminProductForm(props) {
-  let [product, setProduct] = useState("");
-  let [errorProduct, setErrorProduct] = useState(props.productValidations);
+export default function AdminEnquiryForm(props) {
+  let [enquiry, setEnquiry] = useState("");
+  let [errorEnquiry, setErrorEnquiry] = useState(props.enquiryValidations);
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let { action } = props;
   let { selectedEntity } = props;
-  let { categoryList } = props;
-  let { productSchema } = props;
+  let { productList } = props;
+  let { enquirySchema } = props;
   let [singleFileList, setSingleFileList] = useState(
-    getSingleFileListFromProductSchema()
+    getSingleFileListFromEnquirySchema()
   );
-  function getSingleFileListFromProductSchema() {
+  function getSingleFileListFromEnquirySchema() {
     let list = [];
-    productSchema.forEach((e, index) => {
+    enquirySchema.forEach((e, index) => {
       let obj = {};
       if (e.type == "singleFile") {
         obj["fileAttributeName"] = e.attribute;
@@ -34,49 +34,47 @@ export default function AdminProductForm(props) {
   function init() {
     let { action } = props;
     if (action === "add") {
-      // emptyProduct.category = props.categoryToRetain;
-      // emptyProduct.categoryId = props.categoryIdToRetain;
-      setProduct(props.emptyProduct);
+      setEnquiry(props.emptyEnquiry);
     } else if (action === "update") {
       // in edit mode, keep the update button enabled at the beginning
       setFlagFormInvalid(false);
-      setProduct(props.productToBeEdited);
+      setEnquiry(props.enquiryToBeEdited);
     }
   }
   function handleTextFieldChange(event) {
     let name = event.target.name;
-    setProduct({ ...product, [name]: event.target.value });
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    setEnquiry({ ...enquiry, [name]: event.target.value });
+    let message = fieldValidate(event, errorEnquiry);
+    let errEnquiry = { ...errorEnquiry };
+    errorEnquiry[`${name}`].message = message;
+    setErrorEnquiry(errEnquiry);
   }
   function handleBlur(event) {
     let name = event.target.name;
-    let message = fieldValidate(event, errorProduct);
-    let errProduct = { ...errorProduct };
-    errorProduct[`${name}`].message = message;
-    setErrorProduct(errProduct);
+    let message = fieldValidate(event, errorEnquiry);
+    let errEnquiry = { ...errorEnquiry };
+    errorEnquiry[`${name}`].message = message;
+    setErrorEnquiry(errEnquiry);
   }
   function handleFocus(event) {
     setFlagFormInvalid(false);
   }
   function checkAllErrors() {
-    for (let field in errorProduct) {
-      if (errorProduct[field].message !== "") {
+    for (let field in errorEnquiry) {
+      if (errorEnquiry[field].message !== "") {
         return true;
       } //if
     } //for
-    let errProduct = { ...errorProduct };
+    let errEnquiry = { ...errorEnquiry };
     let flag = false;
-    for (let field in product) {
-      if (errorProduct[field] && product[field] == "") {
+    for (let field in enquiry) {
+      if (errorEnquiry[field] && enquiry[field] == "") {
         flag = true;
-        errProduct[field].message = "Required...";
+        errEnquiry[field].message = "Required...";
       } //if
     } //for
     if (flag) {
-      setErrorProduct(errProduct);
+      setErrorEnquiry(errEnquiry);
       return true;
     }
     return false;
@@ -92,7 +90,7 @@ export default function AdminProductForm(props) {
     setFlagFormInvalid(false);
     if (action == "update") {
       // There might be files in this form, add those also
-      let pr = { ...product };
+      let pr = { ...enquiry };
       for (let i = 0; i < singleFileList.length; i++) {
         let fAName = singleFileList[i].fileAttributeName;
         if (pr[fAName + "New"]) {
@@ -102,24 +100,24 @@ export default function AdminProductForm(props) {
           delete pr[fAName + "New"];
         }
       } //for
-      setProduct(pr);
+      setEnquiry(pr);
       props.onFormSubmit(pr);
     } else if (action == "add") {
-      props.onFormSubmit(product);
+      props.onFormSubmit(enquiry);
     }
   };
   function handleFileChange(selectedFile, fileIndex, message) {
     setFlagFormInvalid(false);
     if (action == "add") {
-      setProduct({
-        ...product,
+      setEnquiry({
+        ...enquiry,
         ["file" + fileIndex]: selectedFile,
         [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
       });
-      let errProduct = { ...errorProduct };
-      errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
-      setErrorProduct(errProduct);
-      // setErrorProduct({ ...errorProduct, message: message });
+      let errEnquiry = { ...errorEnquiry };
+      errEnquiry[singleFileList[fileIndex].fileAttributeName].message = message;
+      setErrorEnquiry(errEnquiry);
+      // setErrorEnquiry({ ...errorEnquiry, message: message });
     }
   }
   function handleFileRemove(selectedFile, fileIndex, message) {
@@ -160,28 +158,28 @@ export default function AdminProductForm(props) {
       // user selected a new file but then deselected
       newFileName = "";
     }
-    setProduct({
-      ...product,
+    setEnquiry({
+      ...enquiry,
       // file: file,
       ["file" + fileIndex]: selectedFile,
       [singleFileList[fileIndex].fileAttributeName + "New"]: newFileName,
       // [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
     });
-    let errProduct = { ...errorProduct };
-    errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
-    setErrorProduct(errProduct);
+    let errEnquiry = { ...errorEnquiry };
+    errEnquiry[singleFileList[fileIndex].fileAttributeName].message = message;
+    setErrorEnquiry(errEnquiry);
   }
 
   // This one is old logic
   // function handleFileChange(file, fileIndex) {
   //   if (action == "add") {
-  //     setProduct({
-  //       ...product,
+  //     setEnquiry({
+  //       ...enquiry,
   //       file: file,
   //       [singleFileList[fileIndex].fileAttributeName]: file.name,
   //     });
   //   } else if (action == "update") {
-  //     // setProduct({ ...product, newFile: file, newImage: file.name });
+  //     // setEnquiry({ ...enquiry, newFile: file, newImage: file.name });
   //     // props.onFileChangeInUpdateMode(file, fileIndex);
   //     let fl = [...singleFileList];
   //     fl[fileIndex]["newFileName"] = file.name;
@@ -197,22 +195,20 @@ export default function AdminProductForm(props) {
       setSingleFileList(fl);
     }
   }
-  function handleSelectCategoryChange(event) {
+  function handleSelectProductChange(event) {
     let index = event.target.selectedIndex; // get selected index, instead of selected value
     var optionElement = event.target.childNodes[index];
-    var selectedCategoryId = optionElement.getAttribute("id");
-    let category = event.target.value.trim();
-    let categoryId = selectedCategoryId;
-    setProduct({ ...product, category: category, categoryId: categoryId });
+    var selectedProductId = optionElement.getAttribute("id");
+    let product = event.target.value.trim();
+    let productId = selectedProductId;
+    setEnquiry({ ...enquiry, product: product, productId: productId });
   }
 
-  let optionsCategory = categoryList.map((category, index) =>
-    category.rating != 1 ? (
-      <option value={category.name} key={index} id={category._id}>
-        {category.name}
-      </option>
-    ) : null
-  );
+  let optionsProducts = productList.map((product, index) => (
+    <option value={product.name} key={index} id={product._id}>
+      {product.name}
+    </option>
+  ));
 
   return (
     <div className="p-2">
@@ -228,137 +224,159 @@ export default function AdminProductForm(props) {
                 type="text"
                 className="form-control"
                 name="name"
-                value={product.name}
+                value={enquiry.name}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter product name"
+                placeholder="Enter customer name"
               />
             </div>
             <div className="">
-              {errorProduct.name.message ? (
-                <span className="text-danger">{errorProduct.name.message}</span>
+              {errorEnquiry.name.message ? (
+                <span className="text-danger">{errorEnquiry.name.message}</span>
               ) : null}
             </div>
           </div>
           <div className="col-6 my-2">
             <div className="text-bold my-1">
-              <label>Price</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="price"
-                value={product.price}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter price in Rs."
-              />
-            </div>
-            <div className="">
-              {errorProduct.price.message ? (
-                <span className="text-danger">
-                  {errorProduct.price.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Final Price</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="finalPrice"
-                value={product.finalPrice}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter discounted price in Rs."
-              />
-            </div>
-            <div className="">
-              {errorProduct.finalPrice.message ? (
-                <span className="text-danger">
-                  {errorProduct.finalPrice.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-12 my-2">
-            <div className="text-bold my-1">
-              <label>Information</label>
-            </div>
-            <div className="px-0">
-              <textarea
-                className="form-control"
-                name="info"
-                style={{ height: "300px" }}
-                rows={5}
-                // cols={20}
-                value={product.info}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter information"
-              ></textarea>
-            </div>
-            <div className="">
-              {errorProduct.info.message ? (
-                <span className="text-danger">{errorProduct.info.message}</span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-12 my-2">
-            <div className="text-bold my-1">
-              <label>Product Image</label>
-            </div>
-            <SingleFileUpload
-              singleFileList={singleFileList}
-              action={action}
-              name="productImage"
-              fileName={product.productImage}
-              onFileChange={handleFileChange}
-              onFileChangeUpdateMode={handleFileChangeUpdateMode}
-              onCancelChangeImageClick={handleCancelChangeImageClick}
-              onFileRemove={handleFileRemove}
-            />
-            <div className="">
-              {errorProduct.productImage.message ? (
-                <span className="text-danger">
-                  {errorProduct.productImage.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Category</label>
+              <label>Product Interested In </label>
             </div>
             <div className="px-0">
               <select
                 className="form-control"
-                name="category"
-                value={product.category}
-                onChange={handleSelectCategoryChange}
+                name="product"
+                value={enquiry.product}
+                onChange={handleSelectProductChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
               >
-                <option> Select Category </option>
-                {optionsCategory}
+                <option> Select Product </option>
+                {optionsProducts}
               </select>
             </div>
           </div>
+          <div className="col-6 my-2">
+            <div className="text-bold my-1">
+              <label>Site Location</label>
+            </div>
+            <div className="px-0">
+              <input
+                type="text"
+                className="form-control"
+                name="siteLocation"
+                value={enquiry.siteLocation}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter site location"
+              />
+            </div>
+            <div className="">
+              {errorEnquiry.siteLocation.message ? (
+                <span className="text-danger">
+                  {errorEnquiry.siteLocation.message}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="col-6 my-2">
+            <div className="text-bold my-1">
+              <label>Mobile Number </label>
+            </div>
+            <div className="px-0">
+              <input
+                type="text"
+                className="form-control"
+                name="mobileNumber"
+                value={enquiry.mobileNumber}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter mobile Number"
+              />
+            </div>
+            <div className="">
+              {errorEnquiry.mobileNumber.message ? (
+                <span className="text-danger">
+                  {errorEnquiry.mobileNumber.message}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="col-6 my-2">
+            <div className="text-bold my-1">
+              <label>City </label>
+            </div>
+            <div className="px-0">
+              <input
+                type="text"
+                className="form-control"
+                name="city"
+                value={enquiry.city}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter city-name"
+              />
+            </div>
+            <div className="">
+              {errorEnquiry.city.message ? (
+                <span className="text-danger">{errorEnquiry.city.message}</span>
+              ) : null}
+            </div>
+          </div>
+          <div className="col-6 my-2">
+            <div className="text-bold my-1">
+              <label>Region</label>
+            </div>
+            <div className="px-0">
+              <input
+                type="text"
+                className="form-control"
+                name="region"
+                value={enquiry.region}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter Region"
+              />
+            </div>
+            <div className="">
+              {errorEnquiry.region.message ? (
+                <span className="text-danger">
+                  {errorEnquiry.region.message}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="col-12 my-2">
+            <div className="text-bold my-1">
+              <label>Remarks</label>
+            </div>
+            <div className="px-0">
+              <textarea
+                className="form-control"
+                name="remarks"
+                style={{ height: "300px" }}
+                rows={5}
+                value={enquiry.remarks}
+                onChange={handleTextFieldChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                placeholder="Enter Remarks"
+              ></textarea>
+            </div>
+            <div className="">
+              {errorEnquiry.remarks.message ? (
+                <span className="text-danger">
+                  {errorEnquiry.remarks.message}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
           <div className="col-12">
-            <button
-              className="btn btn-primary"
-              type="submit"
-              // disabled={flagFormInvalid}
-            >
+            <button className="btn btn-primary" type="submit">
               {(action + " " + selectedEntity.singularName).toUpperCase()}
             </button>{" "}
             &nbsp;{" "}

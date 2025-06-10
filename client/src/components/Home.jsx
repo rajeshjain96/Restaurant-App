@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Content from "./Content";
 import SideBar from "./SideBar";
 import { entities } from "./Entities.js";
@@ -15,8 +15,6 @@ export default function Home() {
   let [action, setAction] = useState("add");
   let [message, setMessage] = useState("");
   let [itemToBeEdited, setItemToBeEdited] = useState("");
-  let [categoryList, setCategoryList] = useState([]);
-  let [productList, setProductList] = useState([]);
   let [selectedList, setSelectedList] = useState([]);
   let [filteredList, setFilteredList] = useState([]);
   let [sortedField, setSortedField] = useState("");
@@ -24,7 +22,6 @@ export default function Home() {
   let [searchText, setSearchText] = useState("");
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let entityDisplayNames = entities.map((e, index) => e.displayName);
-
   // useEffect(()=>{
   //   if(selectedEntityIndex!=-1)
   //   {
@@ -109,7 +106,6 @@ export default function Home() {
     setSelectedList(list);
     setFilteredList(list);
   }
-
   function handleSubmit(obj) {
     // check for form validations
     let flag = false;

@@ -13,7 +13,6 @@ export default function AnItem(props) {
   function handleEditButtonClick() {
     props.onEditButtonClick(item);
   }
-
   function handleDeleteButtonClick() {
     setFlagDeleteButtonPressed(true);
   }

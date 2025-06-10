@@ -1,18 +1,8 @@
 import { useState } from "react";
-
 import "./App.css";
-import Home from "./components/Home";
 import RestaurantHomePage from "./components_r/RestaurantHomePage";
-import EComm from "./components_Ecomm/EComm";
-import SamplePdfGenerator from "./components_r/SamplePdfGenerator";
-import TableExportOnly from "./components_r/TableExportOnly";
 import axios from "axios";
-import UploadForm from "./components_r/UploadForm";
-import FileUpload from "./components_r/FileUpload";
-import EditStudentImages from "./EditStudentImages";
-import StudentList from "./components_r/StudentList";
-import PdfViewer from "./components_r/PdfViewer";
-
+import Home from "./components/Home";
 function App() {
   const [count, setCount] = useState(0);
   axios.defaults.withCredentials = true; // ⬅️ Important!

@@ -103,7 +103,6 @@ export default function AddEditForm(props) {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // for dropdown, data is to be modified
     props.onSubmit(formData);
   };
   function handleFormCloseClick() {
@@ -119,9 +118,7 @@ export default function AddEditForm(props) {
     return <div>Wait...</div>;
   }
   return (
-    //   <div className="add-form">
     <div className="">
-      {/* <h2 className="heading-add-pro">Add Product</h2> */}
       <div className="add-form-ele">
         <form
           className="add-form-form row align-items-start`"
@@ -162,10 +159,7 @@ export default function AddEditForm(props) {
                         id={`${field.id}-${option}`}
                         name={field.id}
                         value={option}
-                        // value={formData[`${field.id}`]}
-                        // value={formData[field.id]}
                         checked={formData[`${field.id}`] == option}
-                        // checked={true}
                         onChange={handleChange}
                         onClick={handleChange}
                       />
@@ -262,12 +256,9 @@ export default function AddEditForm(props) {
                     {(action == "add" ||
                       (action == "edit" && field.flagChangeImage)) && (
                       <input
-                        // className="add-form-else-ele"
                         type={field.type}
                         id={field.id}
-                        // size="50"
                         name={field.id}
-                        // value={formData[field.id]}
                         onChange={(e) => {
                           handleFileChange(e, field_index);
                         }}
