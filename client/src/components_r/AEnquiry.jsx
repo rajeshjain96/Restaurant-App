@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import { Link } from "react-router-dom";
 
 export default function AEnquiry(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
   let { enquiry } = props;
+  let { user } = props;
   let { showInList } = props;
   let { sortedField } = props;
   let { direction } = props;
@@ -112,10 +114,15 @@ export default function AEnquiry(props) {
           </div>
         </div>
         <div className="col-12 text-primary">
-          Remark:{" "}
-          {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 20) +
-            "-" +
-            enquiry.remarks[enquiry.remarks.length - 1].user}
+          <Link
+            to={`/enquiryRemarks?id=${enquiry._id}&product=${enquiry.product}&user=${user.name}`}
+            target="_blank"
+          >
+            Remark:{" "}
+            {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 20) +
+              "-" +
+              enquiry.remarks[enquiry.remarks.length - 1].user}
+          </Link>
         </div>
         <div className="col-12 bg-secondary text-white">
           Last updated:{" "}

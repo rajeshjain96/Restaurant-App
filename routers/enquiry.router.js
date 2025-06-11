@@ -23,7 +23,8 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     let id = req.params.id;
-    res.send(EnquiryService.getEnquiryById(id));
+    let obj = await EnquiryService.getEnquiryById(id);
+    res.send(obj);
   } catch (error) {
     next(error); // Send error to middleware
   }
@@ -33,8 +34,9 @@ router.post("/", upload.any(), async (req, res, next) => {
     let obj = req.body;
     obj.addDate = new Date();
     obj.updateDate = new Date();
-    console.log("Enquiry post");
-    console.log(req.body);
+    ////////// enquiries has got remakrs as sub-collection
+    obj.remarks[0].addDate = new Date();
+    ///////////////////
     obj = await EnquiryService.addEnquiry(obj);
     res.status(201).json(obj);
   } catch (error) {
@@ -44,9 +46,6 @@ router.post("/", upload.any(), async (req, res, next) => {
 router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
-    console.log("Enquiry put");
-    console.log(req.body);
-    console.log(req.files);
     obj.updateDate = new Date();
     obj = await EnquiryService.updateEnquiry(obj);
     res.status(200).json(obj);
@@ -60,6 +59,18 @@ router.delete("/:id", async (req, res, next) => {
     let obj = req.body;
     obj = await EnquiryService.deleteEnquiry(id);
     res.json(obj);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+/////////////sub-collection routes///////////////
+router.post("/:id/remarks", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    let obj = req.body;
+    obj.addDate = new Date();
+    obj = await EnquiryService.addRemark(obj, id);
+    res.status(201).json(obj);
   } catch (error) {
     next(error); // Send error to middleware
   }

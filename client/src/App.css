@@ -69,10 +69,18 @@
   font-size: 1.1rem;
 }
 .text-small {
-  font-size: 0.9rem;
+  font-size: 0.9em;
 }
 .text-bold {
   font-weight: bold;
+}
+.text-italic
+{
+  font-style: italic;
+}
+.enquiry-remarks
+{
+  margin-top: 100px;
 }
 .container-sidebar {
   /* height: 100vh; */

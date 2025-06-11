@@ -503,6 +503,7 @@ export default function AdminEnquiries(props) {
             enquiry={e}
             key={index + 1}
             index={index}
+            user={user}
             sortedField={sortedField}
             direction={direction}
             listSize={filteredEnquiryList.length}
