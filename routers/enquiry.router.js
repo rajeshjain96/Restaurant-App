@@ -35,8 +35,6 @@ router.post("/", upload.any(), async (req, res, next) => {
     obj.updateDate = new Date();
     console.log("Enquiry post");
     console.log(req.body);
-    console.log(req.files);
-
     obj = await EnquiryService.addEnquiry(obj);
     res.status(201).json(obj);
   } catch (error) {

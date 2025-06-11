@@ -56,9 +56,7 @@ export default function AProduct(props) {
             e.show && (
               <div key={index} className="col-2">
                 <>
-                  {e.type != "singleFile" &&
-                    e.type != "text-area" &&
-                    product[e.attribute]}
+                  {e.type == "normal" && product[e.attribute]}
                   {e.type == "singleFile" && (
                     <img
                       className="img-fluid"

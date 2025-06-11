@@ -197,6 +197,9 @@ export default function CommonUtilityBar(props) {
   function handleFileTypeSelectionChange(fileType) {
     setExportFileType(fileType);
   }
+  function handleUploadExcelSheetClick() {
+    
+  }
   return (
     <>
       <h4
@@ -204,7 +207,7 @@ export default function CommonUtilityBar(props) {
           "text-center text-primary  " +
           (flagToggleButton ? "" : "w-75 mx-auto")
         }
-        style={{margin:"0px"}}
+        style={{ margin: "0px" }}
       >
         {selectedEntity.name}
       </h4>
@@ -234,12 +237,16 @@ export default function CommonUtilityBar(props) {
           onClick={handleAddEntityClick}
         >
           <i className="bi bi-file-plus-fill"></i>
+          &nbsp; &nbsp; &nbsp;{" "}
+          <span onClick={handleUploadExcelSheetClick}>
+            <i className="bi bi-file-earmark-arrow-up-fill"></i>
+          </span>
         </div>
       )}
       {action == "list" && (
         <div
           className={
-            "row mx-auto justify-content-center text-start p-2 align-items-center my-3 border-top border-1 border-primary"
+            "row mx-auto justify-content-center text-start p-2 align-items-center my-1 border-top border-1 border-primary"
           }
         >
           {listLength != 0 && (
@@ -266,15 +273,6 @@ export default function CommonUtilityBar(props) {
             </div>
           )}
           <div className="col-3 text-center">
-            {/* <button
-              className="btn btn-primary"
-              onClick={handleExcelExportClick}
-            >
-              Export To Excel
-            </button>{" "}
-            <button className="btn btn-primary" onClick={handlePDFExportClick}>
-              Export To PDF
-            </button> */}
             <button className="btn btn-primary" onClick={handleExportClick}>
               <span style={{ fontSize: "16px" }}>
                 <i className="bi bi-file-earmark-arrow-down-fill"></i>

@@ -18,29 +18,35 @@ export default function AdminEnquiries(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
+  let { user } = props;
   let enquirySchema = [
-    { attribute: "name" },
+    { attribute: "name", type: "normal" },
     {
       attribute: "product",
+      type: "normal",
       relationalData: true,
       list: "productList",
       relatedId: "productId",
     },
-    { attribute: "remarks" },
     { attribute: "productId", type: "relationalId" },
-    { attribute: "siteLocation" },
-    { attribute: "mobileNumber" },
-    { attribute: "city" },
-    { attribute: "region" },
+    { attribute: "siteLocation", type: "normal" },
+    { attribute: "mobileNumber", type: "normal" },
+    { attribute: "city", type: "normal" },
+    { attribute: "region", type: "normal" },
+    {
+      attribute: "remarks",
+      type: "array",
+      defaultValue: [{ remark: "Added", user: user.name }],
+    },
   ];
 
   let enquiryValidations = {
     name: { message: "", mxLen: 200, mnLen: 4, onlyDigits: false },
+    product: { message: "" },
     siteLocation: { message: "", mxLen: 40, mnLen: 4, onlyDigits: false },
     mobileNumber: { message: "", mxLen: 10, mnLen: 10, onlyDigits: true },
     city: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
     region: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
-    remarks: { message: "", mxLen: 200, mnLen: 10, onlyDigits: false },
   };
   let [showInList, setShowInList] = useState(getShowInListFromEnquirySchema());
   let [emptyEnquiry, setEmptyEnquiry] = useState(getEmptyEnquiry());
@@ -49,17 +55,15 @@ export default function AdminEnquiries(props) {
     let cnt = 0;
     enquirySchema.forEach((e, index) => {
       let obj = {};
-      if (e.type != "relationalId") {
-        // do not show id of relational data.
+      if (e.type != "relationalId" && e.type != "array") {
+        // do not show id of relational data and "array" is sort of sub-collection
         obj["attribute"] = e.attribute;
         if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
         }
-        if (e.type == "singleFile" || e.type == "text-area") {
-          obj["type"] = e.type; //"singleFile";
-        }
+        obj["type"] = e.type;
         if (e.type == "singleFile") {
           obj["allowedFileType"] = e.allowedFileType;
         }
@@ -123,8 +127,9 @@ export default function AdminEnquiries(props) {
       });
     }
     if (action == "add") {
-      // enquiry = await addEnquiryToBackend(enquiry);
       setFlagLoad(true);
+      console.log(enquiryForBackEnd);
+
       try {
         let response = await axios.post(
           import.meta.env.VITE_API_URL + "/enquiries",

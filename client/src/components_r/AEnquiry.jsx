@@ -60,9 +60,7 @@ export default function AEnquiry(props) {
             e.show && (
               <div key={index} className="col-2">
                 <>
-                  {e.type != "singleFile" &&
-                    e.type != "text-area" &&
-                    enquiry[e.attribute]}
+                  {e.type == "normal" && enquiry[e.attribute]}
                   {e.type == "singleFile" && (
                     <img
                       className="img-fluid"
@@ -113,7 +111,13 @@ export default function AEnquiry(props) {
             </span>
           </div>
         </div>
-        <div className="col-12 bg-secondary text-center text-white">
+        <div className="col-12 text-primary">
+          Remark:{" "}
+          {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 20) +
+            "-" +
+            enquiry.remarks[enquiry.remarks.length - 1].user}
+        </div>
+        <div className="col-12 bg-secondary text-white">
           Last updated:{" "}
           {new Date(enquiry.updateDate).toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",

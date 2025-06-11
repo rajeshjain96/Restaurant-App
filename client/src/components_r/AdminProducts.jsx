@@ -20,16 +20,17 @@ export default function AdminProducts(props) {
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
   let productSchema = [
-    { attribute: "name" },
+    { attribute: "name", type: "normal" },
     {
       attribute: "category",
+      type: "normal",
       relationalData: true,
       list: "categoryList",
       relatedId: "categoryId",
     },
     { attribute: "categoryId", type: "relationalId" },
-    { attribute: "price" },
-    { attribute: "finalPrice" },
+    { attribute: "price", type: "normal" },
+    { attribute: "finalPrice", type: "normal" },
     {
       attribute: "productImage",
       type: "singleFile",
@@ -64,17 +65,15 @@ export default function AdminProducts(props) {
     let cnt = 0;
     productSchema.forEach((e, index) => {
       let obj = {};
-      if (e.type != "relationalId") {
-        // do not show id of relational data.
+      if (e.type != "relationalId" && e.type != "array") {
+        // do not show id of relational data and "array" is sort of sub-collection
         obj["attribute"] = e.attribute;
         if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
         }
-        if (e.type == "singleFile" || e.type == "text-area") {
-          obj["type"] = e.type; //"singleFile";
-        }
+        obj["type"] = e.type;
         if (e.type == "singleFile") {
           obj["allowedFileType"] = e.allowedFileType;
         }

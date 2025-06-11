@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import fieldValidate from "./FormValidations.js";
 import "../formstyles.css";
-// import FileUpload from "./SingleFileUpload.jsx";
-import SingleFileUpload from "./SingleFileUpload.jsx";
 export default function AdminEnquiryForm(props) {
   let [enquiry, setEnquiry] = useState("");
   let [errorEnquiry, setErrorEnquiry] = useState(props.enquiryValidations);
@@ -169,24 +167,6 @@ export default function AdminEnquiryForm(props) {
     errEnquiry[singleFileList[fileIndex].fileAttributeName].message = message;
     setErrorEnquiry(errEnquiry);
   }
-
-  // This one is old logic
-  // function handleFileChange(file, fileIndex) {
-  //   if (action == "add") {
-  //     setEnquiry({
-  //       ...enquiry,
-  //       file: file,
-  //       [singleFileList[fileIndex].fileAttributeName]: file.name,
-  //     });
-  //   } else if (action == "update") {
-  //     // setEnquiry({ ...enquiry, newFile: file, newImage: file.name });
-  //     // props.onFileChangeInUpdateMode(file, fileIndex);
-  //     let fl = [...singleFileList];
-  //     fl[fileIndex]["newFileName"] = file.name;
-  //     fl[fileIndex]["newFile"] = file;
-  //     setSingleFileList(fl);
-  //   }
-  // }
   function handleCancelChangeImageClick() {
     if (action == "update") {
       let fl = [...singleFileList];
@@ -349,7 +329,7 @@ export default function AdminEnquiryForm(props) {
               ) : null}
             </div>
           </div>
-          <div className="col-12 my-2">
+          {/* <div className="col-12 my-2">
             <div className="text-bold my-1">
               <label>Remarks</label>
             </div>
@@ -373,7 +353,7 @@ export default function AdminEnquiryForm(props) {
                 </span>
               ) : null}
             </div>
-          </div>
+          </div> */}
 
           <div className="col-12">
             <button className="btn btn-primary" type="submit">

@@ -10,6 +10,7 @@ import AdminUsers from "./AdminUsers";
 export default function ContentPage(props) {
   let { selectedEntity } = props;
   let { flagToggleButton } = props;
+  let { user } = props;
   return (
     <>
       {selectedEntity.isReady == false && (
@@ -25,6 +26,7 @@ export default function ContentPage(props) {
         <AdminEnquiries
           selectedEntity={selectedEntity}
           flagToggleButton={flagToggleButton}
+          user={user}
         />
       )}
       {selectedEntity.name == "Customers" && (

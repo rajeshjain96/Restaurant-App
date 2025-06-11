@@ -245,7 +245,9 @@ export default function RestaurantHomePage() {
               onCloseLoginSignupPageClose={handleCloseLoginSignupPageClose}
             />
           )}
-          {view == "content" && <ContentPage selectedEntity={selectedEntity} />}
+          {view == "content" && (
+            <ContentPage selectedEntity={selectedEntity} user={user} />
+          )}
         </div>
       </div>
     </>
