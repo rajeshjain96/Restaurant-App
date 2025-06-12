@@ -425,14 +425,6 @@ export default function AdminEnquiries(props) {
       )}
       {action == "list" && filteredEnquiryList.length != 0 && (
         <div className="row  my-2 mx-auto p-1">
-          <div className="col-1">
-            <a
-              href="#"
-              onClick={() => {
-                handleSrNoClick();
-              }}
-            ></a>
-          </div>
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
               <input

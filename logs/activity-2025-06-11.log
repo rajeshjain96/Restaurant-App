@@ -289,3 +289,73 @@
 11/6/2025, 3:05:18 pm — [ERROR] — guest encountered error during GET /enquiries/undefined — hex string must be 24 characters
 11/6/2025, 3:05:18 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
 11/6/2025, 3:05:18 pm — [ERROR] — guest encountered error during GET /enquiries/undefined — hex string must be 24 characters
+11/6/2025, 3:09:34 pm — [WARN] — Unauthorized operation -->DELETE--->enquiries
+11/6/2025, 3:10:10 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 3:10:10 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 3:10:10 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 3:10:10 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 3:10:17 pm — [INFO] — Kailas Nimbalkar-->DELETE--->enquiries
+11/6/2025, 3:10:55 pm — [INFO] — Kailas Nimbalkar-->POST--->enquiries
+11/6/2025, 3:11:34 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 3:11:34 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 3:13:33 pm — [INFO] — Kailas Nimbalkar-->POST--->enquiries
+11/6/2025, 3:14:43 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 3:14:43 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:25:52 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:25:53 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:25:53 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:25:53 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:28:45 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:28:45 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:29:18 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:29:18 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:29:18 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:29:18 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 5:29:45 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:29:45 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:29:57 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:29:57 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:31:59 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:31:59 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:32:03 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 5:32:03 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:17:48 pm — [WARN] — Unauthorized operation -->GET--->enquiries
+11/6/2025, 7:17:48 pm — [WARN] — Unauthorized operation -->GET--->enquiries
+11/6/2025, 7:31:02 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:31:02 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:31:38 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:31:38 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:34:32 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:34:32 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:01 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:01 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:28 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:28 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:48 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:35:48 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:38:19 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:38:19 pm — [WARN] — Guest's illegal operation -->GET--->enquiries
+11/6/2025, 7:39:11 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:39:12 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:39:12 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 7:39:12 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 7:39:16 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:39:16 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:39:27 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:39:27 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:41:18 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 7:41:19 pm — [INFO] — Kailas Nimbalkar-->GET--->products
+11/6/2025, 7:41:35 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:41:35 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:56 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:56 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:56 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:56 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:56 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:57 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:57 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:45:57 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:46:00 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:46:00 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:58:33 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries
+11/6/2025, 7:58:34 pm — [INFO] — Kailas Nimbalkar-->GET--->enquiries

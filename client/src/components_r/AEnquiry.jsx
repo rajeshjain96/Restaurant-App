@@ -119,7 +119,7 @@ export default function AEnquiry(props) {
             target="_blank"
           >
             Remark:{" "}
-            {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 20) +
+            {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 40) +
               "-" +
               enquiry.remarks[enquiry.remarks.length - 1].user}
           </Link>

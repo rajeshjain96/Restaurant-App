@@ -2,7 +2,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
-
 export default function EnquiryRemarks() {
   const [params] = useSearchParams();
   const id = params.get("id");
@@ -22,9 +21,14 @@ export default function EnquiryRemarks() {
         import.meta.env.VITE_API_URL + "/enquiries/" + id
       );
       let enq = await response.data;
-      setEnquiry(enq);
+      if (enq == "Unauthorized") {
+        setMessage("Session over. Login again");
+      } else {
+        setEnquiry(enq);
+        document.title = enq.name;
+      }
     } catch (error) {
-      showMessage("Something went wrong, refresh the page");
+      setMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
@@ -38,21 +42,8 @@ export default function EnquiryRemarks() {
       minute: "2-digit",
       hour12: false, // use 24-hour format
     };
-
     const formatted = new Date(dateString).toLocaleString("en-GB", options);
-
-    // Convert "11/06/2024, 13:30" → "11-06-2024 13:30"
     return formatted.replace(",", "").replace(/\//g, "-");
-  }
-  function showMessage(message) {
-    setMessage(message);
-    window.setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
-  function getDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB"); // dd/mm/yyyy
   }
   function handleWhatsappClick() {
     let message = "";
@@ -70,8 +61,12 @@ export default function EnquiryRemarks() {
         { remark: remark, user: user }
       );
       let r = await response.data;
+      let re = [...enquiry.remarks];
+      re.push({ remark: remark, addDate: new Date(), user: user });
+      setEnquiry({ ...enquiry, remarks: re });
+      setRemark("");
     } catch (error) {
-      showMessage("Something went wrong, refresh the page");
+      setMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
@@ -82,6 +77,13 @@ export default function EnquiryRemarks() {
     return (
       <div className="my-5 text-center">
         <BeatLoader size={24} color={"blue"} />
+      </div>
+    );
+  }
+  if (message) {
+    return (
+      <div className="my-5 text-center text-danger">
+        Session over. Please login again.
       </div>
     );
   }
@@ -148,8 +150,8 @@ export default function EnquiryRemarks() {
                 .reverse()
                 .map((e, index) => (
                   <div key={index}>
-                    <div className="text-bigger">{e.remark}</div>
-                    <div className="text-small text-italic">
+                    <div className="text-bigger lh-1">{e.remark}</div>
+                    <div className="text-small text-italic mb-1">
                       {e.user} ({formatToIST(e.addDate)})
                     </div>
                     <div></div>

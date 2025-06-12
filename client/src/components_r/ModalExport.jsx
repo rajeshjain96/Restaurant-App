@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 export default function ModalExport(props) {
-  let { heading } = props;
-  let { modalText } = props;
-  let { btnGroup } = props;
-
   useEffect(() => {
     document.body.style.overflowY = "hidden";
     return () => {
       document.body.style.overflowY = "scroll";
     };
   }, []);
-  let [columnSize, setColumnSize] = useState("selected");
+  let [columnSize, setColumnSize] = useState("all");
   function handleModalCloseClick() {
     props.onModalCloseClick();
   }
@@ -46,18 +42,18 @@ export default function ModalExport(props) {
             type="radio"
             name="columnSize"
             id=""
-            checked={columnSize == "selected"}
-            onChange={() => handleColumnSizeSelection("selected")}
+            checked={columnSize == "all"}
+            onChange={() => handleColumnSizeSelection("all")}
           />{" "}
-          Selected Columns{" "}
+          All Columns &nbsp;
           <input
             type="radio"
             name="columnSize"
             id=""
-            checked={columnSize == "all"}
-            onChange={() => handleColumnSizeSelection("all")}
+            checked={columnSize == "selected"}
+            onChange={() => handleColumnSizeSelection("selected")}
           />{" "}
-          All Columns
+          Selected Columns{" "}
         </div>
         {/* <hr /> */}
         <div className="text-center my-3">

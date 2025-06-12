@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ModalExport from "./ModalExport";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -12,8 +12,10 @@ export default function CommonUtilityBar(props) {
   let { filteredList } = props;
   let { showInList } = props;
   let [flagExport, setFlagExport] = useState(false);
-  let [exportColumnsSize, setExportColumnSize] = useState("selected");
+  let [exportColumnsSize, setExportColumnSize] = useState("all");
   let [exportFileType, setExportFileType] = useState("excel");
+  let [flagFileUpload, setFlagFileUpload] = useState(false);
+  const buttonBRef = useRef(null);
 
   function handleListClick() {
     props.onListClick();
@@ -24,36 +26,30 @@ export default function CommonUtilityBar(props) {
   function handleSearchKeyUp(event) {
     props.onSearchKeyUp(event);
   }
-  function handleExcelExportClick() {
-    props.onExcelExportClick();
-  }
+  // function handleExcelExportClick() {
+  //   props.onExcelExportClick();
+  // }
   function handleExportButtonClick() {
     //close the modal
     setFlagExport(false);
     if (exportFileType == "excel") {
-      handleExcelExportClick(exportColumnsSize);
+      handleExcelExportClick();
     } else if (exportFileType == "pdf") {
-      handlePDFExportClick(exportColumnsSize);
+      handlePDFExportClick();
     }
   }
   function handleExcelExportClick() {
     JSONToCSVConvertor(filteredList, "Nothing", true);
   }
-  async function handlePDFExportClick(exportColumnsSize) {
-    // const data = [
-    //   { name: "Alice", email: "alice@example.com", age: 25 },
-    //   { name: "Bob", email: "bob@example.com", age: 30 },
-    //   { name: "Charlie", email: "charlie@example.com", age: 28 },
-    // ];
+  async function handlePDFExportClick() {
     const data = [...filteredList];
-    // const headers = [["Name", "Email", "Age"]];
     let headers = [];
     // add content to header dynamically
     let columnNames = [];
     showInList.forEach((e, index) => {
       if (
-        (e.show && exportColumnsSize == "selected") ||
-        exportColumnsSize == "all"
+        exportColumnsSize == "all" ||
+        (e.show && exportColumnsSize == "selected")
       ) {
         columnNames.push(e.attribute);
       }
@@ -127,7 +123,20 @@ export default function CommonUtilityBar(props) {
     CSV += ReportTitle + "\r\n\n";
     let headers = [...showInList];
     // Remove all other than showInList
-    headers = headers.filter((e, index) => e.show == true);
+
+    //  showInList.forEach((e, index) => {
+    //   if (
+    //     exportColumnsSize == "all" ||
+    //     (e.show && exportColumnsSize == "selected")
+    //   ) {
+    //     columnNames.push(e.attribute);
+    //   }
+    // });
+    headers = headers.filter(
+      (e, index) =>
+        exportColumnsSize == "all" ||
+        (e.show && exportColumnsSize == "selected")
+    );
     if (ShowLabel) {
       var row = "";
       var CSV = "";
@@ -198,7 +207,27 @@ export default function CommonUtilityBar(props) {
     setExportFileType(fileType);
   }
   function handleUploadExcelSheetClick() {
-    
+    if (buttonBRef.current) {
+      buttonBRef.current.click(); // trigger Button B click
+    }
+  }
+  function fileChangedHandler(event) {
+    let file = event.target.files[0];
+    let message = "";
+    if (!file) {
+      // setMessage("");
+      setPreviewImage("");
+      return;
+    }
+    // image/jpeg, image/png, application/pdf, video/mp4,
+    //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    if (file.type.indexOf("spreadsheet") == -1) {
+      message = "The file-type should be excel";
+      setFile(file);
+    } else {
+      setFile(file);
+    }
+    // props.onFileChangeUpdateMode(file, fileIndex, message);
   }
   return (
     <>
@@ -231,18 +260,26 @@ export default function CommonUtilityBar(props) {
         </div>
       )}
       {action == "list" && selectedEntity.addFacility && (
-        <div
-          className="text-center"
-          style={{ fontSize: "30px" }}
-          onClick={handleAddEntityClick}
-        >
-          <i className="bi bi-file-plus-fill"></i>
+        <div className="text-center" style={{ fontSize: "30px" }}>
+          <span onClick={handleAddEntityClick}>
+            <i className="bi bi-file-plus-fill"></i>
+          </span>
           &nbsp; &nbsp; &nbsp;{" "}
           <span onClick={handleUploadExcelSheetClick}>
             <i className="bi bi-file-earmark-arrow-up-fill"></i>
           </span>
         </div>
       )}
+      <div>
+        <input
+          className=""
+          type="file"
+          name="file"
+          ref={buttonBRef}
+          onChange={fileChangedHandler}
+          style={{ opacity: 0, position: "absolute", zIndex: -1 }}
+        />
+      </div>
       {action == "list" && (
         <div
           className={
