@@ -7,24 +7,23 @@ export default function ModalExport(props) {
     };
   }, []);
   let [columnSize, setColumnSize] = useState("all");
+  let [exportFileType, setExportFileType] = useState("excel");
   function handleModalCloseClick() {
     props.onModalCloseClick();
   }
-  function handleModalButtonClick(event) {
-    props.onModalButtonClick(event);
-  }
+
   function handleModalButtonCancelClick() {
     props.onModalButtonCancelClick();
   }
   function handleExportButtonClick() {
-    props.onExportButtonClick();
+    props.onExportButtonClick(columnSize,exportFileType);
   }
   function handleColumnSizeSelection(columnSize) {
     setColumnSize(columnSize);
-    props.onColumnSizeSelection(columnSize);
+    // props.onColumnSizeSelection(columnSize);
   }
   function handleFileTypeSelectionChange(event) {
-    props.onFileTypeSelectionChange(event.target.value);
+    setExportFileType(event.target.value);
   }
   return (
     <>

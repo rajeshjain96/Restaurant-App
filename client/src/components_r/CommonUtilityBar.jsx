@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import * as XLSX from "xlsx";
+
 import ModalExport from "./ModalExport";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -12,9 +14,8 @@ export default function CommonUtilityBar(props) {
   let { filteredList } = props;
   let { showInList } = props;
   let [flagExport, setFlagExport] = useState(false);
-  let [exportColumnsSize, setExportColumnSize] = useState("all");
-  let [exportFileType, setExportFileType] = useState("excel");
   let [flagFileUpload, setFlagFileUpload] = useState(false);
+  let [selectedFile, setSelectedFile] = useState("");
   const buttonBRef = useRef(null);
 
   function handleListClick() {
@@ -29,33 +30,29 @@ export default function CommonUtilityBar(props) {
   // function handleExcelExportClick() {
   //   props.onExcelExportClick();
   // }
-  function handleExportButtonClick() {
+  function handleExportButtonClick(columnSize, exportFileType) {
     //close the modal
     setFlagExport(false);
     if (exportFileType == "excel") {
-      handleExcelExportClick();
+      handleExcelExportClick(columnSize);
     } else if (exportFileType == "pdf") {
-      handlePDFExportClick();
+      handlePDFExportClick(columnSize);
     }
   }
-  function handleExcelExportClick() {
-    JSONToCSVConvertor(filteredList, "Nothing", true);
+  function handleExcelExportClick(columnSize) {
+    JSONToCSVConvertor(columnSize, filteredList, "Nothing", true);
   }
-  async function handlePDFExportClick() {
+  async function handlePDFExportClick(columnSize) {
     const data = [...filteredList];
     let headers = [];
     // add content to header dynamically
     let columnNames = [];
     showInList.forEach((e, index) => {
-      if (
-        exportColumnsSize == "all" ||
-        (e.show && exportColumnsSize == "selected")
-      ) {
+      if (columnSize == "all" || (e.show && columnSize == "selected")) {
         columnNames.push(e.attribute);
       }
     });
     // headers.push(columnNames);
-    // const body = data.map((row) => [row.name, row.email, row.age.toString()]);
     let body = data.map((row, index) => {
       let a = [];
       for (let i = 0; i < columnNames.length; i++) {
@@ -80,7 +77,7 @@ export default function CommonUtilityBar(props) {
 
     // Logo (optional)
     const logo = new Image();
-    logo.src = "/images/fruits/anjeer.jpg";
+    logo.src = "/images/Mobico_Logo.png";
     logo.onload = () => {
       doc.addImage(logo, "JPEG", pageWidth - 140, 20, 100, 50);
       doc.setFontSize(18);
@@ -115,33 +112,21 @@ export default function CommonUtilityBar(props) {
       doc.save(fileName);
     };
   }
-  function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  function JSONToCSVConvertor(columnSize, JSONData, ReportTitle, ShowLabel) {
     //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
     var arrData = typeof JSONData != "object" ? JSON.parse(JSONData) : JSONData;
     var arrData = JSONData;
     //Set Report title in first row or line
     CSV += ReportTitle + "\r\n\n";
-    let headers = [...showInList];
-    // Remove all other than showInList
-
-    //  showInList.forEach((e, index) => {
-    //   if (
-    //     exportColumnsSize == "all" ||
-    //     (e.show && exportColumnsSize == "selected")
-    //   ) {
-    //     columnNames.push(e.attribute);
-    //   }
-    // });
-    headers = headers.filter(
-      (e, index) =>
-        exportColumnsSize == "all" ||
-        (e.show && exportColumnsSize == "selected")
+    let headers = showInList.filter(
+      (e, index) => columnSize == "all" || (e.show && columnSize == "selected")
     );
+    headers.unshift({ attribute: "_id" }); // id is required
     if (ShowLabel) {
       var row = "";
       var CSV = "";
       // Add Sr. No.
-      row += "Sr. No., ";
+      // row += "Sr. No., ";
       //This loop will extract the label from 1st index of on array
       for (let i = 0; i < headers.length; i++) {
         //Now convert each value to string and comma-seprated
@@ -153,7 +138,8 @@ export default function CommonUtilityBar(props) {
     //1st loop is to extract each row
     let data;
     for (var i = 0; i < arrData.length; i++) {
-      var row = '"' + (i + 1) + '",';
+      // var row = '"' + (i + 1) + '",';
+      var row = "";
       //2nd loop will extract each column and convert it in string comma-seprated
       for (let e of headers) {
         data = arrData[i][e["attribute"]];
@@ -200,142 +186,135 @@ export default function CommonUtilityBar(props) {
   function handleModalCloseClick() {
     setFlagExport(false);
   }
-  function handleColumnSizeSelection(columnSize) {
-    setExportColumnSize(columnSize);
-  }
-  function handleFileTypeSelectionChange(fileType) {
-    setExportFileType(fileType);
-  }
+
   function handleUploadExcelSheetClick() {
     if (buttonBRef.current) {
       buttonBRef.current.click(); // trigger Button B click
     }
   }
-  function fileChangedHandler(event) {
-    let file = event.target.files[0];
-    let message = "";
+  function fileChangedHandler(e) {
+    let file = e.target.files[0];
     if (!file) {
-      // setMessage("");
-      setPreviewImage("");
       return;
     }
     // image/jpeg, image/png, application/pdf, video/mp4,
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-    if (file.type.indexOf("spreadsheet") == -1) {
-      message = "The file-type should be excel";
-      setFile(file);
+    if (
+      file.type.indexOf("csv") == -1 &&
+      file.type.indexOf("spreadsheet") == -1
+    ) {
+      props.onExcelFileUploadClick(null, "The file-type should be excel");
     } else {
-      setFile(file);
+      // setSelectedFile(file);
+      props.onExcelFileUploadClick(file, "");
     }
-    // props.onFileChangeUpdateMode(file, fileIndex, message);
   }
+
   return (
     <>
-      <h4
-        className={
-          "text-center text-primary  " +
-          (flagToggleButton ? "" : "w-75 mx-auto")
-        }
-        style={{ margin: "0px" }}
-      >
-        {selectedEntity.name}
-      </h4>
-      <div
-        className={
-          "text-center text-primary  " +
-          (flagToggleButton ? "" : "w-75 mx-auto")
-        }
-      >
-        {action == "add"
-          ? "(Add a Record)"
-          : action == "update"
-          ? "(Update Record)"
-          : "(Showing Records)"}
-      </div>
-      {(action == "add" || action == "update") && (
-        <div className="text-center" style={{ fontSize: "30px" }}>
-          <button className="btn btn-primary" onClick={handleListClick}>
-            <i className="bi bi-list-columns-reverse"></i>
-          </button>
-        </div>
-      )}
-      {action == "list" && selectedEntity.addFacility && (
-        <div className="text-center" style={{ fontSize: "30px" }}>
-          <span onClick={handleAddEntityClick}>
-            <i className="bi bi-file-plus-fill"></i>
-          </span>
-          &nbsp; &nbsp; &nbsp;{" "}
-          <span onClick={handleUploadExcelSheetClick}>
-            <i className="bi bi-file-earmark-arrow-up-fill"></i>
-          </span>
-        </div>
-      )}
-      <div>
-        <input
-          className=""
-          type="file"
-          name="file"
-          ref={buttonBRef}
-          onChange={fileChangedHandler}
-          style={{ opacity: 0, position: "absolute", zIndex: -1 }}
-        />
-      </div>
-      {action == "list" && (
+      <div className="container">
+        <h4
+          className={
+            "text-center text-primary  " +
+            (flagToggleButton ? "" : "w-75 mx-auto")
+          }
+          style={{ margin: "0px" }}
+        >
+          {selectedEntity.name}
+        </h4>
         <div
           className={
-            "row mx-auto justify-content-center text-start p-2 align-items-center my-1 border-top border-1 border-primary"
+            "text-center text-primary  " +
+            (flagToggleButton ? "" : "w-75 mx-auto")
           }
         >
-          {listLength != 0 && (
-            <div className="col-6 text-center ">
-              <input
-                type="search"
-                name=""
-                id=""
-                size="50"
-                onKeyUp={handleSearchKeyUp}
-                onChange={handleSearchKeyUp}
-                className="p-1"
-              />
-            </div>
-          )}
-          {listLength != 0 && (
-            <div className="col-3 text-center ">
-              <select name="" id="">
-                <option value="10">10</option>
-                <option value="10">20</option>
-                <option value="10">50</option>
-                <option value="10">100</option>
-              </select>
-            </div>
-          )}
-          <div className="col-3 text-center">
-            <button className="btn btn-primary" onClick={handleExportClick}>
-              <span style={{ fontSize: "16px" }}>
-                <i className="bi bi-file-earmark-arrow-down-fill"></i>
-              </span>
+          {action == "add"
+            ? "(Add a Record)"
+            : action == "update"
+            ? "(Update Record)"
+            : "(Showing Records)"}
+        </div>
+        {(action == "add" || action == "update") && (
+          <div className="text-center" style={{ fontSize: "30px" }}>
+            <button className="btn btn-primary" onClick={handleListClick}>
+              <i className="bi bi-list-columns-reverse"></i>
             </button>
           </div>
+        )}
+        {action == "list" && selectedEntity.addFacility && (
+          <div className="text-center" style={{ fontSize: "30px" }}>
+            <span onClick={handleAddEntityClick}>
+              <i className="bi bi-file-plus-fill"></i>
+            </span>
+            &nbsp; &nbsp; &nbsp;{" "}
+            <span onClick={handleUploadExcelSheetClick}>
+              <i className="bi bi-file-earmark-arrow-up-fill"></i>
+            </span>
+          </div>
+        )}
+        <div>
+          <input
+            className=""
+            type="file"
+            name="selectedFile"
+            ref={buttonBRef}
+            onChange={fileChangedHandler}
+            style={{ opacity: 0, position: "absolute", zIndex: -1 }}
+          />
         </div>
-      )}
-
-      {message && (
-        <div className="message text-danger text-small text-center">
-          {message}
-        </div>
-      )}
-      {flagExport && (
-        <ModalExport
-          modalText={'Do you really want to delete data of  "'}
-          btnGroup={["Yes", "No"]}
-          onModalCloseClick={handleModalCloseClick}
-          onModalButtonCancelClick={handleModalCloseClick}
-          onColumnSizeSelection={handleColumnSizeSelection}
-          onFileTypeSelectionChange={handleFileTypeSelectionChange}
-          onExportButtonClick={handleExportButtonClick}
-          // onModalButtonClick={handleModalButtonClick}
-        />
-      )}
+        {action == "list" && (
+          <div
+            className={
+              "row mx-auto justify-content-center text-start p-2 align-items-center my-1 border-top border-1 border-primary"
+            }
+          >
+            {listLength != 0 && (
+              <div className="col-6 text-center ">
+                <input
+                  type="search"
+                  name=""
+                  id=""
+                  size="50"
+                  onKeyUp={handleSearchKeyUp}
+                  onChange={handleSearchKeyUp}
+                  className="p-1"
+                />
+              </div>
+            )}
+            {listLength != 0 && (
+              <div className="col-3 text-center ">
+                <select name="" id="">
+                  <option value="10">10</option>
+                  <option value="10">20</option>
+                  <option value="10">50</option>
+                  <option value="10">100</option>
+                </select>
+              </div>
+            )}
+            <div className="col-3 text-center">
+              <button className="btn btn-primary" onClick={handleExportClick}>
+                <span style={{ fontSize: "16px" }}>
+                  <i className="bi bi-file-earmark-arrow-down-fill"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+        {message && (
+          <div className="message text-danger text-small text-center">
+            {message}
+          </div>
+        )}
+        {flagExport && (
+          <ModalExport
+            modalText={'Do you really want to delete data of  "'}
+            btnGroup={["Yes", "No"]}
+            onModalCloseClick={handleModalCloseClick}
+            onModalButtonCancelClick={handleModalCloseClick}
+            onExportButtonClick={handleExportButtonClick}
+          />
+        )}
+      </div>
     </>
   );
 }

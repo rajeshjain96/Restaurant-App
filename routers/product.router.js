@@ -33,10 +33,6 @@ router.post("/", upload.any(), async (req, res, next) => {
     let obj = req.body;
     obj.addDate = new Date();
     obj.updateDate = new Date();
-    console.log("Product post");
-    console.log(req.body);
-    console.log(req.files);
-
     obj = await ProductService.addProduct(obj);
     res.status(201).json(obj);
   } catch (error) {

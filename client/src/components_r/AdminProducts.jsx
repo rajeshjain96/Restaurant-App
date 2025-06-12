@@ -3,12 +3,13 @@ import CommonUtilityBar from "./CommonUtilityBar";
 import AdminProductForm from "./AdminProductForm";
 import { BeatLoader } from "react-spinners";
 import AProduct from "./AProduct";
+import * as XLSX from "xlsx";
 import axios from "axios";
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
+  let [filteredProductList, setFilteredProductList] = useState([]);
   let [categoryList, setCategoryList] = useState([]);
   let [action, setAction] = useState("list");
-  let [filteredProductList, setFilteredProductList] = useState([]);
   let [productToBeEdited, setProductToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
@@ -16,6 +17,8 @@ export default function AdminProducts(props) {
 
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
+  let [sheetData, setSheetData] = useState(null);
+
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
@@ -388,7 +391,59 @@ export default function AdminProducts(props) {
     sil[index].flagReadMore = !sil[index].flagReadMore;
     setShowInList(sil);
   }
-
+  function handleExcelFileUploadClick(file, message) {
+    if (message) {
+      showMessage(message);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target.result;
+      // Read the workbook from the array buffer
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      // Assume reading the first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      // Convert to JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      console.log(jsonData);
+      setSheetData(jsonData);
+      analyseSheetData(jsonData);
+    };
+    // reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
+  }
+  function analyseSheetData(jsonData) {
+    let cntU = 0,
+      cntA = 0;
+    jsonData.forEach((sheetProduct, index) => {
+      if (!sheetProduct._id) {
+        cntA++;
+      }
+    });
+    if (cntA == jsonData.length) {
+      showMessage("Sorry...products without ID");
+      return;
+    }
+    // Get current product-list
+    let flag;
+    productList.forEach((product, index) => {
+      flag = false;
+      for (let i = 0; i < jsonData.length; i++) {
+        if (product._id == jsonData[i]._id) {
+          flag = true; //found
+          break;
+        } //if
+      } //for
+      if (!flag) {
+        // not found
+        // console.log("Products Mismatch.. Use latest downloaded file...");
+        showMessage("Products Mismatch.. Use latest downloaded file...");
+        setFlagLoad(false);
+        return;
+      }
+    });
+  }
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -408,6 +463,7 @@ export default function AdminProducts(props) {
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
+        onExcelFileUploadClick={handleExcelFileUploadClick}
       />
       {filteredProductList.length == 0 && productList.length != 0 && (
         <div className="text-center">Nothing to show</div>

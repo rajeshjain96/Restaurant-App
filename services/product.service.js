@@ -1,7 +1,7 @@
 const { app } = require("../init.js");
 const { ObjectId } = require("mongodb");
 
-async function  getAllProducts() {
+async function getAllProducts() {
   const db = app.locals.db;
 
   const collection = db.collection("products");
@@ -17,7 +17,7 @@ async function getProductById(id) {
 async function addProduct(obj) {
   const db = app.locals.db;
   const collection = db.collection("products");
-  let response = await collection.insertOne(obj);
+  obj = await collection.insertOne(obj);
   return obj;
 }
 async function updateProduct(obj) {
