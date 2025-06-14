@@ -5,6 +5,7 @@ import axios from "axios";
 import Home from "./components/Home";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import EnquiryRemarks from "./components_r/enquiryRemarks";
+import SampleForm from "./components_r/sampleForm";
 function App() {
   axios.defaults.withCredentials = true; // ⬅️ Important!
 
@@ -13,6 +14,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<RestaurantHomePage />} />
+          <Route path="/sampleForm" element={<SampleForm />} />
+
           <Route path="/enquiryRemarks" element={<EnquiryRemarks />} />
           {/* <Route path="/contact" element={<Contact />} /> */}
         </Routes>

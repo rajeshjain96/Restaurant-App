@@ -17,6 +17,16 @@ async function getProductById(id) {
 async function addProduct(obj) {
   const db = app.locals.db;
   const collection = db.collection("products");
+  // normalize text
+  // normalize text
+  const keys = Object.keys(obj);
+   for (let key of keys) 
+  {
+    if(typeof obj[key] == "string")
+    {
+      obj[key]=normalizeNewlines(obj[key])
+    }
+  }
   obj = await collection.insertOne(obj);
   return obj;
 }
@@ -40,6 +50,10 @@ async function deleteProduct(id) {
   console.log("Deleted");
   return obj;
 }
+function normalizeNewlines(text) {
+  return text.replace(/\r\n/g, "\n");
+}
+
 module.exports = ProductService = {
   getAllProducts,
   getProductById,

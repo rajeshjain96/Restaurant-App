@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
-import * as XLSX from "xlsx";
-
 import ModalExport from "./ModalExport";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
+import ExportToExcel from "./ExportToExcel";
+import ExportToPDF from "./ExportToPDF";
 export default function CommonUtilityBar(props) {
   let { action } = props;
   let { message } = props;
@@ -27,157 +24,50 @@ export default function CommonUtilityBar(props) {
   function handleSearchKeyUp(event) {
     props.onSearchKeyUp(event);
   }
-  // function handleExcelExportClick() {
-  //   props.onExcelExportClick();
-  // }
+
   function handleExportButtonClick(columnSize, exportFileType) {
     //close the modal
     setFlagExport(false);
+    // Prepare list for export. exclude image-names, addDate and updateDate.
+    let fieldsToBeExported = showInList
+      .filter(
+        (e) =>
+          (e.type != "singleFile" && e.show && columnSize == "selected") ||
+          columnSize == "all"
+      )
+      .map((e) => e.attribute);
+
     if (exportFileType == "excel") {
-      handleExcelExportClick(columnSize);
+      fieldsToBeExported.unshift("_id");
+    }
+    let exportList = filteredList.map((e, index) => {
+      let keys = Object.keys(e);
+      let obj = {};
+      for (let key of keys) {
+        if (fieldsToBeExported.includes(key)) {
+          obj[key] = e[key];
+        }
+      } //for
+      return obj;
+    });
+    // _id is also required
+    if (exportFileType == "excel") {
+      handleExcelExportClick(exportList);
     } else if (exportFileType == "pdf") {
-      handlePDFExportClick(columnSize);
+      handlePDFExportClick(fieldsToBeExported, exportList);
     }
   }
-  function handleExcelExportClick(columnSize) {
-    JSONToCSVConvertor(columnSize, filteredList, "Nothing", true);
-  }
-  async function handlePDFExportClick(columnSize) {
-    const data = [...filteredList];
-    let headers = [];
-    // add content to header dynamically
-    let columnNames = [];
-    showInList.forEach((e, index) => {
-      if (columnSize == "all" || (e.show && columnSize == "selected")) {
-        columnNames.push(e.attribute);
-      }
-    });
-    // headers.push(columnNames);
-    let body = data.map((row, index) => {
-      let a = [];
-      for (let i = 0; i < columnNames.length; i++) {
-        a.push(row[columnNames[i]].toString());
-      } //for
-      return a;
-    });
-    // Make first letter of headers capital
-    columnNames = columnNames.map((e, index) => {
-      let s = e.charAt(0).toUpperCase() + e.slice(1);
-      return s;
-    });
-    // now push to headers
-    headers.push(columnNames);
-
-    const doc = new jsPDF({
-      orientation: "landscape",
-      unit: "pt",
-      format: "A4",
-    });
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    // Logo (optional)
-    const logo = new Image();
-    logo.src = "/images/Mobico_Logo.png";
-    logo.onload = () => {
-      doc.addImage(logo, "JPEG", pageWidth - 140, 20, 100, 50);
-      doc.setFontSize(18);
-      doc.text(selectedEntity.name + " Data", 40, 50);
-      doc.setFontSize(12);
-      doc.text("Generated on: " + new Date().toLocaleDateString(), 40, 70);
-
-      autoTable(doc, {
-        head: headers,
-        body: body,
-        startY: 100,
-        theme: "grid",
-        headStyles: { fillColor: [0, 102, 204], textColor: 255 },
-        bodyStyles: { fillColor: [245, 245, 245] },
-        alternateRowStyles: { fillColor: [255, 255, 255] },
-        styles: { fontSize: 10, cellPadding: 6 },
-        didDrawPage: (data) => {
-          const pageCount = doc.internal.getNumberOfPages();
-          const pageHeight = doc.internal.pageSize.getHeight();
-          doc.setFontSize(9);
-          doc.text(
-            `Page ${
-              doc.internal.getCurrentPageInfo().pageNumber
-            } of ${pageCount}`,
-            pageWidth - 100,
-            pageHeight - 20
-          );
-        },
-      });
-      let fileName = selectedEntity.name + " " + new Date() + ".pdf";
-      // doc.save("hidden-table.pdf");
-      doc.save(fileName);
-    };
-  }
-  function JSONToCSVConvertor(columnSize, JSONData, ReportTitle, ShowLabel) {
-    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-    var arrData = typeof JSONData != "object" ? JSON.parse(JSONData) : JSONData;
-    var arrData = JSONData;
-    //Set Report title in first row or line
-    CSV += ReportTitle + "\r\n\n";
-    let headers = showInList.filter(
-      (e, index) => columnSize == "all" || (e.show && columnSize == "selected")
-    );
-    headers.unshift({ attribute: "_id" }); // id is required
-    if (ShowLabel) {
-      var row = "";
-      var CSV = "";
-      // Add Sr. No.
-      // row += "Sr. No., ";
-      //This loop will extract the label from 1st index of on array
-      for (let i = 0; i < headers.length; i++) {
-        //Now convert each value to string and comma-seprated
-        row += headers[i].attribute + ",";
-      }
-      //append Label row with line break
-      CSV += row + "\r\n";
-    }
-    //1st loop is to extract each row
-    let data;
-    for (var i = 0; i < arrData.length; i++) {
-      // var row = '"' + (i + 1) + '",';
-      var row = "";
-      //2nd loop will extract each column and convert it in string comma-seprated
-      for (let e of headers) {
-        data = arrData[i][e["attribute"]];
-        row += '"' + data + '",';
-      } //for
-      // row.slice(0, row.length - 1);
-      //add a line break after each row
-      CSV += row + "\r\n";
-    }
-    if (CSV == "") {
-      alert("Invalid data");
-      return;
-    }
+  function handleExcelExportClick(exportList) {
     let dt = new Date();
-
-    //Generate a file name
     var fileName =
       selectedEntity.name + dt.toDateString() + " " + dt.toLocaleTimeString();
-    //  + ".xls";
-    //this will remove the blank-spaces from the title and replace it with an underscore
-    // fileName += ReportTitle.replace(/ /g, "_");
-    //Initialize file format you want csv or xls
-    // var uri = "data:text/csv;charset=utf-8," + escape(CSV);
-    var uri = "data:text/csv;charset=utf-8," + CSV;
-    // Now the little tricky part.
-    // you can use either>> window.open(uri);
-    // but this will not work in some browsers
-    // or you will not get the correct file extension
-    //this trick will generate a temp <a /> tag
-    var link = document.createElement("a");
-    link.href = uri;
-    //set the visibility hidden so it will not effect on your web-layout
-    link.style = "visibility:hidden";
-    link.download = fileName + ".csv";
-    //this part will append the anchor tag and remove it after automatic click
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    ExportToExcel(exportList, fileName);
+  }
+  function handlePDFExportClick(fieldsToBeExported, exportList) {
+    let dt = new Date();
+    var fileName =
+      selectedEntity.name + dt.toDateString() + " " + dt.toLocaleTimeString();
+    ExportToPDF(selectedEntity.name, fieldsToBeExported, exportList, fileName);
   }
 
   function handleExportClick() {

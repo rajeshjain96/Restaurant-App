@@ -39,6 +39,16 @@
             "date": 1749712888797,
             "name": "C:\\RestaurantApp\\logs\\activity-2025-06-12.log",
             "hash": "ff8112a1edbbcff0132f468d2c411b3b08b947089d32261662eba03512ff1daf"
+        },
+        {
+            "date": 1749804841691,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-13.log",
+            "hash": "4933cc51075e03287a3cf56a1431b671b158eac69c8213570e0197c55278ee50"
+        },
+        {
+            "date": 1749874873699,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-14.log",
+            "hash": "5551a184b7a32b8d3f0396ee33cec29b664185bd104c4c8cf2c65bf492dc25b7"
         }
     ],
     "hashType": "sha256"

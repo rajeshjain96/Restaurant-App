@@ -22,6 +22,10 @@ export default function AdminProducts(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
+  let [productsAdded, setProductsAdded] = useState([]);
+  let [productsUpdated, setProductsUpdated] = useState([]);
+  let [cntUpdate, setCntUpdate] = useState(0);
+  let [cntAdd, setCntAdd] = useState(0);
   let productSchema = [
     { attribute: "name", type: "normal" },
     {
@@ -405,8 +409,7 @@ export default function AdminProducts(props) {
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       // Convert to JSON
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      console.log(jsonData);
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
       setSheetData(jsonData);
       analyseSheetData(jsonData);
     };
@@ -416,16 +419,19 @@ export default function AdminProducts(props) {
   function analyseSheetData(jsonData) {
     let cntU = 0,
       cntA = 0;
+    let productsA = [],
+      productsU = [];
     jsonData.forEach((sheetProduct, index) => {
       if (!sheetProduct._id) {
         cntA++;
+        productsA.push(sheetProduct);
       }
     });
     if (cntA == jsonData.length) {
-      showMessage("Sorry...products without ID");
+      showMessage("Sorry...products should have ID");
       return;
     }
-    // Get current product-list
+    // All current products should be in the excel file.
     let flag;
     productList.forEach((product, index) => {
       flag = false;
@@ -437,12 +443,56 @@ export default function AdminProducts(props) {
       } //for
       if (!flag) {
         // not found
-        // console.log("Products Mismatch.. Use latest downloaded file...");
         showMessage("Products Mismatch.. Use latest downloaded file...");
         setFlagLoad(false);
         return;
       }
+      jsonData.forEach((data, index) => {
+        flag = false;
+        for (let i = 0; i < productList.length; i++) {
+          if (data._id == productList[i]._id) {
+            flag = true; //found
+            if (compareAllValues(productList[i], data)) {
+              // some value is modified, so add this to update list
+              productsU.push(data);
+              cntU++;
+            }
+            break;
+          } //if
+        } //for
+        if (!flag && data._id) {
+          // not found
+          showMessage("Do not assign ID to new products.");
+          setFlagLoad(false);
+          return;
+        }
+      });
+      setCntUpdate(cntU);
+      setCntAdd(cntA);
+      setProductsAdded(productsA);
+      setProductsUpdated(productsU);
+      setFlagLoad(false);
     });
+  }
+  function compareAllValues(product, data) {
+    const keys = Object.keys(data);
+
+    for (let key of keys) {
+      if (typeof data[key] == "string") {
+        if (data[key].length > 50) {
+          console.log(data[key].length + " " + product[key].length);
+          console.log(data[key] + " " + product[key]);
+          let s = data[key].replace(/\n/g, "\r\n");
+          // let s1 = product[key].replace(/\r?\n/g, " ");
+          console.log(s + "..." + product[key]);
+          console.log(s.length + "..." + +product[key].length);
+        }
+      }
+      if (data[key] != product[key]) {
+        return true;
+      }
+    }
+    return false;
   }
   if (flagLoad) {
     return (
