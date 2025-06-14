@@ -31,6 +31,13 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
+    // normalize text
+    const keys = Object.keys(obj);
+    for (let key of keys) {
+      if (typeof obj[key] == "string") {
+        obj[key] = normalizeNewlines(obj[key]);
+      }
+    }
     obj.addDate = new Date();
     obj.updateDate = new Date();
     obj = await ProductService.addProduct(obj);
@@ -39,15 +46,43 @@ router.post("/", upload.any(), async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
+router.post("/bulk-add", upload.any(), async (req, res, next) => {
+  let products = req.body;
+  if (!Array.isArray(products)) {
+    return res.status(400).json({ message: "Invalid input, expected array" });
+  }
+  products.forEach((e, index) => {
+    e.addDate = new Date();
+    e.updateDate = new Date();
+  });
+  try {
+    let result = await ProductService.addManyProducts(products);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
 router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
-    console.log("Product put");
-    console.log(req.body);
-    console.log(req.files);
     obj.updateDate = new Date();
     obj = await ProductService.updateProduct(obj);
     res.status(200).json(obj);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+router.put("/bulk-update", upload.any(), async (req, res, next) => {
+  let products = req.body;
+  if (!Array.isArray(products)) {
+    return res.status(400).json({ message: "Invalid input, expected array" });
+  }
+  products.forEach((e, index) => {
+    e.updateDate = new Date();
+  });
+  try {
+    let result = await ProductService.updateManyProducts(products);
+    res.status(201).json(result);
   } catch (error) {
     next(error); // Send error to middleware
   }
@@ -62,5 +97,8 @@ router.delete("/:id", async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
+normalizeNewlines = (text) => {
+  return text.replace(/\r\n/g, "\n");
+};
 
 module.exports = router;

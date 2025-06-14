@@ -37,7 +37,6 @@ async function deleteQuotation(id) {
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
-  console.log("Deleted");
   return obj;
 }
 module.exports = QuotationService = {

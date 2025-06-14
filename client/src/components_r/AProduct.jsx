@@ -65,6 +65,7 @@ export default function AProduct(props) {
                         "/uploadedImages/" +
                         product[e.attribute]
                       }
+                      alt="Unavailable"
                     />
                   )}
                   {e.type == "text-area" &&
@@ -97,7 +98,7 @@ export default function AProduct(props) {
             <i className="bi bi-trash3-fill"></i>
           </span>
         </div>
-        <div className="col-12 bg-secondary text-center text-white">
+        <div className="col-12 text-center text-secondary text-italic text-small">
           Last updated:{" "}
           {new Date(product.updateDate).toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",

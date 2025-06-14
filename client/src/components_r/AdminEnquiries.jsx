@@ -4,6 +4,12 @@ import AdminEnquiryForm from "./AdminEnquiryForm";
 import { BeatLoader } from "react-spinners";
 import AEnquiry from "./AEnquiry";
 import axios from "axios";
+import * as XLSX from "xlsx";
+import ModalImport from "./ModalImport";
+import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
+import recordsAddBulk from "./RecordsAddBulk";
+import recordsUpdateBulk from "./RecordsUpdateBulk";
+
 export default function AdminEnquiries(props) {
   let [enquiryList, setEnquiryList] = useState([]);
   let [productList, setProductList] = useState([]);
@@ -11,10 +17,17 @@ export default function AdminEnquiries(props) {
   let [filteredEnquiryList, setFilteredEnquiryList] = useState([]);
   let [enquiryToBeEdited, setEnquiryToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
+  let [flagImport, setFlagImport] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
+  let [sheetData, setSheetData] = useState(null);
+  let [selectedFile, setSelectedFile] = useState("");
+  let [recordsToBeAdded, setRecordsToBeAdded] = useState([]);
+  let [recordsToBeUpdated, setRecordsToBeUpdated] = useState([]);
+  let [cntUpdate, setCntUpdate] = useState(0);
+  let [cntAdd, setCntAdd] = useState(0);
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
@@ -379,7 +392,85 @@ export default function AdminEnquiries(props) {
     sil[index].flagReadMore = !sil[index].flagReadMore;
     setShowInList(sil);
   }
+  function handleExcelFileUploadClick(file, msg) {
+    if (msg) {
+      showMessage(message);
+      return;
+    }
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target.result;
+      // Read the workbook from the array buffer
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      // Assume reading the first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      // Convert to JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      // const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      setSheetData(jsonData);
+      let result = analyseImportExcelSheet(jsonData, enquiryList);
+      if (result.message) {
+        showMessage(result.message);
+      } else {
+        showImportAnalysis(result);
+      }
+      // analyseSheetData(jsonData, productList);
+    };
+    // reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
+  }
+  function showImportAnalysis(result) {
+    setCntAdd(result.cntA);
+    setCntUpdate(result.cntU);
+    setRecordsToBeAdded(result.recordsToBeAdded);
+    setRecordsToBeUpdated(result.recordsToBeUpdated);
+    //open modal
+    setFlagImport(true);
+  }
+  function handleModalCloseClick() {
+    setFlagImport(false);
+  }
+  async function handleImportButtonClick() {
+    setFlagImport(false); // close the modal
+    setFlagLoad(true);
+    let result;
+    try {
+      if (recordsToBeAdded.length > 0) {
+        result = await recordsAddBulk(
+          recordsToBeAdded,
+          "enquiries",
+          enquiryList
+        );
+        if (result.success) {
+          setEnquiryList(result.updatedList);
+          setFilteredEnquiryList(result.updatedList);
+        }
+        showMessage(result.message);
+      }
+      if (recordsToBeUpdated.length > 0) {
+        result = await recordsUpdateBulk(
+          recordsToBeUpdated,
+          "enquiries",
+          enquiryList
+        );
+        if (result.success) {
+          setEnquiryList(result.updatedList);
+          setFilteredEnquiryList(result.updatedList);
+        }
+        showMessage(result.message);
+      } //if
+    } catch (error) {
+      console.log(error);
 
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
+  }
+  function handleClearSelectedFile() {
+    setSelectedFile(null);
+  }
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -399,6 +490,8 @@ export default function AdminEnquiries(props) {
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
+        onExcelFileUploadClick={handleExcelFileUploadClick}
+        onClearSelectedFile={handleClearSelectedFile}
       />
       {filteredEnquiryList.length == 0 && enquiryList.length != 0 && (
         <div className="text-center">Nothing to show</div>
@@ -506,6 +599,17 @@ export default function AdminEnquiries(props) {
             onToggleText={handleToggleText}
           />
         ))}
+      {flagImport && (
+        <ModalImport
+          modalText={"Summary of Bulk Import"}
+          additions={recordsToBeAdded}
+          updations={recordsToBeUpdated}
+          btnGroup={["Yes", "No"]}
+          onModalCloseClick={handleModalCloseClick}
+          onModalButtonCancelClick={handleModalCloseClick}
+          onImportButtonClick={handleImportButtonClick}
+        />
+      )}
     </>
   );
 }

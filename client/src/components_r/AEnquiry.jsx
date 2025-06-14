@@ -124,7 +124,7 @@ export default function AEnquiry(props) {
               enquiry.remarks[enquiry.remarks.length - 1].user}
           </Link>
         </div>
-        <div className="col-12 bg-secondary text-white">
+        <div className="col-12 text-center text-secondary text-italic text-small">
           Last updated:{" "}
           {new Date(enquiry.updateDate).toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",

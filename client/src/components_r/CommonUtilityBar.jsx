@@ -12,7 +12,6 @@ export default function CommonUtilityBar(props) {
   let { showInList } = props;
   let [flagExport, setFlagExport] = useState(false);
   let [flagFileUpload, setFlagFileUpload] = useState(false);
-  let [selectedFile, setSelectedFile] = useState("");
   const buttonBRef = useRef(null);
 
   function handleListClick() {
@@ -79,11 +78,17 @@ export default function CommonUtilityBar(props) {
 
   function handleUploadExcelSheetClick() {
     if (buttonBRef.current) {
+      props.onClearSelectedFile();
       buttonBRef.current.click(); // trigger Button B click
     }
   }
   function fileChangedHandler(e) {
     let file = e.target.files[0];
+    console.log("..."+file);
+     if (buttonBRef.current) {
+      buttonBRef.current.value = '';
+    }
+    
     if (!file) {
       return;
     }

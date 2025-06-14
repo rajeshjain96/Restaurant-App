@@ -34,7 +34,6 @@ async function deleteCategory(id) {
   let obj = await collection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
-  console.log("Deleted");
   return obj;
 }
 module.exports = CategoryService = {

@@ -43,12 +43,43 @@ router.post("/", upload.any(), async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
+router.post("/bulk-add", upload.any(), async (req, res, next) => {
+  let enquiries = req.body;
+  if (!Array.isArray(enquiries)) {
+    return res.status(400).json({ message: "Invalid input, expected array" });
+  }
+  enquiries.forEach((e, index) => {
+    e.addDate = new Date();
+    e.updateDate = new Date();
+  });
+  try {
+    let result = await EnquiryService.addManyEnquiries(enquiries);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
 router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
     obj.updateDate = new Date();
     obj = await EnquiryService.updateEnquiry(obj);
     res.status(200).json(obj);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+router.put("/bulk-update", upload.any(), async (req, res, next) => {
+  let enquiries = req.body;
+  if (!Array.isArray(enquiries)) {
+    return res.status(400).json({ message: "Invalid input, expected array" });
+  }
+  enquiries.forEach((e, index) => {
+    e.updateDate = new Date();
+  });
+  try {
+    let result = await EnquiryService.updateManyEnquiries(enquiries);
+    res.status(201).json(result);
   } catch (error) {
     next(error); // Send error to middleware
   }

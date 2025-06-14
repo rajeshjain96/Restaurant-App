@@ -3,8 +3,12 @@ import CommonUtilityBar from "./CommonUtilityBar";
 import AdminProductForm from "./AdminProductForm";
 import { BeatLoader } from "react-spinners";
 import AProduct from "./AProduct";
-import * as XLSX from "xlsx";
 import axios from "axios";
+import * as XLSX from "xlsx";
+import ModalImport from "./ModalImport";
+import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
+import recordsAddBulk from "./RecordsAddBulk";
+import recordsUpdateBulk from "./RecordsUpdateBulk";
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
   let [filteredProductList, setFilteredProductList] = useState([]);
@@ -12,20 +16,20 @@ export default function AdminProducts(props) {
   let [action, setAction] = useState("list");
   let [productToBeEdited, setProductToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
+  let [flagImport, setFlagImport] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
-
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
   let [sheetData, setSheetData] = useState(null);
-
+  let [selectedFile, setSelectedFile] = useState("");
+  let [recordsToBeAdded, setRecordsToBeAdded] = useState([]);
+  let [recordsToBeUpdated, setRecordsToBeUpdated] = useState([]);
+  let [cntUpdate, setCntUpdate] = useState(0);
+  let [cntAdd, setCntAdd] = useState(0);
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-  let [productsAdded, setProductsAdded] = useState([]);
-  let [productsUpdated, setProductsUpdated] = useState([]);
-  let [cntUpdate, setCntUpdate] = useState(0);
-  let [cntAdd, setCntAdd] = useState(0);
   let productSchema = [
     { attribute: "name", type: "normal" },
     {
@@ -395,11 +399,12 @@ export default function AdminProducts(props) {
     sil[index].flagReadMore = !sil[index].flagReadMore;
     setShowInList(sil);
   }
-  function handleExcelFileUploadClick(file, message) {
-    if (message) {
+  function handleExcelFileUploadClick(file, msg) {
+    if (msg) {
       showMessage(message);
       return;
     }
+    setSelectedFile(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       const arrayBuffer = event.target.result;
@@ -409,90 +414,69 @@ export default function AdminProducts(props) {
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       // Convert to JSON
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      // const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
       setSheetData(jsonData);
-      analyseSheetData(jsonData);
+      let result = analyseImportExcelSheet(jsonData, productList);
+      if (result.message) {
+        showMessage(result.message);
+      } else {
+        showImportAnalysis(result);
+      }
+      // analyseSheetData(jsonData, productList);
     };
     // reader.readAsBinaryString(file);
     reader.readAsArrayBuffer(file);
   }
-  function analyseSheetData(jsonData) {
-    let cntU = 0,
-      cntA = 0;
-    let productsA = [],
-      productsU = [];
-    jsonData.forEach((sheetProduct, index) => {
-      if (!sheetProduct._id) {
-        cntA++;
-        productsA.push(sheetProduct);
-      }
-    });
-    if (cntA == jsonData.length) {
-      showMessage("Sorry...products should have ID");
-      return;
-    }
-    // All current products should be in the excel file.
-    let flag;
-    productList.forEach((product, index) => {
-      flag = false;
-      for (let i = 0; i < jsonData.length; i++) {
-        if (product._id == jsonData[i]._id) {
-          flag = true; //found
-          break;
-        } //if
-      } //for
-      if (!flag) {
-        // not found
-        showMessage("Products Mismatch.. Use latest downloaded file...");
-        setFlagLoad(false);
-        return;
-      }
-      jsonData.forEach((data, index) => {
-        flag = false;
-        for (let i = 0; i < productList.length; i++) {
-          if (data._id == productList[i]._id) {
-            flag = true; //found
-            if (compareAllValues(productList[i], data)) {
-              // some value is modified, so add this to update list
-              productsU.push(data);
-              cntU++;
-            }
-            break;
-          } //if
-        } //for
-        if (!flag && data._id) {
-          // not found
-          showMessage("Do not assign ID to new products.");
-          setFlagLoad(false);
-          return;
-        }
-      });
-      setCntUpdate(cntU);
-      setCntAdd(cntA);
-      setProductsAdded(productsA);
-      setProductsUpdated(productsU);
-      setFlagLoad(false);
-    });
+  function showImportAnalysis(result) {
+    setCntAdd(result.cntA);
+    setCntUpdate(result.cntU);
+    setRecordsToBeAdded(result.recordsToBeAdded);
+    setRecordsToBeUpdated(result.recordsToBeUpdated);
+    //open modal
+    setFlagImport(true);
   }
-  function compareAllValues(product, data) {
-    const keys = Object.keys(data);
-
-    for (let key of keys) {
-      if (typeof data[key] == "string") {
-        if (data[key].length > 50) {
-          console.log(data[key].length + " " + product[key].length);
-          console.log(data[key] + " " + product[key]);
-          let s = data[key].replace(/\n/g, "\r\n");
-          // let s1 = product[key].replace(/\r?\n/g, " ");
-          console.log(s + "..." + product[key]);
-          console.log(s.length + "..." + +product[key].length);
+  function handleModalCloseClick() {
+    setFlagImport(false);
+  }
+  async function handleImportButtonClick() {
+    setFlagImport(false); // close the modal
+    setFlagLoad(true);
+    let result;
+    try {
+      if (recordsToBeAdded.length > 0) {
+        result = await recordsAddBulk(
+          recordsToBeAdded,
+          "products",
+          productList
+        );
+        if (result.success) {
+          setProductList(result.updatedList);
+          setFilteredProductList(result.updatedList);
         }
+        showMessage(result.message);
       }
-      if (data[key] != product[key]) {
-        return true;
-      }
+      if (recordsToBeUpdated.length > 0) {
+        result = await recordsUpdateBulk(
+          recordsToBeUpdated,
+          "products",
+          productList
+        );
+        if (result.success) {
+          setProductList(result.updatedList);
+          setFilteredProductList(result.updatedList);
+        }
+        showMessage(result.message);
+      } //if
+    } catch (error) {
+      console.log(error);
+      
+      showMessage("Something went wrong, refresh the page");
     }
-    return false;
+    setFlagLoad(false);
+  }
+  function handleClearSelectedFile() {
+    setSelectedFile(null);
   }
   if (flagLoad) {
     return (
@@ -514,6 +498,7 @@ export default function AdminProducts(props) {
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
         onExcelFileUploadClick={handleExcelFileUploadClick}
+        onClearSelectedFile={handleClearSelectedFile}
       />
       {filteredProductList.length == 0 && productList.length != 0 && (
         <div className="text-center">Nothing to show</div>
@@ -620,6 +605,17 @@ export default function AdminProducts(props) {
             onToggleText={handleToggleText}
           />
         ))}
+      {flagImport && (
+        <ModalImport
+          modalText={"Summary of Bulk Import"}
+          additions={recordsToBeAdded}
+          updations={recordsToBeUpdated}
+          btnGroup={["Yes", "No"]}
+          onModalCloseClick={handleModalCloseClick}
+          onModalButtonCancelClick={handleModalCloseClick}
+          onImportButtonClick={handleImportButtonClick}
+        />
+      )}
     </>
   );
 }
