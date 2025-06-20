@@ -28,7 +28,6 @@ async function getUserByEmailId(emailId) {
   const userObj = await collection.findOne({
     emailId: emailId,
   });
-  console.log("Found document is =>", userObj);
   if (userObj) {
     return { result: "success" };
   } else {
@@ -42,7 +41,6 @@ async function checkUser(obj) {
   const userObj = await collection.findOne({
     emailId: obj.emailId,
   });
-  console.log("Found document is =>", userObj);
   if (!userObj) {
     // user is not registered
     return { result: "na" };
@@ -70,7 +68,6 @@ async function checkUserTryingToLogIn(obj) {
   const userObj = await collection.findOne({
     emailId: obj.emailId,
   });
-  console.log("Found document is =>", userObj);
   if (!userObj) {
     // user is not registered
     return { result: "na" };

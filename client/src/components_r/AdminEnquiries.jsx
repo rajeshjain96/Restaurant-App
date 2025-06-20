@@ -151,7 +151,7 @@ export default function AdminEnquiries(props) {
         let addedEnquiry = await response.data; //returned  with id
         // This addedEnquiry has id, addDate, updateDate, but the relational data is lost
         // The original enquiry has got relational data.
-        for (let key in product) {
+        for (let key in enquiry) {
           enquirySchema.forEach((e, index) => {
             if (key == e.attribute && e.relationalData) {
               addedEnquiry[key] = enquiry[key];
@@ -162,13 +162,20 @@ export default function AdminEnquiries(props) {
         // update the enquiry list now.
         let prList = [...enquiryList];
         prList.push(addedEnquiry);
+        prList = prList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setEnquiryList(prList);
         let fprList = [...filteredEnquiryList];
         fprList.push(addedEnquiry);
+        fprList = fprList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setFilteredEnquiryList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
+        console.log(error);
         showMessage("Something went wrong, refresh the page");
       }
       setFlagLoad(false);
@@ -182,17 +189,23 @@ export default function AdminEnquiries(props) {
           enquiry,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        let r = await response.data;
+        enquiry = await response.data;
         message = "Enquiry Updated successfully";
         // update the enquiry list now.
         let prList = enquiryList.map((e, index) => {
           if (e._id == enquiry._id) return enquiry;
           return e;
         });
+        prList = prList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         let fprList = filteredEnquiryList.map((e, index) => {
           if (e._id == enquiry._id) return enquiry;
           return e;
         });
+        fprList = fprList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setEnquiryList(prList);
         setFilteredEnquiryList(fprList);
         showMessage(message);

@@ -21,7 +21,7 @@ export default function SingleFileUploadSpecial(props) {
   }
   function fileChangedHandler(event) {
     let file = event.target.files[0];
-    let previewImage=null;
+    let previewImage = null;
     let message = "";
     if (!file) {
       setPreviewImage("");
@@ -31,16 +31,12 @@ export default function SingleFileUploadSpecial(props) {
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     console.log(file.type);
     if (allowedFileType == "all") {
-      console.log("dADA PAUS");
-
       if (
         file.type.indexOf("image") == -1 &&
         file.type.indexOf("pdf") == -1 &&
         file.type.indexOf("spreadsheet") == -1 &&
         file.type.indexOf("text") == -1
       ) {
-        console.log("dADA PAUS....");
-
         message = "The " + file.type + " file-type is not allowed";
       }
     } else if (file.type.indexOf(allowedFileType) == -1) {
@@ -48,7 +44,8 @@ export default function SingleFileUploadSpecial(props) {
     } else if (file.size > allowedSize * 1024 * 1024) {
       message = "The file-size should be maximum " + allowedSize + " MB";
     }
-    if (allowedFileType == "image") previewImage = URL.createObjectURL(file);
+    if (file.type.indexOf("image") != -1)
+      previewImage = URL.createObjectURL(file);
     // else {
     //   if (allowedFileType == "image") previewImage = URL.createObjectURL(file);
     // }

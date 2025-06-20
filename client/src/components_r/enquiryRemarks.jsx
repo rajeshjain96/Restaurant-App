@@ -65,9 +65,13 @@ export default function EnquiryRemarks() {
         { remark: remark, user: user }
       );
       let r = await response.data;
-      let re = [...enquiry.remarks];
-      re.push({ remark: remark, addDate: new Date(), user: user });
-      setEnquiry({ ...enquiry, remarks: re });
+      console.log("r");
+      console.log(r);
+
+      let re = [...remarks];
+      re.push(r);
+      // setEnquiry({ ...enquiry, remarks: re });
+      setRemarks(re);
       setRemark("");
     } catch (error) {
       console.log(error);
@@ -159,16 +163,16 @@ export default function EnquiryRemarks() {
           </div>
         </form>
         <div className="container">
-          {enquiry.remarks && (
+          {remarks && (
             <>
-              {enquiry.remarks
+              {remarks
                 .slice()
                 .reverse()
                 .map((e, index) => (
                   <AEnquiryRemark
                     key={index}
                     enquiryRemark={e}
-                    shownIndex={enquiry.fileInfo.length - 1 - index}
+                    shownIndex={remarks.length - 1 - index}
                     onDeleteButtonClick={handleDeleteButtonClick}
                   />
                 ))}

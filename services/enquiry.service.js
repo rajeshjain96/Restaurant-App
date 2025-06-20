@@ -96,6 +96,17 @@ async function addRemark(obj, id) {
   );
   return response;
 }
+async function deleteRemark(id, remarkId) {
+  const db = app.locals.db;
+  const collection = db.collection("enquiries");
+  const response = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    {
+      $pull: { remarks: { _id: ObjectId.createFromHexString(remarkId) } },
+    }
+  );
+  return response;
+}
 async function addFileInfo(obj, id) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
@@ -131,4 +142,5 @@ module.exports = EnquiryService = {
   addRemark,
   addFileInfo,
   deleteFileInfo,
+  deleteRemark,
 };

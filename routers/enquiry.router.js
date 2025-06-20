@@ -44,7 +44,14 @@ router.post("/", upload.any(), async (req, res, next) => {
     obj.addDate = new Date();
     obj.updateDate = new Date();
     ////////// enquiries has got remakrs as sub-collection
-    obj.remarks = [{ remark: "Added", user: obj.user, addDate: new Date() }];
+    obj.remarks = [
+      {
+        _id: new ObjectId(),
+        remark: "Added",
+        user: obj.user,
+        addDate: new Date(),
+      },
+    ];
     ////////// enquiries has got fileInfo as sub-collection
     obj.fileInfo = [];
     ///////////////////
@@ -74,8 +81,10 @@ router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
     obj.updateDate = new Date();
+    let id = obj._id;
     let result = await EnquiryService.updateEnquiry(obj);
     if (result.modifiedCount == 1) {
+      obj._id = id;
       res.status(200).json(obj);
     }
   } catch (error) {
@@ -112,13 +121,29 @@ router.post("/:id/remarks", async (req, res, next) => {
   try {
     const id = req.params.id;
     let obj = req.body;
+    obj._id = new ObjectId();
     obj.addDate = new Date();
-    obj = await EnquiryService.addRemark(obj, id);
-    res.status(201).json(obj);
+    let result = await EnquiryService.addRemark(obj, id);
+    if (result.modifiedCount === 1) {
+      res.status(201).json(obj);
+    }
   } catch (error) {
     next(error); // Send error to middleware
   }
 });
+router.delete("/:id/remarks/:remarkId", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const remarkId = req.params.remarkId;
+    let result = await EnquiryService.deleteRemark(id, remarkId);
+    if (result.modifiedCount === 1) {
+      res.status(201).json(result.modifiedCount);
+    }
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+
 /////////////sub-collection routes///////////////
 router.post("/:id/fileInfo", upload.any(), async (req, res, next) => {
   try {

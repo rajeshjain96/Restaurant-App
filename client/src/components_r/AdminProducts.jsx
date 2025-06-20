@@ -167,7 +167,7 @@ export default function AdminProducts(props) {
         for (let key in product) {
           productSchema.forEach((e, index) => {
             if (key == e.attribute && e.relationalData) {
-              addedProduct[key]=product[key] ;
+              addedProduct[key] = product[key];
             }
           });
         }
@@ -176,10 +176,17 @@ export default function AdminProducts(props) {
         // update the product list now.
         let prList = [...productList];
         prList.push(addedProduct);
-        setProductList(prList);
+        prList = prList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
+        // setProductList(prList);
         let fprList = [...filteredProductList];
         fprList.push(addedProduct);
+        fprList = fprList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setFilteredProductList(fprList);
+        // update the list in sorted order of updateDate
         showMessage(message);
         setAction("list");
       } catch (error) {
@@ -203,10 +210,16 @@ export default function AdminProducts(props) {
           if (e._id == product._id) return product;
           return e;
         });
+        prList = prList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         let fprList = filteredProductList.map((e, index) => {
           if (e._id == product._id) return product;
           return e;
         });
+        fprList = fprList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setProductList(prList);
         setFilteredProductList(fprList);
         showMessage(message);
