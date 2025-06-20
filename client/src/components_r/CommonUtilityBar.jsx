@@ -31,8 +31,8 @@ export default function CommonUtilityBar(props) {
     let fieldsToBeExported = showInList
       .filter(
         (e) =>
-          (e.type != "singleFile" && e.show && columnSize == "selected") ||
-          columnSize == "all"
+          e.type != "singleFile" &&
+          ((e.show && columnSize == "selected") || columnSize == "all")
       )
       .map((e) => e.attribute);
 
@@ -84,11 +84,11 @@ export default function CommonUtilityBar(props) {
   }
   function fileChangedHandler(e) {
     let file = e.target.files[0];
-    console.log("..."+file);
-     if (buttonBRef.current) {
-      buttonBRef.current.value = '';
+    console.log("..." + file);
+    if (buttonBRef.current) {
+      buttonBRef.current.value = "";
     }
-    
+
     if (!file) {
       return;
     }

@@ -14,8 +14,8 @@ export default function Modal(props) {
   function handleModalCloseClick() {
     props.onModalCloseClick();
   }
-  function handleModalButtonClick(event) {
-    props.onModalButtonClick(event);
+  function handleModalButtonClick(index) {
+    props.onModalButtonClick(btnGroup[index]);
   }
   return (
     <>
@@ -35,8 +35,8 @@ export default function Modal(props) {
             <button
               className="btn btn-primary mx-1"
               key={index}
-              onClick={(event) => {
-                handleModalButtonClick(event);
+              onClick={() => {
+                handleModalButtonClick(index);
               }}
             >
               {e}

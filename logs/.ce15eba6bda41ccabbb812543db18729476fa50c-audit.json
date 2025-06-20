@@ -6,21 +6,6 @@
     "auditLog": "C:\\RestaurantApp\\logs\\.ce15eba6bda41ccabbb812543db18729476fa50c-audit.json",
     "files": [
         {
-            "date": 1748942153257,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-03.log",
-            "hash": "8d5807766f786ad3a7ac7beaea321d011fcedbdc0ffa61f7d0650e4069f03479"
-        },
-        {
-            "date": 1749094922030,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-05.log",
-            "hash": "ab000e1457f083c3b28b61ccc4c217bb6e6ec515d6d205a571ef8f437de607d1"
-        },
-        {
-            "date": 1749191733251,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-06.log",
-            "hash": "571f8308542218bf602b6f2a3d87306d32614fa3d12bc81c558f3a323b15a0ef"
-        },
-        {
             "date": 1749455635556,
             "name": "C:\\RestaurantApp\\logs\\activity-2025-06-09.log",
             "hash": "90c9d3e927a4be9f5c879a4f797322d13280f9a29bdb370e864cc06110f9105f"
@@ -49,6 +34,26 @@
             "date": 1749874873699,
             "name": "C:\\RestaurantApp\\logs\\activity-2025-06-14.log",
             "hash": "5551a184b7a32b8d3f0396ee33cec29b664185bd104c4c8cf2c65bf492dc25b7"
+        },
+        {
+            "date": 1749957220503,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-15.log",
+            "hash": "9a5641fe668dd14ed1a3f3d46eebce348c58703e9ad30f0e8b4ffe04b9bb4029"
+        },
+        {
+            "date": 1750148634140,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-17.log",
+            "hash": "609f759afc2976c674125417ef1f63fd1b1790752a18932c0fbe5b346f124c37"
+        },
+        {
+            "date": 1750315420072,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-19.log",
+            "hash": "449bfbddcbe215ba4d9047ad30bbb2af68f0166a9fb8d63b727dab38d8e28ddf"
+        },
+        {
+            "date": 1750403436125,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-20.log",
+            "hash": "4492d5fa50415fd48ce57da82b04dd5b632dcd9c55a2613154b1d5acd8d0638d"
         }
     ],
     "hashType": "sha256"

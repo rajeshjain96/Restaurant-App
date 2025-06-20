@@ -25,7 +25,7 @@ export default function MyModal(props) {
           {" "}
           <div>{heading}</div>{" "}
           <div onClick={handleModalCloseClick}>
-            <i class="bi bi-x-square"></i>
+            <i className="bi bi-x-square"></i>
           </div>
         </div>
         <div className="my-3 p-3"> {modalText}</div>

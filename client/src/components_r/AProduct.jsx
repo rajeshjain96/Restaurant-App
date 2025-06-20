@@ -20,11 +20,8 @@ export default function AProduct(props) {
   function handleModalCloseClick() {
     setFlagDeleteButtonPressed(false);
   }
-  function handleModalButtonClick(event) {
-    let ans = event.target.innerHTML;
-
+  function handleModalButtonClick(ans) {
     setFlagDeleteButtonPressed(false);
-
     props.onDeleteButtonClick(ans, product);
   }
   function getNameFromId(id, index) {
@@ -98,7 +95,7 @@ export default function AProduct(props) {
             <i className="bi bi-trash3-fill"></i>
           </span>
         </div>
-        <div className="col-12 text-center text-secondary text-italic text-small">
+        <div className="col-12  text-secondary text-italic text-small">
           Last updated:{" "}
           {new Date(product.updateDate).toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",

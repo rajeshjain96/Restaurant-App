@@ -6,21 +6,6 @@
     "auditLog": "C:\\RestaurantApp\\logs\\.7626e3994608ab245bc0a90d3b8c4c887487dd06-audit.json",
     "files": [
         {
-            "date": 1747478279306,
-            "name": "C:\\RestaurantApp\\logs\\error-2025-05-17.log",
-            "hash": "1938f302c792a3016674b0b8b24d84f2546df83c36a692b0bc7fd3b0d85a08da"
-        },
-        {
-            "date": 1747646075385,
-            "name": "C:\\RestaurantApp\\logs\\error-2025-05-19.log",
-            "hash": "8769f551e25e65e595222bacfea71f9b0567944302ed92da7e6b7330ef559ee8"
-        },
-        {
-            "date": 1747747052573,
-            "name": "C:\\RestaurantApp\\logs\\error-2025-05-20.log",
-            "hash": "eee30b59c93503c3f19892fbd6184e4ba6db3ef1470d01cf5f38eb8307cddbc3"
-        },
-        {
             "date": 1748942153263,
             "name": "C:\\RestaurantApp\\logs\\error-2025-06-03.log",
             "hash": "9b9fb8a1db6dc7dbd91fb15cdc9b3c3f006823b96ffe9839962522f73804815f"
@@ -64,6 +49,26 @@
             "date": 1749874873704,
             "name": "C:\\RestaurantApp\\logs\\error-2025-06-14.log",
             "hash": "b290102211435eff02e44310a04ef80fd7cfc33a6032a393eaafdd570daf9ef8"
+        },
+        {
+            "date": 1749957220508,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-15.log",
+            "hash": "5ec30145000e7c544eb96c4afff90d514ba8094412b9f19273e1ce4555685b68"
+        },
+        {
+            "date": 1750148634144,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-17.log",
+            "hash": "8b22f60d8b2412480ba7d8fbf6ba2134db95fd4dd81442f6c30163dbd7d2068d"
+        },
+        {
+            "date": 1750315420077,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-19.log",
+            "hash": "e880b53f44490a665e80bad671fb8f480fdab7b562e88c477692d6a875b4c7da"
+        },
+        {
+            "date": 1750403436132,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-06-20.log",
+            "hash": "98d141fbd34a1ef409f448bbf15fa0cd165e1a93ffa04728a6d2baf111fe2001"
         }
     ],
     "hashType": "sha256"

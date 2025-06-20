@@ -27,7 +27,7 @@ export default function CartPage(props) {
       {cartItems.length != 0 && (
         <div className="text-center my-3">
           <button className="btn btn-dark" onClick={handleBackToShoppingClick}>
-            <i class="bi bi-arrow-left-square"></i>
+            <i className="bi bi-arrow-left-square"></i>
           </button>{" "}
         </div>
       )}

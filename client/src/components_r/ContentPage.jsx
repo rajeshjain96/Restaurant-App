@@ -39,6 +39,7 @@ export default function ContentPage(props) {
         <AdminCategories
           selectedEntity={selectedEntity}
           flagToggleButton={flagToggleButton}
+          user={user}
         />
       )}
       {selectedEntity.name == "Quotations" && (

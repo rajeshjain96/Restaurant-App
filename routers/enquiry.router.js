@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { ObjectId } = require("mongodb");
 const EnquiryService = require("../services/enquiry.service");
 const multer = require("multer");
+const { normalizeNewlines } = require("../services/utilities/lib");
 // const upload = multer({ dest: "uploads/" });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -32,10 +34,19 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
+    // normalize text
+    const keys = Object.keys(obj);
+    for (let key of keys) {
+      if (typeof obj[key] == "string") {
+        obj[key] = normalizeNewlines(obj[key]);
+      }
+    }
     obj.addDate = new Date();
     obj.updateDate = new Date();
     ////////// enquiries has got remakrs as sub-collection
-    obj.remarks[0].addDate = new Date();
+    obj.remarks = [{ remark: "Added", user: obj.user, addDate: new Date() }];
+    ////////// enquiries has got fileInfo as sub-collection
+    obj.fileInfo = [];
     ///////////////////
     obj = await EnquiryService.addEnquiry(obj);
     res.status(201).json(obj);
@@ -63,8 +74,10 @@ router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
     obj.updateDate = new Date();
-    obj = await EnquiryService.updateEnquiry(obj);
-    res.status(200).json(obj);
+    let result = await EnquiryService.updateEnquiry(obj);
+    if (result.modifiedCount == 1) {
+      res.status(200).json(obj);
+    }
   } catch (error) {
     next(error); // Send error to middleware
   }
@@ -106,4 +119,32 @@ router.post("/:id/remarks", async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
+/////////////sub-collection routes///////////////
+router.post("/:id/fileInfo", upload.any(), async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    let obj = req.body;
+    obj._id = new ObjectId();
+    obj.addDate = new Date();
+    let result = await EnquiryService.addFileInfo(obj, id);
+    if (result.modifiedCount === 1) {
+      res.status(201).json(obj);
+    }
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+router.delete("/:id/fileInfo/:fileInfoId", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const fileInfoId = req.params.fileInfoId;
+    let result = await EnquiryService.deleteFileInfo(id, fileInfoId);
+    if (result.modifiedCount === 1) {
+      res.status(201).json(result.modifiedCount);
+    }
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
+});
+
 module.exports = router;

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function AEnquiry(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
+  let [flagLoad, setFlagLoad] = useState(false);
   let { enquiry } = props;
   let { user } = props;
   let { showInList } = props;
@@ -21,11 +22,8 @@ export default function AEnquiry(props) {
   function handleModalCloseClick() {
     setFlagDeleteButtonPressed(false);
   }
-  function handleModalButtonClick(event) {
-    let ans = event.target.innerHTML;
-
+  function handleModalButtonClick(ans) {
     setFlagDeleteButtonPressed(false);
-
     props.onDeleteButtonClick(ans, enquiry);
   }
   function getNameFromId(id, index) {
@@ -37,7 +35,8 @@ export default function AEnquiry(props) {
   function handleToggleText(index) {
     props.onToggleText(index);
   }
-  function handleWhatsappClick() {
+  function handleWhatsappClick(event) {
+    event.preventDefault();
     let message = "";
     let url =
       `https://api.whatsapp.com/send?phone=${enquiry.mobileNumber}&text=` +
@@ -104,31 +103,54 @@ export default function AEnquiry(props) {
               <i className="bi bi-trash3-fill"></i>
             </span>
           </div>
-          <div className="">
-            <span onClick={handleWhatsappClick}>
-              <i
-                className="bi bi-whatsapp"
-                style={{ fontSize: "2rem", color: "#25D366" }}
-              ></i>
-            </span>
+        </div>
+        <div className="col-12 ">
+          <div className="row mt-2 justify-content-between">
+            <div className="col-4">
+              <div>
+                <span className="text-italic text-small">
+                  {enquiry.remarks[enquiry.remarks.length - 1].user}
+                </span>
+                <Link
+                  to={`/enquiryRemarks?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
+                  target="_blank"
+                >
+                  :{" "}
+                  {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(
+                    0,
+                    50
+                  )}
+                </Link>
+              </div>
+              <div className="col-12 text-secondary text-italic text-small">
+                Last updated:{" "}
+                {new Date(enquiry.updateDate).toLocaleString("en-IN", {
+                  timeZone: "Asia/Kolkata",
+                })}{" "}
+              </div>
+            </div>
+            <div className="col-2">
+              <span onClick={handleWhatsappClick}>
+                <a href="">
+                  <i
+                    className="bi bi-whatsapp"
+                    style={{ fontSize: "2rem", color: "#25D366" }}
+                  ></i>
+                </a>
+              </span>
+            </div>
+            <div className="col-2">
+              <Link
+                to={`/enquiryFiles?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
+                target="_blank"
+              >
+                <i
+                  className="bi bi-file-earmark-plus"
+                  style={{ fontSize: "2rem", color: "#25D366" }}
+                ></i>
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="col-12 text-primary">
-          <Link
-            to={`/enquiryRemarks?id=${enquiry._id}&product=${enquiry.product}&user=${user.name}`}
-            target="_blank"
-          >
-            Remark:{" "}
-            {enquiry.remarks[enquiry.remarks.length - 1].remark.slice(0, 40) +
-              "-" +
-              enquiry.remarks[enquiry.remarks.length - 1].user}
-          </Link>
-        </div>
-        <div className="col-12 text-center text-secondary text-italic text-small">
-          Last updated:{" "}
-          {new Date(enquiry.updateDate).toLocaleString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          })}
         </div>
       </div>
       {flagDeleteButtonPressed && (

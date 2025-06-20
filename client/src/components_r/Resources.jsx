@@ -3,51 +3,48 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import InfoHeader from "./infoHeader";
-import AEnquiryRemark from "./AEnquiryRemark";
-import Modal from "./Modal";
-
-export default function EnquiryRemarks() {
+export default function Resources() {
   const [params] = useSearchParams();
   const id = params.get("id");
-  const productId = params.get("productId");
+  const product = params.get("product");
   const user = params.get("user");
   let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [enquiry, setEnquiry] = useState([]);
   let [remark, setRemark] = useState("");
-  let [remarks, setRemarks] = useState([]);
-  let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);
-
-  let [selectedIndex, setSelectedIndex] = useState(-1);
-
   useEffect(() => {
     getData();
   }, []);
   async function getData() {
     setFlagLoad(true);
     try {
-      let response1 = await axios(
+      let response = await axios(
         import.meta.env.VITE_API_URL + "/enquiries/" + id
       );
-      let response2 = await axios(
-        import.meta.env.VITE_API_URL + "/products/" + productId
-      );
-      let enq = response1.data;
-      let pr = response2.data;
+      let enq = await response.data;
       if (enq == "Unauthorized") {
-        showMessage("Session over. Login again");
+        setMessage("Session over. Login again");
       } else {
-        // assign product to enquiry
-        enq.product = pr.name;
         setEnquiry(enq);
-        setRemarks(enq.remarks);
         document.title = enq.name;
       }
     } catch (error) {
-      console.log(error);
-      showMessage("Something went wrong, refresh the page");
+      setMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
+  }
+  function formatToIST(dateString) {
+    const options = {
+      timeZone: "Asia/Kolkata", // IST
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // use 24-hour format
+    };
+    const formatted = new Date(dateString).toLocaleString("en-GB", options);
+    return formatted.replace(",", "").replace(/\//g, "-");
   }
   function handleWhatsappClick() {
     let message = "";
@@ -70,8 +67,7 @@ export default function EnquiryRemarks() {
       setEnquiry({ ...enquiry, remarks: re });
       setRemark("");
     } catch (error) {
-      console.log(error);
-      showMessage("Something went wrong, refresh the page");
+      setMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
@@ -85,55 +81,18 @@ export default function EnquiryRemarks() {
       </div>
     );
   }
-  function showMessage(message) {
-    setMessage(message);
-    window.setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
-  function handleDeleteButtonClick(index) {
-    if (remarks.length == 1) {
-      showMessage("At least one remark is required.");
-      return;
-    }
-    setFlagDeleteButtonPressed(true);
-    setSelectedIndex(index);
-  }
-  function handleModalCloseClick() {
-    setFlagDeleteButtonPressed(false);
-  }
-  function handleModalButtonClick(ans) {
-    setFlagDeleteButtonPressed(false);
-    if (ans == "No") {
-      // delete operation cancelled
-      showMessage("Delete operation cancelled");
-    } else if (ans == "Yes") {
-      // delete operation allowed
-      performDeleteOperation();
-    }
-  }
-  async function performDeleteOperation() {
-    try {
-      let response = await axios.delete(
-        import.meta.env.VITE_API_URL +
-          "/enquiries/" +
-          id +
-          "/remarks/" +
-          remarks[selectedIndex]._id
-      );
-      let rs = remarks.filter((e) => e._id != remarks[selectedIndex]._id);
-      setRemarks(rs);
-      showMessage("Delete operation successful");
-    } catch (error) {
-      console.log(error);
-      showMessage("Something went wrong.");
-    }
+  if (message) {
+    return (
+      <div className="my-5 text-center text-danger">
+        Session over. Please login again.
+      </div>
+    );
   }
   return (
     <>
       <InfoHeader
+        product={product}
         enquiry={enquiry}
-        message={message}
         onWhatsappClick={handleWhatsappClick}
       />
       <div className="container enquiry-remarks">
@@ -160,30 +119,23 @@ export default function EnquiryRemarks() {
         </form>
         <div className="container">
           {enquiry.remarks && (
-            <>
+            <div className="row ">
               {enquiry.remarks
                 .slice()
                 .reverse()
                 .map((e, index) => (
-                  <AEnquiryRemark
-                    key={index}
-                    enquiryRemark={e}
-                    shownIndex={enquiry.fileInfo.length - 1 - index}
-                    onDeleteButtonClick={handleDeleteButtonClick}
-                  />
+                  <div key={index}>
+                    <div className="text-bigger lh-1">{e.remark}</div>
+                    <div className="text-small text-italic mb-1">
+                      {e.user} ({formatToIST(e.addDate)})
+                    </div>
+                    <div></div>
+                  </div>
                 ))}
-            </>
+            </div>
           )}
         </div>
       </div>
-      {flagDeleteButtonPressed && (
-        <Modal
-          modalText={"Do you really want to delete the selected record."}
-          btnGroup={["Yes", "No"]}
-          onModalCloseClick={handleModalCloseClick}
-          onModalButtonClick={handleModalButtonClick}
-        />
-      )}
     </>
   );
 }

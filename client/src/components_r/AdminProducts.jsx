@@ -118,6 +118,11 @@ export default function AdminProducts(props) {
       let pList = await response.data;
       response = await axios(import.meta.env.VITE_API_URL + "/categories");
       let cList = await response.data;
+      // Arrange products is sorted order as per updateDate
+      pList = pList.sort(
+        (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+      );
+
       // In the productList, add a parameter - category
       pList.forEach((product) => {
         // get category (string) from categoryId
@@ -156,14 +161,24 @@ export default function AdminProducts(props) {
           productForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        product._id = await response.data.insertedId;
+        let addedProduct = await response.data; //returned  with id
+        // This addedProduct has id, addDate, updateDate, but the relational data is lost
+        // The original product has got relational data.
+        for (let key in product) {
+          productSchema.forEach((e, index) => {
+            if (key == e.attribute && e.relationalData) {
+              addedProduct[key]=product[key] ;
+            }
+          });
+        }
+
         message = "Product added successfully";
         // update the product list now.
         let prList = [...productList];
-        prList.push(product);
+        prList.push(addedProduct);
         setProductList(prList);
         let fprList = [...filteredProductList];
-        fprList.push(product);
+        fprList.push(addedProduct);
         setFilteredProductList(fprList);
         showMessage(message);
         setAction("list");
@@ -178,10 +193,10 @@ export default function AdminProducts(props) {
       try {
         let response = await axios.put(
           import.meta.env.VITE_API_URL + "/products",
-          product,
+          productForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        let r = await response.data;
+        product = await response.data;
         message = "Product Updated successfully";
         // update the product list now.
         let prList = productList.map((e, index) => {
@@ -221,8 +236,18 @@ export default function AdminProducts(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, product) {
-    // await deleteBackendProduct(product.id);
+  function handleDeleteButtonClick(ans, product) {
+    if (ans == "No") {
+      // delete operation cancelled
+      showMessage("Delete operation cancelled");
+      return;
+    }
+    if (ans == "Yes") {
+      // delete operation allowed
+      performDeleteOperation(product);
+    }
+  }
+  async function performDeleteOperation(product) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
@@ -470,7 +495,7 @@ export default function AdminProducts(props) {
       } //if
     } catch (error) {
       console.log(error);
-      
+
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);

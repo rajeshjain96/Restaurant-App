@@ -11,13 +11,18 @@ async function getAllProducts() {
   return list;
 }
 async function getProductById(id) {
-  let obj = await Product.findById(id);
-  return obj;
+  const db = app.locals.db;
+  const collection = db.collection("products");
+  const productObj = await collection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+  console.log(productObj);
+
+  return productObj;
 }
 async function addProduct(obj) {
   const db = app.locals.db;
   const collection = db.collection("products");
-  // normalize text
   // normalize text
   const keys = Object.keys(obj);
   for (let key of keys) {
@@ -25,13 +30,13 @@ async function addProduct(obj) {
       obj[key] = normalizeNewlines(obj[key]);
     }
   }
-  obj = await collection.insertOne(obj);
+  let result = await collection.insertOne(obj);
+  obj._id = result.insertedId;
   return obj;
 }
 async function addManyProducts(products) {
   const db = app.locals.db;
   const collection = db.collection("products");
-
   const result = await collection.insertMany(products);
   const insertedIds = Object.values(result.insertedIds);
   const insertedDocs = await collection
@@ -65,11 +70,11 @@ async function updateProduct(obj) {
   const collection = db.collection("products");
   let id = obj._id;
   delete obj._id;
-  obj = await collection.updateOne(
+  let result = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     { $set: obj }
   );
-  return obj;
+  return result;
 }
 async function deleteProduct(id) {
   const db = app.locals.db;
@@ -79,7 +84,9 @@ async function deleteProduct(id) {
   });
   return obj;
 }
-
+normalizeNewlines = (text) => {
+  return text.replace(/\r\n/g, "\n");
+};
 module.exports = ProductService = {
   getAllProducts,
   getProductById,

@@ -4,53 +4,62 @@ import AdminCategoryForm from "./AdminCategoryForm";
 import { BeatLoader } from "react-spinners";
 import ACategory from "./ACategory";
 import axios from "axios";
-
+import * as XLSX from "xlsx";
+import ModalImport from "./ModalImport";
+import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
+import recordsAddBulk from "./RecordsAddBulk";
+import recordsUpdateBulk from "./RecordsUpdateBulk";
 export default function AdminCategories(props) {
   let [categoryList, setCategoryList] = useState([]);
+  let [productList, setProductList] = useState([]);
   let [action, setAction] = useState("list");
   let [filteredCategoryList, setFilteredCategoryList] = useState([]);
   let [categoryToBeEdited, setCategoryToBeEdited] = useState("");
   let [flagLoad, setFlagLoad] = useState(false);
+  let [flagImport, setFlagImport] = useState(false);
   let [message, setMessage] = useState("");
   let [searchText, setSearchText] = useState("");
   let [sortedField, setSortedField] = useState("");
   let [direction, setDirection] = useState("");
+  let [sheetData, setSheetData] = useState(null);
+  let [selectedFile, setSelectedFile] = useState("");
+  let [recordsToBeAdded, setRecordsToBeAdded] = useState([]);
+  let [recordsToBeUpdated, setRecordsToBeUpdated] = useState([]);
+  let [cntUpdate, setCntUpdate] = useState(0);
+  let [cntAdd, setCntAdd] = useState(0);
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-
+  let { user } = props;
   let categorySchema = [
-    { attribute: "name" },
-    { attribute: "info" },
-    { attribute: "rating" },
-    { attribute: "imageName" },
+    { attribute: "name", type: "normal" },
+    { attribute: "description", type: "normal" },
   ];
   let categoryValidations = {
-    name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
-    info: { message: "", onlyDigits: false },
-    rating: {
-      message: "",
-      mxLen: 30,
-      mnLen: 2,
-      onlyDigits: false,
-    },
-    imageName: { message: "" },
+    name: { message: "", mxLen: 200, mnLen: 4, onlyDigits: false },
+    description: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getListFromCategorySchema());
+  let [showInList, setShowInList] = useState(getShowInListFromCategorySchema());
   let [emptyCategory, setEmptyCategory] = useState(getEmptyCategory());
-
-  function getListFromCategorySchema() {
+  function getShowInListFromCategorySchema() {
     let list = [];
     let cnt = 0;
     categorySchema.forEach((e, index) => {
       let obj = {};
-      if (!e.type) {
-        // do not show id of relational data.
+      if (e.type != "relationalId" && e.type != "array") {
+        // do not show id of relational data and "array" is sort of sub-collection
         obj["attribute"] = e.attribute;
         if (cnt < 5) {
           obj["show"] = true;
         } else {
           obj["show"] = false;
+        }
+        obj["type"] = e.type;
+        if (e.type == "singleFile") {
+          obj["allowedFileType"] = e.allowedFileType;
+        }
+        if (e.type == "text-area") {
+          obj["flagReadMore"] = false;
         }
         cnt++;
         list.push(obj);
@@ -76,20 +85,35 @@ export default function AdminCategories(props) {
     setFlagLoad(true);
     try {
       let response = await axios(import.meta.env.VITE_API_URL + "/categories");
-      let cList = await response.data;
-      setCategoryList(cList);
-      setFilteredCategoryList(cList);
+      let eList = await response.data;
+      response = await axios(import.meta.env.VITE_API_URL + "/products");
+      let pList = await response.data;
+      // In the categoryList, add a parameter - product
+      eList.forEach((category) => {
+        // get category (string) from categoryId
+        for (let i = 0; i < pList.length; i++) {
+          if (category.productId == pList[i]._id) {
+            category.product = pList[i].name;
+            break;
+          }
+        } //for
+      });
+      setCategoryList(eList);
+      setFilteredCategoryList(eList);
+      setProductList(pList);
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
   }
   async function handleFormSubmit(category) {
+    // always add user
+    category.user = user.name;
     let message;
     // now remove relational data
     let categoryForBackEnd = { ...category };
     for (let key in categoryForBackEnd) {
-      categoryList.forEach((e, index) => {
+      categorySchema.forEach((e, index) => {
         if (key == e.attribute && e.relationalData) {
           delete categoryForBackEnd[key];
         }
@@ -100,9 +124,10 @@ export default function AdminCategories(props) {
       try {
         let response = await axios.post(
           import.meta.env.VITE_API_URL + "/categories",
-          categoryForBackEnd
+          categoryForBackEnd,
+          { headers: { "Content-type": "multipart/form-data" } }
         );
-        category._id = await response.data.insertedId;
+        category = response.data; // received record with _id
         message = "Category added successfully";
         // update the category list now.
         let prList = [...categoryList];
@@ -117,13 +142,15 @@ export default function AdminCategories(props) {
         showMessage("Something went wrong, refresh the page");
       }
       setFlagLoad(false);
-    } else if (action == "update") {
+    } //...add
+    else if (action == "update") {
       category._id = categoryToBeEdited._id; // The form does not have id field
       setFlagLoad(true);
       try {
         let response = await axios.put(
           import.meta.env.VITE_API_URL + "/categories",
-          categoryForBackEnd
+          category,
+          { headers: { "Content-type": "multipart/form-data" } }
         );
         let r = await response.data;
         message = "Category Updated successfully";
@@ -141,10 +168,12 @@ export default function AdminCategories(props) {
         showMessage(message);
         setAction("list");
       } catch (error) {
+        console.log(error);
+
         showMessage("Something went wrong, refresh the page");
       }
-      setFlagLoad(false);
-    }
+    } //else ...(update)
+    setFlagLoad(false);
   }
   function handleFormCloseClick() {
     props.onFormCloseClick();
@@ -165,8 +194,19 @@ export default function AdminCategories(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, category) {
-    setFlagLoad(true);
+  function handleDeleteButtonClick(ans, category) {
+    // await deleteBackendCategory(category.id);
+    if (ans == "No") {
+      // delete operation cancelled
+      showMessage("Delete operation cancelled");
+      return;
+    }
+    if (ans == "Yes") {
+      // delete operation allowed
+      performDeleteOperation(category);
+    }
+  }
+  async function performDeleteOperation(category) {
     try {
       let response = await axios.delete(
         import.meta.env.VITE_API_URL + "/categories/" + category._id
@@ -176,6 +216,7 @@ export default function AdminCategories(props) {
       //update the category list now.
       let prList = categoryList.filter((e, index) => e._id != category._id);
       setCategoryList(prList);
+
       let fprList = categoryList.filter((e, index) => e._id != category._id);
       setFilteredCategoryList(fprList);
       showMessage(message);
@@ -196,8 +237,8 @@ export default function AdminCategories(props) {
       showMessage("Minimum 1 field should be selected.");
       return;
     }
-    if (cnt == 4 && checked) {
-      showMessage("Maximum 4 fields can be selected.");
+    if (cnt == 5 && checked) {
+      showMessage("Maximum 5 fields can be selected.");
       return;
     }
     let att = [...showInList];
@@ -227,7 +268,6 @@ export default function AdminCategories(props) {
     setDirection(d);
     if (d == false) {
       //in ascending order
-
       list.sort((a, b) => {
         if (a[field] > b[field]) {
           return 1;
@@ -253,15 +293,46 @@ export default function AdminCategories(props) {
     setSortedField(field);
   }
   function handleSrNoClick() {
-    props.onSrNoClick();
+    // let field = selectedEntity.attributes[index].id;
+    let d = false;
+    if (sortedField === "updateDate") {
+      d = !direction;
+    } else {
+      d = false;
+    }
+
+    let list = [...filteredCategoryList];
+    setDirection(!direction);
+    if (d == false) {
+      //in ascending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    } else {
+      //in descending order
+      list.sort((a, b) => {
+        if (new Date(a["updateDate"]) < new Date(b["updateDate"])) {
+          return 1;
+        }
+        if (new Date(a["updateDate"]) > new Date(b["updateDate"])) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+    // setSelectedList(list);
+    setFilteredCategoryList(list);
+    setSortedField("updateDate");
   }
   function handleFormTextChangeValidations(message, index) {
     props.onFormTextChangeValidations(message, index);
   }
-  function handleFileUploadChange(file, index) {
-    props.onFileUploadChange(file, index);
-  }
-
   function handleSearchKeyUp(event) {
     let searchText = event.target.value;
     setSearchText(searchText);
@@ -274,14 +345,11 @@ export default function AdminCategories(props) {
       return;
     }
     let searchedCategories = [];
-    // searchedCategories = filterByName(query);
     searchedCategories = filterByShowInListAttributes(query);
     setFilteredCategoryList(searchedCategories);
   }
   function filterByName(query) {
     let fList = [];
-    // console.log(selectedEntity.attributes[0].showInList);
-
     for (let i = 0; i < selectedList.length; i++) {
       if (selectedList[i].name.toLowerCase().includes(query.toLowerCase())) {
         fList.push(selectedList[i]);
@@ -309,12 +377,117 @@ export default function AdminCategories(props) {
     } //outer for
     return fList;
   }
-  function handleChangeImageClick(index) {
-    props.onChangeImageClick(index);
+  function handleToggleText(index) {
+    let sil = [...showInList];
+    sil[index].flagReadMore = !sil[index].flagReadMore;
+    setShowInList(sil);
   }
-  function handleChangeImageCancelClick(index) {
-    props.onChangeImageCancelClick(index);
+  function handleExcelFileUploadClick(file, msg) {
+    if (msg) {
+      showMessage(message);
+      return;
+    }
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target.result;
+      // Read the workbook from the array buffer
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      // Assume reading the first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      // Convert to JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      // const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      setSheetData(jsonData);
+      let result = analyseImportExcelSheet(jsonData, categoryList);
+      if (result.message) {
+        showMessage(result.message);
+      } else {
+        showImportAnalysis(result);
+      }
+      // analyseSheetData(jsonData, productList);
+    };
+    // reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   }
+  function showImportAnalysis(result) {
+    setCntAdd(result.cntA);
+    setCntUpdate(result.cntU);
+    setRecordsToBeAdded(result.recordsToBeAdded);
+    setRecordsToBeUpdated(result.recordsToBeUpdated);
+    //open modal
+    setFlagImport(true);
+  }
+  function handleModalCloseClick() {
+    setFlagImport(false);
+  }
+  async function handleImportButtonClick() {
+    setFlagImport(false); // close the modal
+    setFlagLoad(true);
+    let result;
+    try {
+      if (recordsToBeAdded.length > 0) {
+        result = await recordsAddBulk(
+          recordsToBeAdded,
+          "categories",
+          categoryList
+        );
+        if (result.success) {
+          setCategoryList(result.updatedList);
+          setFilteredCategoryList(result.updatedList);
+        }
+        showMessage(result.message);
+      }
+      if (recordsToBeUpdated.length > 0) {
+        result = await recordsUpdateBulk(
+          recordsToBeUpdated,
+          "categories",
+          categoryList
+        );
+        if (result.success) {
+          setCategoryList(result.updatedList);
+          setFilteredCategoryList(result.updatedList);
+        }
+        showMessage(result.message);
+      } //if
+    } catch (error) {
+      console.log(error);
+
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
+  }
+  function handleClearSelectedFile() {
+    setSelectedFile(null);
+  }
+  async function handleRefreshRecord(id) {
+    // get this particular record from backend
+    setFlagLoad(true);
+    try {
+      let response = await axios(import.meta.env.VITE_API_URL + "/categories");
+      let eList = await response.data;
+      response = await axios(import.meta.env.VITE_API_URL + "/products");
+      let pList = await response.data;
+      // In the categoryList, add a parameter - product
+      eList.forEach((category) => {
+        // get category (string) from categoryId
+        for (let i = 0; i < pList.length; i++) {
+          if (category.productId == pList[i]._id) {
+            category.product = pList[i].name;
+            break;
+          }
+        } //for
+      });
+      setCategoryList(eList);
+      setFilteredCategoryList(eList);
+      setProductList(pList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
+  }
+
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -328,9 +501,14 @@ export default function AdminCategories(props) {
         action={action}
         message={message}
         selectedEntity={selectedEntity}
+        flagToggleButton={flagToggleButton}
+        filteredList={filteredCategoryList}
+        showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
+        onExcelFileUploadClick={handleExcelFileUploadClick}
+        onClearSelectedFile={handleClearSelectedFile}
       />
       {filteredCategoryList.length == 0 && categoryList.length != 0 && (
         <div className="text-center">Nothing to show</div>
@@ -344,6 +522,7 @@ export default function AdminCategories(props) {
             categorySchema={categorySchema}
             categoryValidations={categoryValidations}
             emptyCategory={emptyCategory}
+            productList={productList}
             selectedEntity={selectedEntity}
             categoryToBeEdited={categoryToBeEdited}
             action={action}
@@ -355,7 +534,7 @@ export default function AdminCategories(props) {
         </div>
       )}
       {action == "list" && filteredCategoryList.length != 0 && (
-        <div className="row  my-2 mx-auto  p-1">
+        <div className="row  my-2 mx-auto p-1">
           {showInList.map((e, index) => (
             <div className="col-2" key={index}>
               <input
@@ -381,7 +560,7 @@ export default function AdminCategories(props) {
                 handleSrNoClick();
               }}
             >
-              S N.{" "}
+              SN.{" "}
               {sortedField == "updateDate" && direction && (
                 <i className="bi bi-arrow-up"></i>
               )}
@@ -426,6 +605,7 @@ export default function AdminCategories(props) {
             category={e}
             key={index + 1}
             index={index}
+            user={user}
             sortedField={sortedField}
             direction={direction}
             listSize={filteredCategoryList.length}
@@ -433,8 +613,21 @@ export default function AdminCategories(props) {
             showInList={showInList}
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
+            onToggleText={handleToggleText}
+            onRefreshRecord={handleRefreshRecord}
           />
         ))}
+      {flagImport && (
+        <ModalImport
+          modalText={"Summary of Bulk Import"}
+          additions={recordsToBeAdded}
+          updations={recordsToBeUpdated}
+          btnGroup={["Yes", "No"]}
+          onModalCloseClick={handleModalCloseClick}
+          onModalButtonCancelClick={handleModalCloseClick}
+          onImportButtonClick={handleImportButtonClick}
+        />
+      )}
     </>
   );
 }

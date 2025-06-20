@@ -84,7 +84,8 @@ body {
 .text-italic {
   font-style: italic;
 }
-.enquiry-remarks {
+.enquiry-remarks,
+.container-enquiry-files {
   margin-top: 100px;
 }
 .container-sidebar {

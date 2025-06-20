@@ -1,30 +1,18 @@
 import { useRef, useState } from "react";
 
-export default function SingleFileUpload(props) {
+export default function SingleFileUploadSpecial(props) {
   let { action } = props;
-  let { name } = props;
   let { fileName } = props;
-  let { singleFileList } = props;
+  let { allowedFileType } = props;
+  let { allowedSize } = props;
   let [previewImage, setPreviewImage] = useState(false);
-  // following is for update mode
   let [previewExistingImage, setPreviewExistingImage] = useState(true);
-  // let [message, setMessage] = useState("");
   let [file, setFile] = useState("");
   let [flagImageUploaded, setFlagImageUploaded] = useState("");
   let [flagImageChange, setFlagImageChange] = useState("");
   let [image, setImage] = useState("");
-  let [fileIndex, setFileIndex] = useState(getFileIndex());
   const buttonARef = useRef(null);
   const buttonBRef = useRef(null);
-
-  function getFileIndex() {
-    for (let index = 0; index < singleFileList.length; index++) {
-      let e = singleFileList[index];
-      if (e["fileAttributeName"] == name) {
-        return index;
-      } //if
-    } //for
-  }
   function handleChangeImageClick() {
     setFlagImageChange(true);
     if (buttonBRef.current) {
@@ -33,38 +21,41 @@ export default function SingleFileUpload(props) {
   }
   function fileChangedHandler(event) {
     let file = event.target.files[0];
-    let previewImage;
+    let previewImage=null;
     let message = "";
     if (!file) {
-      // setMessage("");
       setPreviewImage("");
       return;
     }
     // image/jpeg, image/png, application/pdf, video/mp4,
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-    if (file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1) {
-      message =
-        "The file-type should be " + singleFileList[fileIndex].allowedFileType;
-      if (singleFileList[fileIndex].allowedFileType == "image")
-        previewImage = URL.createObjectURL(file);
-    } else if (
-      file.size >
-      singleFileList[fileIndex].allowedSize * 1024 * 1024
-    ) {
-      message =
-        "The file-size should be maximum " +
-        singleFileList[fileIndex].allowedSize +
-        " MB";
-      if (singleFileList[fileIndex].allowedFileType == "image")
-        previewImage = URL.createObjectURL(file);
-    } else {
-      if (singleFileList[fileIndex].allowedFileType == "image")
-        previewImage = URL.createObjectURL(file);
+    console.log(file.type);
+    if (allowedFileType == "all") {
+      console.log("dADA PAUS");
+
+      if (
+        file.type.indexOf("image") == -1 &&
+        file.type.indexOf("pdf") == -1 &&
+        file.type.indexOf("spreadsheet") == -1 &&
+        file.type.indexOf("text") == -1
+      ) {
+        console.log("dADA PAUS....");
+
+        message = "The " + file.type + " file-type is not allowed";
+      }
+    } else if (file.type.indexOf(allowedFileType) == -1) {
+      message = "The file-type should be " + allowedFileType;
+    } else if (file.size > allowedSize * 1024 * 1024) {
+      message = "The file-size should be maximum " + allowedSize + " MB";
     }
+    if (allowedFileType == "image") previewImage = URL.createObjectURL(file);
+    // else {
+    //   if (allowedFileType == "image") previewImage = URL.createObjectURL(file);
+    // }
     setFile(file);
     setPreviewImage(previewImage);
     setPreviewExistingImage(false);
-    props.onFileChange(file, fileIndex, message);
+    props.onFileChange(file, message);
   }
   function fileChangedHandlerUpdateMode(event) {
     let file = event.target.files[0];
@@ -76,21 +67,14 @@ export default function SingleFileUpload(props) {
     }
     // image/jpeg, image/png, application/pdf, video/mp4,
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-    if (file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1) {
-      message =
-        "The file-type should be " + singleFileList[fileIndex].allowedFileType;
+    if (file.type.indexOf("image") == -1) {
+      message = "The file-type should be image";
       let previewImage = URL.createObjectURL(file);
       setFile(file);
       setPreviewImage(previewImage);
       setPreviewExistingImage(false);
-    } else if (
-      file.size >
-      singleFileList[fileIndex].allowedSize * 1024 * 1024
-    ) {
-      message =
-        "The file-size should be maximum " +
-        singleFileList[fileIndex].allowedSize +
-        " MB";
+    } else if (file.size > allowedSize * 1024 * 1024) {
+      message = "The file-size should be maximum " + allowedSize + " MB";
       let previewImage = URL.createObjectURL(file);
       setFile(file);
       setPreviewImage(previewImage);

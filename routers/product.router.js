@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ProductService = require("../services/product.service");
 const multer = require("multer");
+const { normalizeNewlines } = require("../services/utilities/lib");
 // const upload = multer({ dest: "uploads/" });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -23,7 +24,8 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     let id = req.params.id;
-    res.send(ProductService.getProductById(id));
+    let obj = await ProductService.getProductById(id);
+    res.send(obj);
   } catch (error) {
     next(error); // Send error to middleware
   }
@@ -66,8 +68,10 @@ router.put("/", upload.any(), async (req, res, next) => {
   try {
     let obj = req.body;
     obj.updateDate = new Date();
-    obj = await ProductService.updateProduct(obj);
-    res.status(200).json(obj);
+    let result = await ProductService.updateProduct(obj);
+    if (result.modifiedCount == 1) {
+      res.status(200).json(obj);
+    }
   } catch (error) {
     next(error); // Send error to middleware
   }
@@ -97,8 +101,5 @@ router.delete("/:id", async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
-normalizeNewlines = (text) => {
-  return text.replace(/\r\n/g, "\n");
-};
 
 module.exports = router;

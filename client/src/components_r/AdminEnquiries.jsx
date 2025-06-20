@@ -9,7 +9,6 @@ import ModalImport from "./ModalImport";
 import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
 import recordsAddBulk from "./RecordsAddBulk";
 import recordsUpdateBulk from "./RecordsUpdateBulk";
-
 export default function AdminEnquiries(props) {
   let [enquiryList, setEnquiryList] = useState([]);
   let [productList, setProductList] = useState([]);
@@ -46,13 +45,13 @@ export default function AdminEnquiries(props) {
     { attribute: "mobileNumber", type: "normal" },
     { attribute: "city", type: "normal" },
     { attribute: "region", type: "normal" },
-    {
-      attribute: "remarks",
-      type: "array",
-      defaultValue: [{ remark: "Added", user: user.name }],
-    },
+    // The following subcollection is added at the backend
+    // {
+    //   attribute: "remarks",
+    //   type: "array",
+    //   defaultValue: [{ remark: "Added", user: user.name }],
+    // },
   ];
-
   let enquiryValidations = {
     name: { message: "", mxLen: 200, mnLen: 4, onlyDigits: false },
     product: { message: "" },
@@ -129,6 +128,8 @@ export default function AdminEnquiries(props) {
     setFlagLoad(false);
   }
   async function handleFormSubmit(enquiry) {
+    // always add user
+    enquiry.user = user.name;
     let message;
     // now remove relational data
     let enquiryForBackEnd = { ...enquiry };
@@ -141,22 +142,29 @@ export default function AdminEnquiries(props) {
     }
     if (action == "add") {
       setFlagLoad(true);
-      console.log(enquiryForBackEnd);
-
       try {
         let response = await axios.post(
           import.meta.env.VITE_API_URL + "/enquiries",
           enquiryForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        enquiry._id = await response.data.insertedId;
+        let addedEnquiry = await response.data; //returned  with id
+        // This addedEnquiry has id, addDate, updateDate, but the relational data is lost
+        // The original enquiry has got relational data.
+        for (let key in product) {
+          enquirySchema.forEach((e, index) => {
+            if (key == e.attribute && e.relationalData) {
+              addedEnquiry[key] = enquiry[key];
+            }
+          });
+        }
         message = "Enquiry added successfully";
         // update the enquiry list now.
         let prList = [...enquiryList];
-        prList.push(enquiry);
+        prList.push(addedEnquiry);
         setEnquiryList(prList);
         let fprList = [...filteredEnquiryList];
-        fprList.push(enquiry);
+        fprList.push(addedEnquiry);
         setFilteredEnquiryList(fprList);
         showMessage(message);
         setAction("list");
@@ -190,6 +198,8 @@ export default function AdminEnquiries(props) {
         showMessage(message);
         setAction("list");
       } catch (error) {
+        console.log(error);
+
         showMessage("Something went wrong, refresh the page");
       }
     } //else ...(update)
@@ -214,9 +224,19 @@ export default function AdminEnquiries(props) {
       setMessage("");
     }, 3000);
   }
-  async function handleDeleteButtonClick(ans, enquiry) {
+  function handleDeleteButtonClick(ans, enquiry) {
     // await deleteBackendEnquiry(enquiry.id);
-    setFlagLoad(true);
+    if (ans == "No") {
+      // delete operation cancelled
+      showMessage("Delete operation cancelled");
+      return;
+    }
+    if (ans == "Yes") {
+      // delete operation allowed
+      performDeleteOperation(enquiry);
+    }
+  }
+  async function performDeleteOperation(enquiry) {
     try {
       let response = await axios.delete(
         import.meta.env.VITE_API_URL + "/enquiries/" + enquiry._id
@@ -471,6 +491,33 @@ export default function AdminEnquiries(props) {
   function handleClearSelectedFile() {
     setSelectedFile(null);
   }
+  async function handleRefreshRecord(id) {
+    // get this particular record from backend
+    setFlagLoad(true);
+    try {
+      let response = await axios(import.meta.env.VITE_API_URL + "/enquiries");
+      let eList = await response.data;
+      response = await axios(import.meta.env.VITE_API_URL + "/products");
+      let pList = await response.data;
+      // In the enquiryList, add a parameter - product
+      eList.forEach((enquiry) => {
+        // get category (string) from categoryId
+        for (let i = 0; i < pList.length; i++) {
+          if (enquiry.productId == pList[i]._id) {
+            enquiry.product = pList[i].name;
+            break;
+          }
+        } //for
+      });
+      setEnquiryList(eList);
+      setFilteredEnquiryList(eList);
+      setProductList(pList);
+    } catch (error) {
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
+  }
+
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -597,6 +644,7 @@ export default function AdminEnquiries(props) {
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
             onToggleText={handleToggleText}
+            onRefreshRecord={handleRefreshRecord}
           />
         ))}
       {flagImport && (

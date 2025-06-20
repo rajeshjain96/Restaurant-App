@@ -7,7 +7,24 @@ export default function AdminCategoryForm(props) {
   let [flagFormInvalid, setFlagFormInvalid] = useState(false);
   let { action } = props;
   let { selectedEntity } = props;
-
+  let { productList } = props;
+  let { categorySchema } = props;
+  let [singleFileList, setSingleFileList] = useState(
+    getSingleFileListFromCategorySchema()
+  );
+  function getSingleFileListFromCategorySchema() {
+    let list = [];
+    categorySchema.forEach((e, index) => {
+      let obj = {};
+      if (e.type == "singleFile") {
+        obj["fileAttributeName"] = e.attribute;
+        obj["allowedFileType"] = e.allowedFileType;
+        obj["allowedSize"] = e.allowedSize;
+        list.push(obj);
+      }
+    });
+    return list;
+  }
   useEffect(() => {
     window.scroll(0, 0);
     init();
@@ -15,8 +32,6 @@ export default function AdminCategoryForm(props) {
   function init() {
     let { action } = props;
     if (action === "add") {
-      // emptyCategory.category = props.categoryToRetain;
-      // emptyCategory.categoryId = props.categoryIdToRetain;
       setCategory(props.emptyCategory);
     } else if (action === "update") {
       // in edit mode, keep the update button enabled at the beginning
@@ -27,15 +42,6 @@ export default function AdminCategoryForm(props) {
   function handleTextFieldChange(event) {
     let name = event.target.name;
     setCategory({ ...category, [name]: event.target.value });
-    let message = fieldValidate(event, errorCategory);
-    let errCategory = { ...errorCategory };
-    errorCategory[`${name}`].message = message;
-    setErrorCategory(errCategory);
-  }
-  function handleChange(event) {
-    let name = event.target.name;
-    setCategory({ ...category, [name]: event.target.value });
-    // isValid(event);
     let message = fieldValidate(event, errorCategory);
     let errCategory = { ...errorCategory };
     errorCategory[`${name}`].message = message;
@@ -60,7 +66,7 @@ export default function AdminCategoryForm(props) {
     let errCategory = { ...errorCategory };
     let flag = false;
     for (let field in category) {
-      if (category[field] == "") {
+      if (errorCategory[field] && category[field] == "") {
         flag = true;
         errCategory[field].message = "Required...";
       } //if
@@ -73,25 +79,30 @@ export default function AdminCategoryForm(props) {
   }
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // for dropdown, data is to be modified
-    // first check whether all entries are valid or not
     if (checkAllErrors()) {
       setFlagFormInvalid(true);
       return;
     }
     setFlagFormInvalid(false);
-    props.onFormSubmit(category);
+    if (action == "update") {
+      // There might be files in this form, add those also
+      let pr = { ...category };
+      for (let i = 0; i < singleFileList.length; i++) {
+        let fAName = singleFileList[i].fileAttributeName;
+        if (pr[fAName + "New"]) {
+          // image is modified
+          // if field-name is image, temporarily in "imageNew" field, new file-name is saved.
+          pr[fAName] = pr[fAName + "New"];
+          delete pr[fAName + "New"];
+        }
+      } //for
+      setCategory(pr);
+      props.onFormSubmit(pr);
+    } else if (action == "add") {
+      props.onFormSubmit(category);
+    }
   };
-  function handleFormCloseClick() {
-    props.onFormCloseClick();
-  }
-  function handleChangeImageClick(index) {
-    props.onChangeImageClick(index);
-  }
-  function handleChangeImageCancelClick(index) {
-    props.onChangeImageCancelClick(index);
-  }
-  return (
+   return (
     <div className="p-2">
       <form className="text-thick p-4" onSubmit={handleFormSubmit}>
         {/* row starts */}
@@ -109,7 +120,7 @@ export default function AdminCategoryForm(props) {
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter category name"
+                placeholder="Enter the category"
               />
             </div>
             <div className="">
@@ -122,82 +133,30 @@ export default function AdminCategoryForm(props) {
           </div>
           <div className="col-6 my-2">
             <div className="text-bold my-1">
-              <label>Information</label>
+              <label>Description</label>
             </div>
             <div className="px-0">
               <input
                 type="text"
                 className="form-control"
-                name="info"
-                value={category.info}
+                name="description"
+                value={category.description}
                 onChange={handleTextFieldChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                placeholder="Enter details about this category "
+                placeholder="Enter Description"
               />
             </div>
             <div className="">
-              {errorCategory.info.message ? (
+              {errorCategory.description.message ? (
                 <span className="text-danger">
-                  {errorCategory.info.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Rating</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="rating"
-                value={category.rating}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter Rating"
-              />
-            </div>
-            <div className="">
-              {errorCategory.rating.message ? (
-                <span className="text-danger">
-                  {errorCategory.rating.message}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="col-6 my-2">
-            <div className="text-bold my-1">
-              <label>Image Name</label>
-            </div>
-            <div className="px-0">
-              <input
-                type="text"
-                className="form-control"
-                name="imageName"
-                value={category.imageName}
-                onChange={handleTextFieldChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder="Enter image name"
-              />
-            </div>
-            <div className="">
-              {errorCategory.imageName.message ? (
-                <span className="text-danger">
-                  {errorCategory.imageName.message}
+                  {errorCategory.description.message}
                 </span>
               ) : null}
             </div>
           </div>
           <div className="col-12">
-            <button
-              className="btn btn-primary"
-              type="submit"
-              // disabled={flagFormInvalid}
-            >
+            <button className="btn btn-primary" type="submit">
               {(action + " " + selectedEntity.singularName).toUpperCase()}
             </button>{" "}
             &nbsp;{" "}

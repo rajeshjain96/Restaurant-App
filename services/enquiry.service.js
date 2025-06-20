@@ -4,7 +4,7 @@ const { ObjectId } = require("mongodb");
 async function getAllEnquiries() {
   const db = app.locals.db;
 
-  const collection = db.collection("Enquiries");
+  const collection = db.collection("enquiries");
 
   let list = await collection.find().toArray();
 
@@ -16,15 +16,20 @@ async function getEnquiryById(id) {
   const enquiryObj = await collection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
-  // console.log("Found document is =>", userObj);
   return enquiryObj;
-  // let obj = await Enquiry.findById(id);
-  // return obj;
 }
 async function addEnquiry(obj) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
-  obj = await collection.insertOne(obj);
+  // normalize text
+  const keys = Object.keys(obj);
+  for (let key of keys) {
+    if (typeof obj[key] == "string") {
+      obj[key] = normalizeNewlines(obj[key]);
+    }
+  }
+  let result = await collection.insertOne(obj);
+  obj._id = result.insertedId;
   return obj;
 }
 async function addManyEnquiries(enquiries) {
@@ -37,29 +42,17 @@ async function addManyEnquiries(enquiries) {
     .toArray();
   return insertedDocs;
 }
-async function addRemark(obj, id) {
-  const db = app.locals.db;
-  const collection = db.collection("enquiries");
-  const response = await collection.updateOne(
-    { _id: ObjectId.createFromHexString(id) },
-    {
-      $push: {
-        remarks: obj,
-      },
-    }
-  );
-  return response;
-}
+
 async function updateEnquiry(obj) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
   let id = obj._id;
   delete obj._id;
-  obj = await collection.updateOne(
+  let result = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     { $set: obj }
   );
-  return obj;
+  return result;
 }
 async function updateManyEnquiries(enquiries) {
   const db = app.locals.db;
@@ -90,6 +83,43 @@ async function deleteEnquiry(id) {
   });
   return obj;
 }
+async function addRemark(obj, id) {
+  const db = app.locals.db;
+  const collection = db.collection("enquiries");
+  const response = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    {
+      $push: {
+        remarks: obj,
+      },
+    }
+  );
+  return response;
+}
+async function addFileInfo(obj, id) {
+  const db = app.locals.db;
+  const collection = db.collection("enquiries");
+  const response = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    {
+      $push: {
+        fileInfo: obj,
+      },
+    }
+  );
+  return response;
+}
+async function deleteFileInfo(id, fileInfoId) {
+  const db = app.locals.db;
+  const collection = db.collection("enquiries");
+  const response = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    {
+      $pull: { fileInfo: { _id: ObjectId.createFromHexString(fileInfoId) } },
+    }
+  );
+  return response;
+}
 module.exports = EnquiryService = {
   getAllEnquiries,
   getEnquiryById,
@@ -99,4 +129,6 @@ module.exports = EnquiryService = {
   updateManyEnquiries,
   deleteEnquiry,
   addRemark,
+  addFileInfo,
+  deleteFileInfo,
 };

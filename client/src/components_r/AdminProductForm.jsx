@@ -111,10 +111,20 @@ export default function AdminProductForm(props) {
   function handleFileChange(selectedFile, fileIndex, message) {
     setFlagFormInvalid(false);
     if (action == "add") {
+      // add datesuffix to file-name
+      const timestamp = Date.now();
+      const ext = selectedFile.name.split(".").pop();
+      const base = selectedFile.name.replace(/\.[^/.]+$/, "");
+      const newName = `${base}-${timestamp}.${ext}`;
+      // Create a new File object with the new name
+      const renamedFile = new File([selectedFile], newName, {
+        type: selectedFile.type,
+        lastModified: selectedFile.lastModified,
+      });
       setProduct({
         ...product,
-        ["file" + fileIndex]: selectedFile,
-        [singleFileList[fileIndex].fileAttributeName]: selectedFile.name,
+        ["file" + fileIndex]: renamedFile,
+        [singleFileList[fileIndex].fileAttributeName]: newName,
       });
       let errProduct = { ...errorProduct };
       errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
@@ -125,14 +135,13 @@ export default function AdminProductForm(props) {
   function handleFileRemove(selectedFile, fileIndex, message) {
     if (action == "add") {
       setFlagFormInvalid(false);
-      setQuotation({
-        ...quotation,
+      setProduct({
+        ...product,
         [singleFileList[fileIndex].fileAttributeName]: "",
       });
-      let errQuotation = { ...errorQuotation };
-      errQuotation[singleFileList[fileIndex].fileAttributeName].message =
-        message;
-      setErrorQuotation(errQuotation);
+      let errProduct = { ...errorProduct };
+      errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
+      setErrorProduct(errProduct);
     } else if (action == "update") {
       let newFileName = "";
       if (selectedFile) {
@@ -141,15 +150,14 @@ export default function AdminProductForm(props) {
         // user selected a new file but then deselected
         newFileName = "";
       }
-      setQuotation({
-        ...quotation,
+      setProduct({
+        ...product,
         ["file" + fileIndex]: selectedFile,
         [singleFileList[fileIndex].fileAttributeName + "New"]: newFileName,
       });
-      let errQuotation = { ...errorQuotation };
-      errQuotation[singleFileList[fileIndex].fileAttributeName].message =
-        message;
-      setErrorQuotation(errQuotation);
+      let errProduct = { ...errorProduct };
+      errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
+      setErrorProduct(errProduct);
     }
   }
   function handleFileChangeUpdateMode(selectedFile, fileIndex, message) {
@@ -171,24 +179,6 @@ export default function AdminProductForm(props) {
     errProduct[singleFileList[fileIndex].fileAttributeName].message = message;
     setErrorProduct(errProduct);
   }
-
-  // This one is old logic
-  // function handleFileChange(file, fileIndex) {
-  //   if (action == "add") {
-  //     setProduct({
-  //       ...product,
-  //       file: file,
-  //       [singleFileList[fileIndex].fileAttributeName]: file.name,
-  //     });
-  //   } else if (action == "update") {
-  //     // setProduct({ ...product, newFile: file, newImage: file.name });
-  //     // props.onFileChangeInUpdateMode(file, fileIndex);
-  //     let fl = [...singleFileList];
-  //     fl[fileIndex]["newFileName"] = file.name;
-  //     fl[fileIndex]["newFile"] = file;
-  //     setSingleFileList(fl);
-  //   }
-  // }
   function handleCancelChangeImageClick() {
     if (action == "update") {
       let fl = [...singleFileList];
@@ -318,8 +308,8 @@ export default function AdminProductForm(props) {
               <label>Product Image</label>
             </div>
             <SingleFileUpload
-              singleFileList={singleFileList}
               action={action}
+              singleFileList={singleFileList}
               name="productImage"
               fileName={product.productImage}
               onFileChange={handleFileChange}
