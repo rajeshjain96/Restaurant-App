@@ -157,6 +157,7 @@ router.post("/:id/resourceFiles", upload.any(), async (req, res, next) => {
     obj._id = new ObjectId();
     obj.addDate = new Date();
     obj.updateDate = new Date();
+    obj.urlEndPoint = `clientResources?name=AdminEnquiryFiles&id=${id}&subId=${obj._id}`;
     let result = await EnquiryService.addFileInfo(obj, id);
     if (result.modifiedCount === 1) {
       res.status(201).json(obj);

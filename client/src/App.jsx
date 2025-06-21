@@ -9,6 +9,7 @@ import SampleForm from "./components_r/sampleForm";
 import Resources from "./components_r/Resources";
 import AdminEnquiryFiles from "./components_r/AdminEnquiryFiles";
 import AdminEnquiryRemarks from "./components_r/AdminEnquiryRemarks";
+import ClientResources from "./components_r/ClientResources";
 function App() {
   axios.defaults.withCredentials = true; // ⬅️ Important!
 
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<RestaurantHomePage />} />
           <Route path="/sampleForm" element={<SampleForm />} />
+          <Route path="/ClientResources" element={<ClientResources />} />
           <Route
             path="/AdminEnquiryRemarks"
             element={<AdminEnquiryRemarks />}

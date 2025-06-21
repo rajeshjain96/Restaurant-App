@@ -489,7 +489,17 @@ export default function AdminEnquiryFiles(props) {
       message;
     window.open(url, "_blank");
   }
-
+  function handleLinkCopyClick(index) {
+    let list = [...enquiryFileList];
+    for (let i = 0; i < list.length; i++) {
+      if (index == i) {
+        list[i].flagClicked = true;
+      } else {
+        list[i].flagClicked = false;
+      }
+    }
+    setEnquiryFileList(list);
+  }
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -625,6 +635,7 @@ export default function AdminEnquiryFiles(props) {
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
               onToggleText={handleToggleText}
+              onLinkCopyClick={handleLinkCopyClick}
             />
           ))}
       </div>

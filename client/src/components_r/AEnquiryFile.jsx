@@ -43,6 +43,13 @@ export default function AEnquiryFile(props) {
       "_blank"
     );
   }
+  function handleLinkCopyClick(index) {
+    // let en={...enquiry};
+    navigator.clipboard.writeText(
+      window.location.host + "/" + enquiryFile.urlEndPoint
+    );
+    props.onLinkCopyClick(index);
+  }
   return (
     <>
       <div className="row my-2 mx-auto border border-1 border-secondary p-1">
@@ -52,10 +59,6 @@ export default function AEnquiryFile(props) {
             : listSize - index}
           .
         </div>
-
-        {/* <div key={index} className="col-2">
-          {enquiryFile.name}
-        </div> */}
         {showInList.map(
           (e, index) =>
             e.show && (
@@ -131,7 +134,33 @@ export default function AEnquiryFile(props) {
             )
           </span>
         </div>
+        <div className="my-1">
+          <a
+            // className={"text-small text-white p-1 bg-dark"}
+            className={
+              "text-small text-white p-1 " +
+              (enquiryFile.flagClicked ? "bg-danger" : "bg-dark")
+            }
+            href="#"
+            onClick={() => {
+              handleLinkCopyClick(index);
+            }}
+          >
+            {" "}
+            {enquiryFile.flagClicked ? "Copied" : "Copy Link:"}
+          </a>{" "}
+          <span>
+            <a
+              href={"/" + enquiryFile.urlEndPoint}
+              target="_blank"
+              title="Client Resources"
+            >
+              {"/" + enquiryFile.urlEndPoint}
+            </a>
+          </span>
+        </div>
       </div>
+
       {flagDeleteButtonPressed && (
         <Modal
           modalText={"Do you really want to delete this record"}
