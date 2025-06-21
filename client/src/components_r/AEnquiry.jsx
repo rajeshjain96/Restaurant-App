@@ -141,7 +141,7 @@ export default function AEnquiry(props) {
             </div>
             <div className="col-2">
               <Link
-                to={`/enquiryFiles?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
+                to={`/AdminEnquiryFiles?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
                 target="_blank"
               >
                 <i

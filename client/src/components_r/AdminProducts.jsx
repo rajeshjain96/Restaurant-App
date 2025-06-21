@@ -9,6 +9,7 @@ import ModalImport from "./ModalImport";
 import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
 import recordsAddBulk from "./RecordsAddBulk";
 import recordsUpdateBulk from "./RecordsUpdateBulk";
+import { getEmptyObject, getShowInList } from "../utilities";
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
   let [filteredProductList, setFilteredProductList] = useState([]);
@@ -50,7 +51,6 @@ export default function AdminProducts(props) {
     },
     { attribute: "info", type: "text-area" },
   ];
-
   let productValidations = {
     name: { message: "", mxLen: 200, mnLen: 4, onlyDigits: false },
     price: {
@@ -69,45 +69,8 @@ export default function AdminProducts(props) {
     productImage: { message: "" },
     category: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromProductSchema());
-  let [emptyProduct, setEmptyProduct] = useState(getEmptyProduct());
-  function getShowInListFromProductSchema() {
-    let list = [];
-    let cnt = 0;
-    productSchema.forEach((e, index) => {
-      let obj = {};
-      if (e.type != "relationalId" && e.type != "array") {
-        // do not show id of relational data and "array" is sort of sub-collection
-        obj["attribute"] = e.attribute;
-        if (cnt < 5) {
-          obj["show"] = true;
-        } else {
-          obj["show"] = false;
-        }
-        obj["type"] = e.type;
-        if (e.type == "singleFile") {
-          obj["allowedFileType"] = e.allowedFileType;
-        }
-        if (e.type == "text-area") {
-          obj["flagReadMore"] = false;
-        }
-        cnt++;
-        list.push(obj);
-      }
-    });
-    return list;
-  }
-  function getEmptyProduct() {
-    let eProduct = {};
-    productSchema.forEach((e, index) => {
-      if (e["defaultValue"]) {
-        eProduct[e["attribute"]] = e["defaultValue"];
-      } else {
-        eProduct[e["attribute"]] = "";
-      }
-    });
-    return eProduct;
-  }
+  let [showInList, setShowInList] = useState(getShowInList(productSchema));
+  let [emptyProduct, setEmptyProduct] = useState(getEmptyObject(productSchema));
   useEffect(() => {
     getData();
   }, []);
@@ -179,7 +142,7 @@ export default function AdminProducts(props) {
         prList = prList.sort(
           (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
         );
-        // setProductList(prList);
+        setProductList(prList);
         let fprList = [...filteredProductList];
         fprList.push(addedProduct);
         fprList = fprList.sort(
@@ -531,6 +494,7 @@ export default function AdminProducts(props) {
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
         filteredList={filteredProductList}
+        mainList={productList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}

@@ -114,19 +114,19 @@ async function addFileInfo(obj, id) {
     { _id: ObjectId.createFromHexString(id) },
     {
       $push: {
-        fileInfo: obj,
+        files: obj,
       },
     }
   );
   return response;
 }
-async function deleteFileInfo(id, fileInfoId) {
+async function deleteFileInfo(id, resourceFileId) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
   const response = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {
-      $pull: { fileInfo: { _id: ObjectId.createFromHexString(fileInfoId) } },
+      $pull: { files: { _id: ObjectId.createFromHexString(resourceFileId) } },
     }
   );
   return response;

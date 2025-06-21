@@ -9,6 +9,7 @@ import ModalImport from "./ModalImport";
 import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
 import recordsAddBulk from "./RecordsAddBulk";
 import recordsUpdateBulk from "./RecordsUpdateBulk";
+import { getEmptyObject, getShowInList } from "../utilities";
 export default function AdminEnquiries(props) {
   let [enquiryList, setEnquiryList] = useState([]);
   let [productList, setProductList] = useState([]);
@@ -60,45 +61,8 @@ export default function AdminEnquiries(props) {
     city: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
     region: { message: "", mxLen: 40, mnLen: 3, onlyDigits: false },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromEnquirySchema());
-  let [emptyEnquiry, setEmptyEnquiry] = useState(getEmptyEnquiry());
-  function getShowInListFromEnquirySchema() {
-    let list = [];
-    let cnt = 0;
-    enquirySchema.forEach((e, index) => {
-      let obj = {};
-      if (e.type != "relationalId" && e.type != "array") {
-        // do not show id of relational data and "array" is sort of sub-collection
-        obj["attribute"] = e.attribute;
-        if (cnt < 5) {
-          obj["show"] = true;
-        } else {
-          obj["show"] = false;
-        }
-        obj["type"] = e.type;
-        if (e.type == "singleFile") {
-          obj["allowedFileType"] = e.allowedFileType;
-        }
-        if (e.type == "text-area") {
-          obj["flagReadMore"] = false;
-        }
-        cnt++;
-        list.push(obj);
-      }
-    });
-    return list;
-  }
-  function getEmptyEnquiry() {
-    let eEnquiry = {};
-    enquirySchema.forEach((e, index) => {
-      if (e["defaultValue"]) {
-        eEnquiry[e["attribute"]] = e["defaultValue"];
-      } else {
-        eEnquiry[e["attribute"]] = "";
-      }
-    });
-    return eEnquiry;
-  }
+  let [showInList, setShowInList] = useState(getShowInList(enquirySchema));
+  let [emptyEnquiry, setEmptyEnquiry] = useState(getEmptyObject(enquirySchema));
   useEffect(() => {
     getData();
   }, []);
@@ -212,7 +176,6 @@ export default function AdminEnquiries(props) {
         setAction("list");
       } catch (error) {
         console.log(error);
-
         showMessage("Something went wrong, refresh the page");
       }
     } //else ...(update)
@@ -449,9 +412,7 @@ export default function AdminEnquiries(props) {
       } else {
         showImportAnalysis(result);
       }
-      // analyseSheetData(jsonData, productList);
     };
-    // reader.readAsBinaryString(file);
     reader.readAsArrayBuffer(file);
   }
   function showImportAnalysis(result) {
@@ -504,33 +465,6 @@ export default function AdminEnquiries(props) {
   function handleClearSelectedFile() {
     setSelectedFile(null);
   }
-  async function handleRefreshRecord(id) {
-    // get this particular record from backend
-    setFlagLoad(true);
-    try {
-      let response = await axios(import.meta.env.VITE_API_URL + "/enquiries");
-      let eList = await response.data;
-      response = await axios(import.meta.env.VITE_API_URL + "/products");
-      let pList = await response.data;
-      // In the enquiryList, add a parameter - product
-      eList.forEach((enquiry) => {
-        // get category (string) from categoryId
-        for (let i = 0; i < pList.length; i++) {
-          if (enquiry.productId == pList[i]._id) {
-            enquiry.product = pList[i].name;
-            break;
-          }
-        } //for
-      });
-      setEnquiryList(eList);
-      setFilteredEnquiryList(eList);
-      setProductList(pList);
-    } catch (error) {
-      showMessage("Something went wrong, refresh the page");
-    }
-    setFlagLoad(false);
-  }
-
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -546,6 +480,7 @@ export default function AdminEnquiries(props) {
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
         filteredList={filteredEnquiryList}
+        mainList={enquiryList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
@@ -657,7 +592,6 @@ export default function AdminEnquiries(props) {
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
             onToggleText={handleToggleText}
-            onRefreshRecord={handleRefreshRecord}
           />
         ))}
       {flagImport && (

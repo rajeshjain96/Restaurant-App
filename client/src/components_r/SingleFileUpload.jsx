@@ -40,9 +40,22 @@ export default function SingleFileUpload(props) {
       setPreviewImage("");
       return;
     }
+    console.log(singleFileList[fileIndex].allowedSize);
+
     // image/jpeg, image/png, application/pdf, video/mp4,
     //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-    if (file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1) {
+    if (singleFileList[fileIndex].allowedFileType == "all") {
+      if (
+        file.type.indexOf("image") == -1 &&
+        file.type.indexOf("pdf") == -1 &&
+        file.type.indexOf("spreadsheet") == -1 &&
+        file.type.indexOf("text") == -1
+      ) {
+        message = "The " + file.type + " file-type is not allowed";
+      }
+    } else if (
+      file.type.indexOf(singleFileList[fileIndex].allowedFileType) == -1
+    ) {
       message =
         "The file-type should be " + singleFileList[fileIndex].allowedFileType;
       if (singleFileList[fileIndex].allowedFileType == "image")

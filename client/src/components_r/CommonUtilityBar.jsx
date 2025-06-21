@@ -5,10 +5,10 @@ import ExportToPDF from "./ExportToPDF";
 export default function CommonUtilityBar(props) {
   let { action } = props;
   let { message } = props;
-  let { listLength } = props;
   let { selectedEntity } = props;
   let { flagToggleButton } = props;
   let { filteredList } = props;
+  let { mainList } = props;
   let { showInList } = props;
   let [flagExport, setFlagExport] = useState(false);
   let [flagFileUpload, setFlagFileUpload] = useState(false);
@@ -163,7 +163,7 @@ export default function CommonUtilityBar(props) {
               "row mx-auto justify-content-center text-start p-2 align-items-center my-1 border-top border-1 border-primary"
             }
           >
-            {listLength != 0 && (
+            {mainList.length != 0 && (
               <div className="col-6 text-center ">
                 <input
                   type="search"
@@ -176,7 +176,7 @@ export default function CommonUtilityBar(props) {
                 />
               </div>
             )}
-            {listLength != 0 && (
+            {mainList.length != 0 && (
               <div className="col-3 text-center ">
                 <select name="" id="">
                   <option value="10">10</option>
@@ -186,13 +186,15 @@ export default function CommonUtilityBar(props) {
                 </select>
               </div>
             )}
-            <div className="col-3 text-center">
-              <button className="btn btn-primary" onClick={handleExportClick}>
-                <span style={{ fontSize: "16px" }}>
-                  <i className="bi bi-file-earmark-arrow-down-fill"></i>
-                </span>
-              </button>
-            </div>
+            {mainList.length != 0 && (
+              <div className="col-3 text-center">
+                <button className="btn btn-primary" onClick={handleExportClick}>
+                  <span style={{ fontSize: "16px" }}>
+                    <i className="bi bi-file-earmark-arrow-down-fill"></i>
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         )}
         {message && (

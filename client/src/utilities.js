@@ -11,4 +11,46 @@ function formatToIST(dateString) {
   const formatted = new Date(dateString).toLocaleString("en-GB", options);
   return formatted.replace(",", "").replace(/\//g, "-");
 }
-export { formatToIST };
+function getShowInList(schema) {
+  let list = [];
+  let cnt = 0;
+  schema.forEach((e, index) => {
+    let obj = {};
+    if (e.type != "relationalId" && e.type != "array") {
+      // do not show id of relational data and "array" is sort of sub-collection
+      obj["attribute"] = e.attribute;
+      if (cnt < 5) {
+        obj["show"] = true;
+      } else {
+        obj["show"] = false;
+      }
+      obj["type"] = e.type;
+      if (e.type == "singleFile") {
+        obj["allowedFileType"] = e.allowedFileType;
+      }
+      if (e.type == "text-area") {
+        obj["flagReadMore"] = false;
+      }
+      cnt++;
+      list.push(obj);
+    }
+  });
+  return list;
+}
+function isImage(imageName) {
+  let allowedImageTypes = ["jpg", "jpeg", "png"];
+
+  return allowedImageTypes.includes(imageName.slice(imageName.length - 3));
+}
+function getEmptyObject(schema) {
+  let obj = {};
+  schema.forEach((e) => {
+    if (e["defaultValue"]) {
+      obj[e["attribute"]] = e["defaultValue"];
+    } else {
+      obj[e["attribute"]] = "";
+    }
+  });
+  return obj;
+}
+export { formatToIST, getShowInList, getEmptyObject, isImage };

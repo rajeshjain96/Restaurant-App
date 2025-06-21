@@ -53,7 +53,7 @@ router.post("/", upload.any(), async (req, res, next) => {
       },
     ];
     ////////// enquiries has got fileInfo as sub-collection
-    obj.fileInfo = [];
+    obj.files = [];
     ///////////////////
     obj = await EnquiryService.addEnquiry(obj);
     res.status(201).json(obj);
@@ -145,12 +145,13 @@ router.delete("/:id/remarks/:remarkId", async (req, res) => {
 });
 
 /////////////sub-collection routes///////////////
-router.post("/:id/fileInfo", upload.any(), async (req, res, next) => {
+router.post("/:id/resourceFiles", upload.any(), async (req, res, next) => {
   try {
     const id = req.params.id;
     let obj = req.body;
     obj._id = new ObjectId();
     obj.addDate = new Date();
+    obj.updateDate = new Date();
     let result = await EnquiryService.addFileInfo(obj, id);
     if (result.modifiedCount === 1) {
       res.status(201).json(obj);
@@ -159,11 +160,12 @@ router.post("/:id/fileInfo", upload.any(), async (req, res, next) => {
     next(error); // Send error to middleware
   }
 });
-router.delete("/:id/fileInfo/:fileInfoId", async (req, res) => {
+router.delete("/:id/resourceFiles/:resourceFileId", async (req, res) => {
+  
   try {
     const id = req.params.id;
-    const fileInfoId = req.params.fileInfoId;
-    let result = await EnquiryService.deleteFileInfo(id, fileInfoId);
+    const resourceFileId = req.params.resourceFileId;
+    let result = await EnquiryService.deleteFileInfo(id, resourceFileId);
     if (result.modifiedCount === 1) {
       res.status(201).json(result.modifiedCount);
     }

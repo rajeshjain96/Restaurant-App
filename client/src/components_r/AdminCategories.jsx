@@ -461,33 +461,6 @@ export default function AdminCategories(props) {
   function handleClearSelectedFile() {
     setSelectedFile(null);
   }
-  async function handleRefreshRecord(id) {
-    // get this particular record from backend
-    setFlagLoad(true);
-    try {
-      let response = await axios(import.meta.env.VITE_API_URL + "/categories");
-      let eList = await response.data;
-      response = await axios(import.meta.env.VITE_API_URL + "/products");
-      let pList = await response.data;
-      // In the categoryList, add a parameter - product
-      eList.forEach((category) => {
-        // get category (string) from categoryId
-        for (let i = 0; i < pList.length; i++) {
-          if (category.productId == pList[i]._id) {
-            category.product = pList[i].name;
-            break;
-          }
-        } //for
-      });
-      setCategoryList(eList);
-      setFilteredCategoryList(eList);
-      setProductList(pList);
-    } catch (error) {
-      showMessage("Something went wrong, refresh the page");
-    }
-    setFlagLoad(false);
-  }
-
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -614,7 +587,6 @@ export default function AdminCategories(props) {
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
             onToggleText={handleToggleText}
-            onRefreshRecord={handleRefreshRecord}
           />
         ))}
       {flagImport && (
