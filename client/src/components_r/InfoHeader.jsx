@@ -67,7 +67,7 @@ export default function InfoHeader(props) {
         </div>
       </div>
       {/* row ends */}
-      <div className="text-center bg-white text-danger">{message}</div>
+      {/* <div className="text-center bg-white text-danger">{message}</div> */}
     </div>
     // container ends
   );

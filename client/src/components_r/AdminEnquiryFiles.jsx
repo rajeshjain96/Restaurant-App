@@ -12,10 +12,13 @@ import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
 import recordsAddBulk from "./RecordsAddBulk";
 import recordsUpdateBulk from "./RecordsUpdateBulk";
 import { getEmptyObject, getShowInList } from "../utilities";
+import InfoHeader from "./infoHeader";
 export default function AdminEnquiryFiles(props) {
   const [params] = useSearchParams();
   const id = params.get("id");
   const productId = params.get("productId");
+  const user = params.get("user");
+
   let selectedEntity = {
     name: "Enquiry Resources",
     addFacility: true,
@@ -42,6 +45,7 @@ export default function AdminEnquiryFiles(props) {
   let [cntAdd, setCntAdd] = useState(0);
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
+
   let enquiryFileSchema = [
     { attribute: "description", type: "normal" },
     {
@@ -91,6 +95,8 @@ export default function AdminEnquiryFiles(props) {
     setFlagLoad(false);
   }
   async function handleFormSubmit(enquiryFile) {
+    // always add user
+    enquiryFile.user = user;
     let message;
     // now remove relational data
     let enquiryFileForBackEnd = { ...enquiryFile };
@@ -476,6 +482,14 @@ export default function AdminEnquiryFiles(props) {
   function handleClearSelectedFile() {
     setSelectedFile(null);
   }
+  function handleWhatsappClick() {
+    let message = "";
+    let url =
+      `https://api.whatsapp.com/send?phone=${enquiry.mobileNumber}&text=` +
+      message;
+    window.open(url, "_blank");
+  }
+
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -485,125 +499,135 @@ export default function AdminEnquiryFiles(props) {
   }
   return (
     <>
-      <CommonUtilityBar
-        action={action}
+      <InfoHeader
+        enquiry={enquiry}
         message={message}
-        selectedEntity={selectedEntity}
-        flagToggleButton={flagToggleButton}
-        filteredList={filteredEnquiryFileList}
-        mainList={enquiryFileList}
-        showInList={showInList}
-        onListClick={handleListClick}
-        onAddEntityClick={handleAddEntityClick}
-        onSearchKeyUp={handleSearchKeyUp}
-        onExcelFileUploadClick={handleExcelFileUploadClick}
-        onClearSelectedFile={handleClearSelectedFile}
+        onWhatsappClick={handleWhatsappClick}
       />
+      <div style={{ marginTop: "100px" }}>
+        <CommonUtilityBar
+          action={action}
+          message={message}
+          selectedEntity={selectedEntity}
+          flagToggleButton={flagToggleButton}
+          filteredList={filteredEnquiryFileList}
+          mainList={enquiryFileList}
+          showInList={showInList}
+          onListClick={handleListClick}
+          onAddEntityClick={handleAddEntityClick}
+          onSearchKeyUp={handleSearchKeyUp}
+          onExcelFileUploadClick={handleExcelFileUploadClick}
+          onClearSelectedFile={handleClearSelectedFile}
+        />
+      </div>
       {filteredEnquiryFileList.length == 0 && enquiryFileList.length != 0 && (
         <div className="text-center">Nothing to show</div>
       )}
       {enquiryFileList.length == 0 && (
         <div className="text-center">List is empty</div>
       )}
-      {(action == "add" || action == "update") && (
-        <div className="row">
-          <AdminEnquiryFileForm
-            enquiryFileSchema={enquiryFileSchema}
-            enquiryFileValidations={enquiryFileValidations}
-            emptyEnquiryFile={emptyEnquiryFile}
-            categoryList={categoryList}
-            selectedEntity={selectedEntity}
-            enquiryFileToBeEdited={enquiryFileToBeEdited}
-            action={action}
-            flagFormInvalid={flagFormInvalid}
-            onFormSubmit={handleFormSubmit}
-            onFormCloseClick={handleFormCloseClick}
-            onFormTextChangeValidations={handleFormTextChangeValidations}
-          />
-        </div>
-      )}
-      {action == "list" && filteredEnquiryFileList.length != 0 && (
-        <div className="row  my-2 mx-auto p-1">
-          {showInList.map((e, index) => (
-            <div className="col-2" key={index}>
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                checked={showInList[index]["show"] == true}
-                onChange={(e) => {
-                  handleListCheckBoxClick(e.target.checked, index);
-                }}
-              />{" "}
-              {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
-            </div>
-          ))}
-        </div>
-      )}
-      {action == "list" && filteredEnquiryFileList.length != 0 && (
-        <div className="row   my-2 mx-auto  p-1">
-          <div className="col-1">
-            <a
-              href="#"
-              onClick={() => {
-                handleSrNoClick();
-              }}
-            >
-              SN.{" "}
-              {sortedField == "updateDate" && direction && (
-                <i className="bi bi-arrow-up"></i>
-              )}
-              {sortedField == "updateDate" && !direction && (
-                <i className="bi bi-arrow-down"></i>
-              )}
-            </a>
+      <div className="container">
+        {(action == "add" || action == "update") && (
+          <div className="row">
+            <AdminEnquiryFileForm
+              enquiryFileSchema={enquiryFileSchema}
+              enquiryFileValidations={enquiryFileValidations}
+              emptyEnquiryFile={emptyEnquiryFile}
+              categoryList={categoryList}
+              selectedEntity={selectedEntity}
+              enquiryFileToBeEdited={enquiryFileToBeEdited}
+              action={action}
+              flagFormInvalid={flagFormInvalid}
+              onFormSubmit={handleFormSubmit}
+              onFormCloseClick={handleFormCloseClick}
+              onFormTextChangeValidations={handleFormTextChangeValidations}
+            />
           </div>
-          {showInList.map(
-            (e, index) =>
-              e.show && (
-                <div className={"col-2 "} key={index}>
-                  <a
-                    href="#"
-                    className={
-                      sortedField == e.attribute
-                        ? " text-large text-danger"
-                        : ""
-                    }
-                    onClick={() => {
-                      handleHeaderClick(index);
-                    }}
-                  >
-                    {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}{" "}
-                    {sortedField == e.attribute && direction && (
-                      <i className="bi bi-arrow-up"></i>
-                    )}
-                    {sortedField == e.attribute && !direction && (
-                      <i className="bi bi-arrow-down"></i>
-                    )}
-                  </a>
-                </div>
-              )
-          )}
-          <div className="col-1">&nbsp;</div>
-        </div>
-      )}
-      {action == "list" &&
-        filteredEnquiryFileList.length != 0 &&
-        filteredEnquiryFileList.map((e, index) => (
-          <AEnquiryFile
-            enquiryFile={e}
-            key={index + 1}
-            index={index}
-            sortedField={sortedField}
-            direction={direction}
-            listSize={filteredEnquiryFileList.length}
-            selectedEntity={selectedEntity}
-            showInList={showInList}
-            onEditButtonClick={handleEditButtonClick}
-            onDeleteButtonClick={handleDeleteButtonClick}
-            onToggleText={handleToggleText}
-          />
-        ))}
+        )}
+        {action == "list" && filteredEnquiryFileList.length != 0 && (
+          <div className="row  my-2 mx-auto p-1">
+            {showInList.map((e, index) => (
+              <div className="col-2" key={index}>
+                <input
+                  type="checkbox"
+                  name=""
+                  id=""
+                  checked={showInList[index]["show"] == true}
+                  onChange={(e) => {
+                    handleListCheckBoxClick(e.target.checked, index);
+                  }}
+                />{" "}
+                {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
+              </div>
+            ))}
+          </div>
+        )}
+        {action == "list" && filteredEnquiryFileList.length != 0 && (
+          <div className="row   my-2 mx-auto  p-1">
+            <div className="col-1">
+              <a
+                href="#"
+                onClick={() => {
+                  handleSrNoClick();
+                }}
+              >
+                SN.{" "}
+                {sortedField == "updateDate" && direction && (
+                  <i className="bi bi-arrow-up"></i>
+                )}
+                {sortedField == "updateDate" && !direction && (
+                  <i className="bi bi-arrow-down"></i>
+                )}
+              </a>
+            </div>
+            {showInList.map(
+              (e, index) =>
+                e.show && (
+                  <div className={"col-2 "} key={index}>
+                    <a
+                      href="#"
+                      className={
+                        sortedField == e.attribute
+                          ? " text-large text-danger"
+                          : ""
+                      }
+                      onClick={() => {
+                        handleHeaderClick(index);
+                      }}
+                    >
+                      {e.attribute.charAt(0).toUpperCase() +
+                        e.attribute.slice(1)}{" "}
+                      {sortedField == e.attribute && direction && (
+                        <i className="bi bi-arrow-up"></i>
+                      )}
+                      {sortedField == e.attribute && !direction && (
+                        <i className="bi bi-arrow-down"></i>
+                      )}
+                    </a>
+                  </div>
+                )
+            )}
+            <div className="col-1">&nbsp;</div>
+          </div>
+        )}
+        {action == "list" &&
+          filteredEnquiryFileList.length != 0 &&
+          filteredEnquiryFileList.map((e, index) => (
+            <AEnquiryFile
+              enquiryFile={e}
+              key={index + 1}
+              index={index}
+              sortedField={sortedField}
+              direction={direction}
+              listSize={filteredEnquiryFileList.length}
+              selectedEntity={selectedEntity}
+              showInList={showInList}
+              onEditButtonClick={handleEditButtonClick}
+              onDeleteButtonClick={handleDeleteButtonClick}
+              onToggleText={handleToggleText}
+            />
+          ))}
+      </div>
       {flagImport && (
         <ModalImport
           modalText={"Summary of Bulk Import"}

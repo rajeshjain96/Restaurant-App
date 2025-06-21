@@ -86,6 +86,9 @@ async function deleteEnquiry(id) {
 async function addRemark(obj, id) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
+  console.log("aai");
+  console.log(obj);
+
   const response = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {

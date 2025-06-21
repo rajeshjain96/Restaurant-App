@@ -112,7 +112,7 @@ export default function AEnquiry(props) {
                   {enquiry.remarks[enquiry.remarks.length - 1].user}
                 </span>
                 <Link
-                  to={`/enquiryRemarks?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
+                  to={`/AdminEnquiryRemarks?id=${enquiry._id}&productId=${enquiry.productId}&user=${user.name}`}
                   target="_blank"
                 >
                   :{" "}

@@ -121,11 +121,15 @@ export default function AEnquiryFile(props) {
             <i className="bi bi-trash3-fill"></i>
           </span>
         </div>
-        <div className="col-12  text-secondary text-italic text-small">
-          Last updated:{" "}
-          {new Date(enquiryFile.updateDate).toLocaleString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          })}
+        <div className="col-12   text-italic text-small">
+          <span className="text-dark">{enquiryFile.user}</span>{" "}
+          <span className="text-secondary">
+            (
+            {new Date(enquiryFile.updateDate).toLocaleString("en-IN", {
+              timeZone: "Asia/Kolkata",
+            })}
+            )
+          </span>
         </div>
       </div>
       {flagDeleteButtonPressed && (

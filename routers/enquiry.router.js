@@ -50,6 +50,7 @@ router.post("/", upload.any(), async (req, res, next) => {
         remark: "Added",
         user: obj.user,
         addDate: new Date(),
+        updateDate: new Date(),
       },
     ];
     ////////// enquiries has got fileInfo as sub-collection
@@ -121,8 +122,12 @@ router.post("/:id/remarks", async (req, res, next) => {
   try {
     const id = req.params.id;
     let obj = req.body;
+    console.log("baba");
+    console.log(obj);
+
     obj._id = new ObjectId();
     obj.addDate = new Date();
+    obj.updateDate = new Date();
     let result = await EnquiryService.addRemark(obj, id);
     if (result.modifiedCount === 1) {
       res.status(201).json(obj);
@@ -161,7 +166,6 @@ router.post("/:id/resourceFiles", upload.any(), async (req, res, next) => {
   }
 });
 router.delete("/:id/resourceFiles/:resourceFileId", async (req, res) => {
-  
   try {
     const id = req.params.id;
     const resourceFileId = req.params.resourceFileId;
