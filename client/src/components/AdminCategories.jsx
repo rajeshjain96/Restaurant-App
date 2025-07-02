@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { CommonUtilityBar } from "../external/vite-sdk";
+import {
+  CommonUtilityBar,
+  CheckBoxHeaders,
+  ListHeaders,
+} from "../external/vite-sdk";
 import AdminCategoryForm from "./AdminCategoryForm";
 import { BeatLoader } from "react-spinners";
 import ACategory from "./ACategory";
@@ -11,6 +15,7 @@ import {
   recordsUpdateBulk,
   analyseImportExcelSheet,
 } from "../external/vite-sdk";
+
 export default function AdminCategories(props) {
   let [categoryList, setCategoryList] = useState([]);
   let [productList, setProductList] = useState([]);
@@ -512,22 +517,10 @@ export default function AdminCategories(props) {
         </div>
       )}
       {action == "list" && filteredCategoryList.length != 0 && (
-        <div className="row  my-2 mx-auto p-1">
-          {showInList.map((e, index) => (
-            <div className="col-2" key={index}>
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                checked={showInList[index]["show"] == true}
-                onChange={(e) => {
-                  handleListCheckBoxClick(e.target.checked, index);
-                }}
-              />{" "}
-              {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
-            </div>
-          ))}
-        </div>
+        <CheckBoxHeaders
+          showInList={showInList}
+          onListCheckBoxClick={handleListCheckBoxClick}
+        />
       )}
       {action == "list" && filteredCategoryList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
@@ -547,32 +540,12 @@ export default function AdminCategories(props) {
               )}
             </a>
           </div>
-          {showInList.map(
-            (e, index) =>
-              e.show && (
-                <div className={"col-2 "} key={index}>
-                  <a
-                    href="#"
-                    className={
-                      sortedField == e.attribute
-                        ? " text-large text-danger"
-                        : ""
-                    }
-                    onClick={() => {
-                      handleHeaderClick(index);
-                    }}
-                  >
-                    {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}{" "}
-                    {sortedField == e.attribute && direction && (
-                      <i className="bi bi-arrow-up"></i>
-                    )}
-                    {sortedField == e.attribute && !direction && (
-                      <i className="bi bi-arrow-down"></i>
-                    )}
-                  </a>
-                </div>
-              )
-          )}
+          <ListHeaders
+            showInList={showInList}
+            sortedField={sortedField}
+            direction={direction}
+            onHeaderClick={handleHeaderClick}
+          />
           <div className="col-1">&nbsp;</div>
         </div>
       )}

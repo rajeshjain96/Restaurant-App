@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { CommonUtilityBar } from "../external/vite-sdk";
+import {
+  CommonUtilityBar,
+  CheckBoxHeaders,
+  ListHeaders,
+} from "../external/vite-sdk";
 import AdminProductForm from "./AdminProductForm";
 import { BeatLoader } from "react-spinners";
 import AProduct from "./AProduct";
@@ -12,6 +16,8 @@ import {
   analyseImportExcelSheet,
 } from "../external/vite-sdk";
 import { getEmptyObject, getShowInList } from "../external/vite-sdk";
+// import CheckBoxHeaders from "./CheckBoxHeaders";
+// import ListHeaders from "./ListHeaders";
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
   let [filteredProductList, setFilteredProductList] = useState([]);
@@ -74,16 +80,10 @@ export default function AdminProducts(props) {
   let [showInList, setShowInList] = useState(getShowInList(productSchema));
   let [emptyProduct, setEmptyProduct] = useState(getEmptyObject(productSchema));
   useEffect(() => {
-    setFlagLoad(true);
     getData();
-    // const load = async () => {
-    //   const mod = await import("../external/CommonUtilityBar.js");
-    //   setCommonUtilityBar(() => mod.default);
-    // };
-    // load();
-    setFlagLoad(false);
   }, []);
   async function getData() {
+    setFlagLoad(true);
     try {
       let response = await axios(import.meta.env.VITE_API_URL + "/products");
       let pList = await response.data;
@@ -109,6 +109,7 @@ export default function AdminProducts(props) {
     } catch (error) {
       showMessage("Something went wrong, refresh the page");
     }
+    setFlagLoad(false);
   }
   async function handleFormSubmit(product) {
     let message;
@@ -518,22 +519,10 @@ export default function AdminProducts(props) {
         <div className="text-center">List is empty</div>
       )}
       {action == "list" && filteredProductList.length != 0 && (
-        <div className="row  my-2 mx-auto p-1">
-          {showInList.map((e, index) => (
-            <div className="col-2" key={index}>
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                checked={showInList[index]["show"] == true}
-                onChange={(e) => {
-                  handleListCheckBoxClick(e.target.checked, index);
-                }}
-              />{" "}
-              {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
-            </div>
-          ))}
-        </div>
+        <CheckBoxHeaders
+          showInList={showInList}
+          onListCheckBoxClick={handleListCheckBoxClick}
+        />
       )}
       {action == "list" && filteredProductList.length != 0 && (
         <div className="row   my-2 mx-auto  p-1">
@@ -553,32 +542,12 @@ export default function AdminProducts(props) {
               )}
             </a>
           </div>
-          {showInList.map(
-            (e, index) =>
-              e.show && (
-                <div className={"col-2 "} key={index}>
-                  <a
-                    href="#"
-                    className={
-                      sortedField == e.attribute
-                        ? " text-large text-danger"
-                        : ""
-                    }
-                    onClick={() => {
-                      handleHeaderClick(index);
-                    }}
-                  >
-                    {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}{" "}
-                    {sortedField == e.attribute && direction && (
-                      <i className="bi bi-arrow-up"></i>
-                    )}
-                    {sortedField == e.attribute && !direction && (
-                      <i className="bi bi-arrow-down"></i>
-                    )}
-                  </a>
-                </div>
-              )
-          )}
+          <ListHeaders
+            showInList={showInList}
+            sortedField={sortedField}
+            direction={direction}
+            onHeaderClick={handleHeaderClick}
+          />
           <div className="col-1">&nbsp;</div>
         </div>
       )}
