@@ -109,8 +109,6 @@ export default function AdminProductForm(props) {
   };
   function handleFileChange(selectedFile, fileIndex, message) {
     setFlagFormInvalid(false);
-    console.log("Dada " + message);
-
     if (action == "add") {
       // add datesuffix to file-name
       const timestamp = Date.now();

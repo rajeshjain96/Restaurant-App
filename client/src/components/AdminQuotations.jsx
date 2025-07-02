@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import CommonUtilityBar from "./CommonUtilityBar";
+import {
+  CommonUtilityBar,
+  CheckBoxHeaders,
+  ListHeaders,
+} from "../external/vite-sdk";
 import AdminQuotationForm from "./AdminQuotationForm";
 import { BeatLoader } from "react-spinners";
 import AQuotation from "./AQuotation";
@@ -66,7 +70,7 @@ export default function AdminQuotations(props) {
         }
         if (e.type == "singleFile") {
           obj["type"] = "singleFile";
-            obj["allowedFileType"] = e.allowedFileType;
+          obj["allowedFileType"] = e.allowedFileType;
         }
         cnt++;
         list.push(obj);

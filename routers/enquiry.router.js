@@ -122,7 +122,6 @@ router.post("/:id/remarks", async (req, res, next) => {
   try {
     const id = req.params.id;
     let obj = req.body;
-    console.log("baba");
     console.log(obj);
 
     obj._id = new ObjectId();

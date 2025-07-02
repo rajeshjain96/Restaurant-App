@@ -65,7 +65,6 @@ export default function EnquiryRemarks() {
         { remark: remark, user: user }
       );
       let r = await response.data;
-      console.log("r");
       console.log(r);
 
       let re = [...remarks];

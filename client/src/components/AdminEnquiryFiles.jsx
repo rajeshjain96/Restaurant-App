@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import CommonUtilityBar from "./CommonUtilityBar";
+import {
+  CommonUtilityBar,
+  CheckBoxHeaders,
+  ListHeaders,
+} from "../external/vite-sdk";
 import AdminEnquiryFileForm from "./AdminEnquiryFileForm";
 import { BeatLoader } from "react-spinners";
 import AEnquiryFile from "./AEnquiryFile";
@@ -559,22 +563,10 @@ export default function AdminEnquiryFiles(props) {
           </div>
         )}
         {action == "list" && filteredEnquiryFileList.length != 0 && (
-          <div className="row  my-2 mx-auto p-1">
-            {showInList.map((e, index) => (
-              <div className="col-2" key={index}>
-                <input
-                  type="checkbox"
-                  name=""
-                  id=""
-                  checked={showInList[index]["show"] == true}
-                  onChange={(e) => {
-                    handleListCheckBoxClick(e.target.checked, index);
-                  }}
-                />{" "}
-                {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
-              </div>
-            ))}
-          </div>
+          <CheckBoxHeaders
+            showInList={showInList}
+            onListCheckBoxClick={handleListCheckBoxClick}
+          />
         )}
         {action == "list" && filteredEnquiryFileList.length != 0 && (
           <div className="row   my-2 mx-auto  p-1">
@@ -594,33 +586,12 @@ export default function AdminEnquiryFiles(props) {
                 )}
               </a>
             </div>
-            {showInList.map(
-              (e, index) =>
-                e.show && (
-                  <div className={"col-2 "} key={index}>
-                    <a
-                      href="#"
-                      className={
-                        sortedField == e.attribute
-                          ? " text-large text-danger"
-                          : ""
-                      }
-                      onClick={() => {
-                        handleHeaderClick(index);
-                      }}
-                    >
-                      {e.attribute.charAt(0).toUpperCase() +
-                        e.attribute.slice(1)}{" "}
-                      {sortedField == e.attribute && direction && (
-                        <i className="bi bi-arrow-up"></i>
-                      )}
-                      {sortedField == e.attribute && !direction && (
-                        <i className="bi bi-arrow-down"></i>
-                      )}
-                    </a>
-                  </div>
-                )
-            )}
+            <ListHeaders
+              showInList={showInList}
+              sortedField={sortedField}
+              direction={direction}
+              onHeaderClick={handleHeaderClick}
+            />
             <div className="col-1">&nbsp;</div>
           </div>
         )}

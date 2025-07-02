@@ -35,9 +35,6 @@ router.get("/welcome", async (req, res, next) => {
         res.json(tokenData);
       } else {
         console.log("Oh...Valid user refreshed the page");
-
-        // console.log(tokenData);
-
         // Not guest, so may be admin, or other staff
         res.json(tokenData);
       }
