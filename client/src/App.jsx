@@ -1,15 +1,13 @@
-import { useState } from "react";
 import "./App.css";
-import RestaurantHomePage from "./components_r/RestaurantHomePage";
+import MainPage from "./components/MainPage";
 import axios from "axios";
-import Home from "./components/Home";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import EnquiryRemarks from "./components_r/enquiryRemarks";
-import SampleForm from "./components_r/sampleForm";
-import Resources from "./components_r/Resources";
-import AdminEnquiryFiles from "./components_r/AdminEnquiryFiles";
-import AdminEnquiryRemarks from "./components_r/AdminEnquiryRemarks";
-import ClientResources from "./components_r/ClientResources";
+import SampleForm from "./components/sampleForm";
+import Resources from "./components/Resources";
+import AdminEnquiryFiles from "./components/AdminEnquiryFiles";
+import AdminEnquiryRemarks from "./components/AdminEnquiryRemarks";
+import ClientResources from "./components/ClientResources";
 function App() {
   axios.defaults.withCredentials = true; // ⬅️ Important!
 
@@ -17,7 +15,7 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<RestaurantHomePage />} />
+          <Route path="/" element={<MainPage />} />
           <Route path="/sampleForm" element={<SampleForm />} />
           <Route path="/ClientResources" element={<ClientResources />} />
           <Route
@@ -34,5 +32,4 @@ function App() {
     </>
   );
 }
-
 export default App;

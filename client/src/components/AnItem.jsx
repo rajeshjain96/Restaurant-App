@@ -13,6 +13,7 @@ export default function AnItem(props) {
   function handleEditButtonClick() {
     props.onEditButtonClick(item);
   }
+
   function handleDeleteButtonClick() {
     setFlagDeleteButtonPressed(true);
   }
@@ -42,18 +43,10 @@ export default function AnItem(props) {
             : listSize - index}
           .
         </div>
-        {attributes.map(
-          (e, index) =>
-            e.showInList && (
-              <div key={index} className="col-2">
-                {e.type != "dropdown"
-                  ? String(item[e.id]).length <= 20
-                    ? item[e.id]
-                    : item[e.id].slice(0, 20) + "..."
-                  : getNameFromId(item[e.id], index)}
-              </div>
-            )
-        )}
+
+        <div key={index} className="col-2">
+          {item.name}
+        </div>
 
         <div className="col-1">
           <span onClick={handleEditButtonClick}>

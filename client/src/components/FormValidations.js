@@ -16,19 +16,17 @@ export default function fieldValidate(event, errorEntity) {
   if (type === "text" || type === "textarea" || type === "password") {
     // check if 'required', also check min no. of characters
     value = event.target.value.trim();
-    mnLen = errorEntity.mnLen;
-    mxLen = errorEntity.mxLen;
-    onlyDigits = errorEntity.onlyDigits;
-    allDigits = errorEntity.allDigits;
-    noSymbols = errorEntity.noSymbols;
-    // mnLen = errorEntity[`${name}`].mnLen;
-    // mxLen = errorEntity[`${name}`].mxLen;
-    // onlyDigits = errorEntity[`${name}`].onlyDigits;
-    // allDigits = errorEntity[`${name}`].allDigits;
-    // noSymbols = errorEntity[`${name}`].noSymbols;
+    mnLen = errorEntity[`${name}`].mnLen;
+    mxLen = errorEntity[`${name}`].mxLen;
+    onlyDigits = errorEntity[`${name}`].onlyDigits;
+    allDigits = errorEntity[`${name}`].allDigits;
+    noSymbols = errorEntity[`${name}`].noSymbols;
     if (value.length === 0) {
       message = name + requiredMessage;
-    } else if (value.length < mnLen && mxLen == mnLen) {
+    } else if (
+      (value.length < mnLen || value.length > mxLen) &&
+      mxLen == mnLen
+    ) {
       if (!onlyDigits) message = mnLen + " characters required";
       else message = mnLen + " digits required";
     } else if (value.length < mnLen) {
@@ -42,7 +40,7 @@ export default function fieldValidate(event, errorEntity) {
     else if (onlyDigits) {
       for (let i = value.length - 1; i >= 0; i--) {
         const d = value.charCodeAt(i);
-        if (d != 46 && (d < 48 || d > 57)) {
+        if (d < 48 || d > 57) {
           message = "Enter only digits";
           break;
         } //if

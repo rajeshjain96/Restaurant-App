@@ -6,34 +6,14 @@
     "auditLog": "C:\\RestaurantApp\\logs\\.ce15eba6bda41ccabbb812543db18729476fa50c-audit.json",
     "files": [
         {
-            "date": 1750315420072,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-19.log",
-            "hash": "449bfbddcbe215ba4d9047ad30bbb2af68f0166a9fb8d63b727dab38d8e28ddf"
+            "date": 1754120797986,
+            "name": "C:\\RestaurantApp\\logs\\activity-2025-08-02.log",
+            "hash": "2e0ed53f072b83c57e335d2f7dbba9f3cb00957fe3d2370761bf5b698aeb5b29"
         },
         {
-            "date": 1750403436125,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-20.log",
-            "hash": "4492d5fa50415fd48ce57da82b04dd5b632dcd9c55a2613154b1d5acd8d0638d"
-        },
-        {
-            "date": 1750485030253,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-21.log",
-            "hash": "e534128464a44f481f9f1bf878f00632a8654befc17104f2b9491368e7744805"
-        },
-        {
-            "date": 1750659850029,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-23.log",
-            "hash": "ec17f248fa611935fa5b9f8e2df0ebce950794080fc3d1a824bf1e1b9fbf22b6"
-        },
-        {
-            "date": 1750841934056,
-            "name": "C:\\RestaurantApp\\logs\\activity-2025-06-25.log",
-            "hash": "a896855db261beb98e5942ba124cb4bb6f28696a484c259790827e9c729cffbf"
-        },
-        {
-            "date": 1751439400610,
+            "date": 1751442489573,
             "name": "C:\\RestaurantApp\\logs\\activity-2025-07-02.log",
-            "hash": "3684fe79b5192b2cc10134b4886ffbfe6bbbb44ff0c2279c3bfba75a782b30a4"
+            "hash": "5ae6faa75cf3cad64f6f41286d948046e9689dd530f8486eca0d168f4e39f800"
         }
     ],
     "hashType": "sha256"
