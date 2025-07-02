@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./modal";
+import Modal from "./Modal";
 
 export default function AnItem(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);

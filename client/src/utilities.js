@@ -38,9 +38,20 @@ function getShowInList(schema) {
   return list;
 }
 function isImage(imageName) {
+  if (!imageName) return false;
   let allowedImageTypes = ["jpg", "jpeg", "png"];
-
   return allowedImageTypes.includes(imageName.slice(imageName.length - 3));
+}
+function getFileExtension(fileName) {
+  // search last . operator
+  if (!fileName) return "";;
+  let pos = fileName.lastIndexOf(".");
+  if (pos == -1) {
+    //No dot operator in file name, may be file-extension missing
+    return "";
+  } else {
+    return fileName.slice(pos + 1);
+  }
 }
 function getEmptyObject(schema) {
   let obj = {};
@@ -53,4 +64,10 @@ function getEmptyObject(schema) {
   });
   return obj;
 }
-export { formatToIST, getShowInList, getEmptyObject, isImage };
+export {
+  formatToIST,
+  getShowInList,
+  getEmptyObject,
+  isImage,
+  getFileExtension,
+};

@@ -40,7 +40,7 @@ export default function LoginSignupPage(props) {
   };
   async function handleSignupFormSubmit() {
     let response = await axios.post(
-      "http://localhost:3000/users/signup",
+      import.meta.env.VITE_API_URL + "/users/signup",
       formData
     );
     response = response.data;
@@ -59,7 +59,7 @@ export default function LoginSignupPage(props) {
   }
   async function handleLoginFormSubmit() {
     let response = await axios.post(
-      "http://localhost:3000/users/login",
+      import.meta.env.VITE_API_URL + "/users/login",
       formData
     );
     response = response.data;

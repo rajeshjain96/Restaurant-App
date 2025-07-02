@@ -151,7 +151,9 @@ export default function SingleFileUpload(props) {
             <>
               <img
                 className="fileUpload-image"
-                src={"http://localhost:3000/uploadedImages/" + fileName}
+                src={
+                  import.meta.env.VITE_API_URL + "/uploadedImages/" + fileName
+                }
                 alt=""
               />
             </>

@@ -12,7 +12,7 @@ export default function HomePage(props) {
   }, []);
   async function getCountOfImageFiles() {
     let response = await axios.get(
-      "http://localhost:3000/files/count/" + imageFileName
+      import.meta.env.VITE_API_URL + "/files/count/" + imageFileName
     );
     let fc = response.data.count;
     setFileCount(fc);
@@ -33,7 +33,8 @@ export default function HomePage(props) {
               <div className="carousel-item active" key={index}>
                 <img
                   src={
-                    "http://localhost:3000/uploadedImages/" +
+                    import.meta.env.VITE_API_URL +
+                    "/uploadedImages/" +
                     imageFileName +
                     (index + 1) +
                     ".jpg"

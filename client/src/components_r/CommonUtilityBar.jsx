@@ -11,7 +11,6 @@ export default function CommonUtilityBar(props) {
   let { mainList } = props;
   let { showInList } = props;
   let [flagExport, setFlagExport] = useState(false);
-  let [flagFileUpload, setFlagFileUpload] = useState(false);
   const buttonBRef = useRef(null);
 
   function handleListClick() {
@@ -173,6 +172,7 @@ export default function CommonUtilityBar(props) {
                   onKeyUp={handleSearchKeyUp}
                   onChange={handleSearchKeyUp}
                   className="p-1"
+                  placeholder="Search Here"
                 />
               </div>
             )}

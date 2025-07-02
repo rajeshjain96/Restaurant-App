@@ -13,7 +13,8 @@ router.get("/welcome", async (req, res, next) => {
     token = jwt.sign(obj, process.env.SECRET_KEY, { expiresIn: "1h" });
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      // secure: false, // Set to true in production with HTTPS
+      secure: true, // Set to true in production with HTTPS
       sameSite: "Lax",
       maxAge: 3600000,
     });

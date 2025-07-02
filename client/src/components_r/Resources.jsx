@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
-import InfoHeader from "./infoHeader";
+import InfoHeader from "./InfoHeader";
 export default function Resources() {
   const [params] = useSearchParams();
   const id = params.get("id");

@@ -86,9 +86,6 @@ async function deleteEnquiry(id) {
 async function addRemark(obj, id) {
   const db = app.locals.db;
   const collection = db.collection("enquiries");
-  console.log("aai");
-  console.log(obj);
-
   const response = await collection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {
@@ -109,6 +106,31 @@ async function deleteRemark(id, remarkId) {
     }
   );
   return response;
+}
+async function getEnquiryFileById(enquiryId, fileId) {
+  const db = app.locals.db;
+  const collection = db.collection("enquiries");
+  const enquiry = await collection.findOne(
+    {
+      _id: enquiryId,
+      "files._id": fileId,
+    },
+    {
+      projection: {
+        files: {
+          $elemMatch: { _id: fileId },
+        },
+      },
+    }
+  );
+  console.log(enquiry.files.length + "Tatya");
+  console.log(enquiry.files[0]);
+
+  if (enquiry?.files?.length > 0) {
+    return enquiry.files[0];
+  } else {
+    return null;
+  }
 }
 async function addFileInfo(obj, id) {
   const db = app.locals.db;
@@ -143,6 +165,7 @@ module.exports = EnquiryService = {
   updateManyEnquiries,
   deleteEnquiry,
   addRemark,
+  getEnquiryFileById,
   addFileInfo,
   deleteFileInfo,
   deleteRemark,

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import SingleFileUploadSpecial from "./SingleFileUploadSpecial";
-import InfoHeader from "./infoHeader";
+import InfoHeader from "./InfoHeader";
 import Modal from "./Modal";
 import AEnquiryFile from "./AEnquiryFile";
 export default function EnquiryFiles() {

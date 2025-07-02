@@ -10,7 +10,7 @@ export default function NavBar(props) {
   }, []);
   async function getCountOfImageFiles() {
     let response = await axios.get(
-      "http://localhost:3000/files/count/" + imageFileName
+      import.meta.env.VITE_API_URL + "/files/count/" + imageFileName
     );
     let fc = response.data.count;
     setFileCount(fc);

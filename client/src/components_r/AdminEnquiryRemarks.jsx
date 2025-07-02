@@ -12,7 +12,7 @@ import analyseImportExcelSheet from "./AnalyseImportExcelSheet";
 import recordsAddBulk from "./RecordsAddBulk";
 import recordsUpdateBulk from "./RecordsUpdateBulk";
 import { getEmptyObject, getShowInList } from "../utilities";
-import InfoHeader from "./infoHeader";
+import InfoHeader from "./InfoHeader";
 export default function AdminEnquiryRemarks(props) {
   const [params] = useSearchParams();
   const id = params.get("id");

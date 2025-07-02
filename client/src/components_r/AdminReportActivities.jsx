@@ -57,7 +57,7 @@ export default function AdminReportActivities(props) {
     setFileContent("");
     try {
       const response = await axios.get(
-        "http://localhost:3000/files/showActivityLog/" + fileName,
+        import.meta.env.VITE_API_URL + "/files/showActivityLog/" + fileName,
         {
           responseType: "text",
         }
@@ -76,7 +76,7 @@ export default function AdminReportActivities(props) {
     let fileName = "activity-" + formatDate(selectedDate) + ".log";
     try {
       const response = await axios.get(
-        "http://localhost:3000/files/downloadActivityLog/" + fileName,
+        import.meta.env.VITE_API_URL + "/files/downloadActivityLog/" + fileName,
         {
           responseType: "blob",
         }
