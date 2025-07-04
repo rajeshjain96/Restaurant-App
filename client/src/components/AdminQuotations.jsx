@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import {
   CommonUtilityBar,
   CheckBoxHeaders,
-  ListHeaders,
+  ListHeaders,Entity
 } from "../external/vite-sdk";
 import AdminQuotationForm from "./AdminQuotationForm";
 import { BeatLoader } from "react-spinners";
-import AQuotation from "./AQuotation";
 import axios from "axios";
 
 export default function AdminQuotations(props) {
@@ -512,7 +511,7 @@ export default function AdminQuotations(props) {
       {action == "list" &&
         filteredQuotationList.length != 0 &&
         filteredQuotationList.map((e, index) => (
-          <AQuotation
+          <Entity
             quotation={e}
             key={index + 1}
             index={index}

@@ -3,10 +3,10 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity,
 } from "../external/vite-sdk";
 import AdminProductForm from "./AdminProductForm";
 import { BeatLoader } from "react-spinners";
-import AProduct from "./AProduct";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import ModalImport from "./ModalImport";
@@ -16,8 +16,7 @@ import {
   analyseImportExcelSheet,
 } from "../external/vite-sdk";
 import { getEmptyObject, getShowInList } from "../external/vite-sdk";
-// import CheckBoxHeaders from "./CheckBoxHeaders";
-// import ListHeaders from "./ListHeaders";
+
 export default function AdminProducts(props) {
   let [productList, setProductList] = useState([]);
   let [filteredProductList, setFilteredProductList] = useState([]);
@@ -141,7 +140,6 @@ export default function AdminProducts(props) {
             }
           });
         }
-
         message = "Product added successfully";
         // update the product list now.
         let prList = [...productList];
@@ -160,6 +158,7 @@ export default function AdminProducts(props) {
         showMessage(message);
         setAction("list");
       } catch (error) {
+        console.log(error);
         showMessage("Something went wrong, refresh the page");
       }
       setFlagLoad(false);
@@ -246,6 +245,7 @@ export default function AdminProducts(props) {
       setFilteredProductList(fprList);
       showMessage(message);
     } catch (error) {
+      console.log(error);
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
@@ -276,7 +276,6 @@ export default function AdminProducts(props) {
       }
       return p;
     });
-    // sEntity.attributes = a;
     setShowInList(a);
   }
   function handleHeaderClick(index) {
@@ -480,7 +479,6 @@ export default function AdminProducts(props) {
       } //if
     } catch (error) {
       console.log(error);
-
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
@@ -571,8 +569,8 @@ export default function AdminProducts(props) {
       {action == "list" &&
         filteredProductList.length != 0 &&
         filteredProductList.map((e, index) => (
-          <AProduct
-            product={e}
+          <Entity
+            entity={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
@@ -580,6 +578,7 @@ export default function AdminProducts(props) {
             listSize={filteredProductList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
+            VITE_API_URL={import.meta.env.VITE_API_URL}
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
             onToggleText={handleToggleText}

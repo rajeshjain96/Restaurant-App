@@ -5,10 +5,10 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  AEnquiryRemark,
 } from "../external/vite-sdk";
 import AdminEnquiryRemarkForm from "./AdminEnquiryRemarkForm";
 import { BeatLoader } from "react-spinners";
-import AEnquiryRemark from "./AEnquiryRemark";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import ModalImport from "./ModalImport";
@@ -19,6 +19,7 @@ import {
 } from "../external/vite-sdk";
 import { getEmptyObject, getShowInList } from "../external/vite-sdk";
 import InfoHeader from "./InfoHeader";
+// import AEnquiryRemark from "./AEnquiryRemark";
 export default function AdminEnquiryRemarks(props) {
   const [params] = useSearchParams();
   const id = params.get("id");

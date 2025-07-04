@@ -6,7 +6,6 @@ import {
 } from "../external/vite-sdk";
 import AdminEnquiryForm from "./AdminEnquiryForm";
 import { BeatLoader } from "react-spinners";
-import AEnquiry from "./AEnquiry";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import ModalImport from "./ModalImport";
@@ -16,6 +15,7 @@ import {
   analyseImportExcelSheet,
 } from "../external/vite-sdk";
 import { getEmptyObject, getShowInList } from "../external/vite-sdk";
+import AEnquiry from "./AEnquiry";
 
 export default function AdminEnquiries(props) {
   let [enquiryList, setEnquiryList] = useState([]);

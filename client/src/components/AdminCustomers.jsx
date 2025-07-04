@@ -3,10 +3,10 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity
 } from "../external/vite-sdk";
 import AdminCustomerForm from "./AdminCustomerForm";
 import { BeatLoader } from "react-spinners";
-import ACustomer from "./ACustomer";
 import axios from "axios";
 
 export default function AdminCustomers(props) {
@@ -500,8 +500,8 @@ export default function AdminCustomers(props) {
       {action == "list" &&
         filteredCustomerList.length != 0 &&
         filteredCustomerList.map((e, index) => (
-          <ACustomer
-            customer={e}
+          <Entity
+            entity={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}

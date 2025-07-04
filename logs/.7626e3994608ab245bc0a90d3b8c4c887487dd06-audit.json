@@ -6,11 +6,6 @@
     "auditLog": "C:\\RestaurantApp\\logs\\.7626e3994608ab245bc0a90d3b8c4c887487dd06-audit.json",
     "files": [
         {
-            "date": 1748942153263,
-            "name": "C:\\RestaurantApp\\logs\\error-2025-06-03.log",
-            "hash": "9b9fb8a1db6dc7dbd91fb15cdc9b3c3f006823b96ffe9839962522f73804815f"
-        },
-        {
             "date": 1749094922037,
             "name": "C:\\RestaurantApp\\logs\\error-2025-06-05.log",
             "hash": "a3913dde688d6571e4d3764fc68b5113384f8a1f125213fbd319e64b15b0cb92"
@@ -89,6 +84,16 @@
             "date": 1751439400619,
             "name": "C:\\RestaurantApp\\logs\\error-2025-07-02.log",
             "hash": "3e5aaf8031e930e5159118d3a9cb079ce43a61661beeec0840a6185da855c1c5"
+        },
+        {
+            "date": 1751522639152,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-07-03.log",
+            "hash": "ffcd32a98a529a4fd564c9d3c54c2017de6f5798d4d71c4e4322dc6307102e71"
+        },
+        {
+            "date": 1751610057143,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-07-04.log",
+            "hash": "e8ecb19dbc7f9c0dbc385ce550d37ba78f896772ddbdb42af9e931a6677363c8"
         }
     ],
     "hashType": "sha256"

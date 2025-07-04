@@ -18,15 +18,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.get("/", auntheticateUser, logActivity, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    if (req.tokenData.role == "Admin") {
-      let list = await UserService.getAllUsers();
-      res.status(200).json(list);
-    } else {
-      res.status(200).json([]);
-    }
-  } catch (error) {}
+    let list = await UserService.getAllUsers();
+    res.status(200).json(list);
+  } catch (error) {
+    next(error); // Send error to middleware
+  }
 });
 router.get("/:id", async (req, res, next) => {
   try {
@@ -134,6 +132,7 @@ router.delete("/:id", auntheticateUser, logActivity, async (req, res, next) => {
 //================
 function auntheticateUser(req, res, next) {
   const token = req.cookies.token;
+
   if (!token) {
     // This is unauthorized way... but before responding let us add to log
     req.activity = "Unauthorized";
@@ -142,6 +141,8 @@ function auntheticateUser(req, res, next) {
     // return res.sendStatus(401); // Unauthorized
   }
   jwt.verify(token, process.env.SECRET_KEY, (err, tokenData) => {
+    console.log(tokenData.role + "AAI");
+
     if (err) {
       // There might be tempering with the token... but before responding let us add to log
       req.activity = "Forbidden";

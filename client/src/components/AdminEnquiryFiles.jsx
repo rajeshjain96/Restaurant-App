@@ -5,10 +5,10 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity,
 } from "../external/vite-sdk";
 import AdminEnquiryFileForm from "./AdminEnquiryFileForm";
 import { BeatLoader } from "react-spinners";
-import AEnquiryFile from "./AEnquiryFile";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import ModalImport from "./ModalImport";
@@ -598,8 +598,8 @@ export default function AdminEnquiryFiles(props) {
         {action == "list" &&
           filteredEnquiryFileList.length != 0 &&
           filteredEnquiryFileList.map((e, index) => (
-            <AEnquiryFile
-              enquiryFile={e}
+            <Entity
+              entity={e}
               key={index + 1}
               index={index}
               sortedField={sortedField}
@@ -607,6 +607,7 @@ export default function AdminEnquiryFiles(props) {
               listSize={filteredEnquiryFileList.length}
               selectedEntity={selectedEntity}
               showInList={showInList}
+              VITE_API_URL={import.meta.env.VITE_API_URL}
               onEditButtonClick={handleEditButtonClick}
               onDeleteButtonClick={handleDeleteButtonClick}
               onToggleText={handleToggleText}

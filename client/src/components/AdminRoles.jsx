@@ -3,11 +3,12 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity,
 } from "../external/vite-sdk";
 import AdminRoleForm from "./AdminRoleForm";
 import { BeatLoader } from "react-spinners";
-import ARole from "./ARole";
 import axios from "axios";
+import { getEmptyObject, getShowInList } from "../external/vite-sdk";
 
 export default function AdminRoles(props) {
   let [roleList, setRoleList] = useState([]);
@@ -22,13 +23,16 @@ export default function AdminRoles(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-  let roleSchema = [{ attribute: "name" }, { attribute: "level" }];
+  let roleSchema = [
+    { attribute: "name", type: "normal" },
+    { attribute: "level", type: "normal" },
+  ];
   let roleValidations = {
     name: { message: "", mxLen: 80, mnLen: 4, onlyDigits: false },
     level: { message: "", onlyDigits: false },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromRoleSchema());
-  let [emptyRole, setEmptyRole] = useState(getEmptyRole());
+  let [showInList, setShowInList] = useState(getShowInList(roleSchema));
+  let [emptyUser, setEmptyUser] = useState(getEmptyObject(roleSchema));
   function getShowInListFromRoleSchema() {
     let list = [];
     let cnt = 0;
@@ -380,6 +384,7 @@ export default function AdminRoles(props) {
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
         filteredList={filteredRoleList}
+        mainList={roleList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
@@ -484,8 +489,8 @@ export default function AdminRoles(props) {
       {action == "list" &&
         filteredRoleList.length != 0 &&
         filteredRoleList.map((e, index) => (
-          <ARole
-            role={e}
+          <Entity
+            entity={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}

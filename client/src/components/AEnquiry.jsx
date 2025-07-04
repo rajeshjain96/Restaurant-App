@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./Modal";
+import {Modal} from "../external/vite-sdk";
 import { Link } from "react-router-dom";
 
 export default function AEnquiry(props) {

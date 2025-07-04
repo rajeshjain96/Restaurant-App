@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./Modal";
+import { Modal } from "../external/vite-sdk";
 
 export default function AUser(props) {
   let [flagDeleteButtonPressed, setFlagDeleteButtonPressed] = useState(false);

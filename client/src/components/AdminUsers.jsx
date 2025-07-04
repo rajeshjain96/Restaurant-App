@@ -3,11 +3,12 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity,
 } from "../external/vite-sdk";
 import AdminUserForm from "./AdminUserForm";
 import { BeatLoader } from "react-spinners";
-import AUser from "./AUser";
 import axios from "axios";
+import { getEmptyObject, getShowInList } from "../external/vite-sdk";
 
 export default function AdminUsers(props) {
   let [userList, setUserList] = useState([]);
@@ -25,18 +26,19 @@ export default function AdminUsers(props) {
   let { flagToggleButton } = props;
 
   let userSchema = [
-    { attribute: "name" },
+    { attribute: "name", type: "normal" },
     {
       attribute: "role",
+      type: "normal",
       relationalData: true,
       list: "roleList",
       relatedId: "roleId",
     },
     { attribute: "roleId", type: "relationalId" },
-    { attribute: "status", defaultValue: "active" },
-    { attribute: "emailId" },
+    { attribute: "status", type: "normal", defaultValue: "active" },
+    { attribute: "emailId", type: "normal" },
     // { attribute: "password" },
-    { attribute: "mobileNumber" },
+    { attribute: "mobileNumber", type: "normal" },
     // { attribute: "address" },
   ];
   let userValidations = {
@@ -53,49 +55,8 @@ export default function AdminUsers(props) {
     // password: { message: "" },
     role: { message: "" },
   };
-  let [showInList, setShowInList] = useState(getShowInListFromUserSchema());
-  let [emptyUser, setEmptyUser] = useState(getEmptyUser());
-  function getShowInListFromUserSchema() {
-    let list = [];
-    let cnt = 0;
-    userSchema.forEach((e, index) => {
-      let obj = {};
-      if (e.type != "relationalId") {
-        // do not show id of relational data.
-        obj["attribute"] = e.attribute;
-        if (cnt < 5) {
-          obj["show"] = true;
-        } else {
-          obj["show"] = false;
-        }
-        cnt++;
-        list.push(obj);
-      }
-    });
-    return list;
-  }
-  function getEmptyUser() {
-    let eUser = {};
-    userSchema.forEach((e, index) => {
-      if (e["defaultValue"]) {
-        eUser[e["attribute"]] = e["defaultValue"];
-      } else {
-        eUser[e["attribute"]] = "";
-      }
-    });
-    return eUser;
-  }
-  function getFileListFromUserSchema() {
-    let list = [];
-    userSchema.forEach((e, index) => {
-      let obj = {};
-      if (e.type == "file") {
-        obj["fileAttributeName"] = e.attribute;
-        list.push(obj);
-      }
-    });
-    return list;
-  }
+  let [showInList, setShowInList] = useState(getShowInList(userSchema));
+  let [emptyUser, setEmptyUser] = useState(getEmptyObject(userSchema));
   useEffect(() => {
     getData();
   }, []);
@@ -144,19 +105,35 @@ export default function AdminUsers(props) {
           userForBackEnd,
           { headers: { "Content-type": "multipart/form-data" } }
         );
-        user._id = await response.data.insertedId;
+        let addedUser = await response.data; //returned  with id
+        // This addedUser has id, addDate, updateDate, but the relational data is lost
+        // The original user has got relational data.
+        for (let key in user) {
+          userSchema.forEach((e, index) => {
+            if (key == e.attribute && e.relationalData) {
+              addedUser[key] = user[key];
+            }
+          });
+        }
         message = "User added successfully";
         // update the user list now.
         let prList = [...userList];
         prList.push(user);
+        prList = prList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setUserList(prList);
 
         let fprList = [...filteredUserList];
         fprList.push(user);
+        fprList = fprList.sort(
+          (a, b) => new Date(b.updateDate) - new Date(a.updateDate)
+        );
         setFilteredUserList(fprList);
         showMessage(message);
         setAction("list");
       } catch (error) {
+        console.log(error);
         showMessage("Something went wrong, refresh the page");
       }
       setFlagLoad(false);
@@ -212,7 +189,17 @@ export default function AdminUsers(props) {
     }, 3000);
   }
   async function handleDeleteButtonClick(ans, user) {
-    // await deleteBackendUser(user.id);
+    if (ans == "No") {
+      // delete operation cancelled
+      showMessage("Delete operation cancelled");
+      return;
+    }
+    if (ans == "Yes") {
+      // delete operation allowed
+      performDeleteOperation(product);
+    }
+  }
+  async function performDeleteOperation(product) {
     setFlagLoad(true);
     try {
       let response = await axios.delete(
@@ -228,6 +215,7 @@ export default function AdminUsers(props) {
       setFilteredUserList(fprList);
       showMessage(message);
     } catch (error) {
+      console.log(error);
       showMessage("Something went wrong, refresh the page");
     }
     setFlagLoad(false);
@@ -258,7 +246,6 @@ export default function AdminUsers(props) {
       }
       return p;
     });
-    // sEntity.attributes = a;
     setShowInList(a);
   }
   function handleHeaderClick(index) {
@@ -391,17 +378,90 @@ export default function AdminUsers(props) {
     } //outer for
     return fList;
   }
-  function handleChangeImageClick(index) {
-    props.onChangeImageClick(index);
+  function handleToggleText(index) {
+    let sil = [...showInList];
+    sil[index].flagReadMore = !sil[index].flagReadMore;
+    setShowInList(sil);
   }
-  function handleChangeImageCancelClick(index) {
-    props.onChangeImageCancelClick(index);
+  function handleExcelFileUploadClick(file, msg) {
+    if (msg) {
+      showMessage(message);
+      return;
+    }
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target.result;
+      // Read the workbook from the array buffer
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      // Assume reading the first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      // Convert to JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      // const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      setSheetData(jsonData);
+      let result = analyseImportExcelSheet(jsonData, productList);
+      if (result.message) {
+        showMessage(result.message);
+      } else {
+        showImportAnalysis(result);
+      }
+      // analyseSheetData(jsonData, productList);
+    };
+    // reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   }
-  function handleFileChangeInUpdateMode(file, fileIndex) {
-    let fl = [...fileList];
-    fl[fileIndex]["newFileName"] = file.name;
-    fl[fileIndex]["newFile"] = file;
-    setFileList(fl);
+  function showImportAnalysis(result) {
+    setCntAdd(result.cntA);
+    setCntUpdate(result.cntU);
+    setRecordsToBeAdded(result.recordsToBeAdded);
+    setRecordsToBeUpdated(result.recordsToBeUpdated);
+    //open modal
+    setFlagImport(true);
+  }
+  function handleModalCloseClick() {
+    setFlagImport(false);
+  }
+  async function handleImportButtonClick() {
+    setFlagImport(false); // close the modal
+    setFlagLoad(true);
+    let result;
+    try {
+      if (recordsToBeAdded.length > 0) {
+        result = await recordsAddBulk(
+          recordsToBeAdded,
+          "products",
+          productList,
+          import.meta.env.VITE_API_URL
+        );
+        if (result.success) {
+          setProductList(result.updatedList);
+          setFilteredProductList(result.updatedList);
+        }
+        showMessage(result.message);
+      }
+      if (recordsToBeUpdated.length > 0) {
+        result = await recordsUpdateBulk(
+          recordsToBeUpdated,
+          "products",
+          productList,
+          import.meta.env.VITE_API_URL
+        );
+        if (result.success) {
+          setProductList(result.updatedList);
+          setFilteredProductList(result.updatedList);
+        }
+        showMessage(result.message);
+      } //if
+    } catch (error) {
+      console.log(error);
+      showMessage("Something went wrong, refresh the page");
+    }
+    setFlagLoad(false);
+  }
+  function handleClearSelectedFile() {
+    setSelectedFile(null);
   }
   if (flagLoad) {
     return (
@@ -418,10 +478,13 @@ export default function AdminUsers(props) {
         selectedEntity={selectedEntity}
         flagToggleButton={flagToggleButton}
         filteredList={filteredUserList}
+        mainList={userList}
         showInList={showInList}
         onListClick={handleListClick}
         onAddEntityClick={handleAddEntityClick}
         onSearchKeyUp={handleSearchKeyUp}
+        onExcelFileUploadClick={handleExcelFileUploadClick}
+        onClearSelectedFile={handleClearSelectedFile}
       />
       {filteredUserList.length == 0 && userList.length != 0 && (
         <div className="text-center">Nothing to show</div>
@@ -454,20 +517,12 @@ export default function AdminUsers(props) {
               }}
             ></a>
           </div>
-          {showInList.map((e, index) => (
-            <div className="col-2" key={index}>
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                checked={showInList[index]["show"] == true}
-                onChange={(e) => {
-                  handleListCheckBoxClick(e.target.checked, index);
-                }}
-              />{" "}
-              {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}
-            </div>
-          ))}
+          {action == "list" && filteredUserList.length != 0 && (
+            <CheckBoxHeaders
+              showInList={showInList}
+              onListCheckBoxClick={handleListCheckBoxClick}
+            />
+          )}
         </div>
       )}
       {action == "list" && filteredUserList.length != 0 && (
@@ -488,40 +543,20 @@ export default function AdminUsers(props) {
               )}
             </a>
           </div>
-          {showInList.map(
-            (e, index) =>
-              e.show && (
-                <div className={"col-2 "} key={index}>
-                  <a
-                    href="#"
-                    className={
-                      sortedField == e.attribute
-                        ? " text-large text-danger"
-                        : ""
-                    }
-                    onClick={() => {
-                      handleHeaderClick(index);
-                    }}
-                  >
-                    {e.attribute.charAt(0).toUpperCase() + e.attribute.slice(1)}{" "}
-                    {sortedField == e.attribute && direction && (
-                      <i className="bi bi-arrow-up"></i>
-                    )}
-                    {sortedField == e.attribute && !direction && (
-                      <i className="bi bi-arrow-down"></i>
-                    )}
-                  </a>
-                </div>
-              )
-          )}
+          <ListHeaders
+            showInList={showInList}
+            sortedField={sortedField}
+            direction={direction}
+            onHeaderClick={handleHeaderClick}
+          />
           <div className="col-1">&nbsp;</div>
         </div>
       )}
       {action == "list" &&
         filteredUserList.length != 0 &&
         filteredUserList.map((e, index) => (
-          <AUser
-            user={e}
+          <Entity
+            entity={e}
             key={index + 1}
             index={index}
             sortedField={sortedField}
@@ -529,8 +564,10 @@ export default function AdminUsers(props) {
             listSize={filteredUserList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
+            VITE_API_URL={import.meta.env.VITE_API_URL}
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}
+            onToggleText={handleToggleText}
           />
         ))}
     </>

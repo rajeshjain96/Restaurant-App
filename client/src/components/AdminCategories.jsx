@@ -3,10 +3,11 @@ import {
   CommonUtilityBar,
   CheckBoxHeaders,
   ListHeaders,
+  Entity,
 } from "../external/vite-sdk";
 import AdminCategoryForm from "./AdminCategoryForm";
 import { BeatLoader } from "react-spinners";
-import ACategory from "./ACategory";
+// import ACategory from "./ACategory";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import ModalImport from "./ModalImport";
@@ -552,8 +553,8 @@ export default function AdminCategories(props) {
       {action == "list" &&
         filteredCategoryList.length != 0 &&
         filteredCategoryList.map((e, index) => (
-          <ACategory
-            category={e}
+          <Entity
+            entity={e}
             key={index + 1}
             index={index}
             user={user}
