@@ -4,8 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import InfoHeader from "./InfoHeader";
 import AEnquiryRemark from "./AEnquiryRemark";
-import Modal from "./Modal";
-
+import {Modal} from "../external/vite-sdk";
 export default function EnquiryRemarks() {
   const [params] = useSearchParams();
   const id = params.get("id");

@@ -24,7 +24,6 @@ export default function AdminUsers(props) {
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
   let { flagToggleButton } = props;
-
   let userSchema = [
     { attribute: "name", type: "normal" },
     {
