@@ -19,6 +19,11 @@
             "date": 1752907713118,
             "name": "C:\\RestaurantApp\\logs\\error-2025-07-19.log",
             "hash": "9bf624b2bee87e4e3b1c3192ee386bb81069704d7bcb795c20fd71ac3591d8a7"
+        },
+        {
+            "date": 1753097116022,
+            "name": "C:\\RestaurantApp\\logs\\error-2025-07-21.log",
+            "hash": "59cbd0dcc07525f30c32650803ff62c88d7d3a4942b35dddbe8731fff5203dd0"
         }
     ],
     "hashType": "sha256"

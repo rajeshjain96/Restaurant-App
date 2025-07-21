@@ -1,70 +1,43 @@
 import AdminCategories from "./AdminCategories";
-import AdminCustomers from "./AdminCustomers";
 import AdminEnquiries from "./AdminEnquiries";
 import AdminProducts from "./AdminProducts";
-import AdminQuotations from "./AdminQuotations";
 import AdminReportActivities from "./AdminReportActivities";
 import AdminRoles from "./AdminRoles";
 import AdminUsers from "./AdminUsers";
 
 export default function ContentPage(props) {
   let { selectedEntity } = props;
-  let { flagToggleButton } = props;
   let { user } = props;
+  function handleBackClick() {
+    props.onBackClick();
+  }
   return (
     <>
+      <div className="text-center text-bigger my-3">
+        <a href="#" onClick={handleBackClick}>
+          BACK
+        </a>
+      </div>
       {selectedEntity.isReady == false && (
         <h5 className="text-center">Work in Progress !</h5>
       )}
       {selectedEntity.name == "Products" && (
-        <AdminProducts
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminProducts selectedEntity={selectedEntity} />
       )}
       {selectedEntity.name == "Enquiries" && (
-        <AdminEnquiries
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-          user={user}
-        />
-      )}
-      {selectedEntity.name == "Customers" && (
-        <AdminCustomers
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminEnquiries selectedEntity={selectedEntity} user={user} />
       )}
       {selectedEntity.name == "Product Categories" && (
-        <AdminCategories
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-          user={user}
-        />
-      )}
-      {selectedEntity.name == "Quotations" && (
-        <AdminQuotations
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminCategories selectedEntity={selectedEntity} user={user} />
       )}
       {selectedEntity.name == "Users" && (
-        <AdminUsers
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminUsers selectedEntity={selectedEntity} />
       )}
       {selectedEntity.name == "Roles" && (
-        <AdminRoles
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminRoles selectedEntity={selectedEntity} />
       )}
       {selectedEntity.name == "Activity Report" && (
-        <AdminReportActivities
-          selectedEntity={selectedEntity}
-          flagToggleButton={flagToggleButton}
-        />
+        <AdminReportActivities selectedEntity={selectedEntity} />
       )}
     </>
   );

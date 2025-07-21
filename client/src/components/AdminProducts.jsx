@@ -35,9 +35,9 @@ export default function AdminProducts(props) {
   let [recordsToBeUpdated, setRecordsToBeUpdated] = useState([]);
   let [cntUpdate, setCntUpdate] = useState(0);
   let [cntAdd, setCntAdd] = useState(0);
+  let [cntShow, setCntShow] = useState(5); // Initially 5 attributes are shown
   let { selectedEntity } = props;
   let { flagFormInvalid } = props;
-  let { flagToggleButton } = props;
   let productSchema = [
     { attribute: "name", type: "normal" },
     {
@@ -271,8 +271,10 @@ export default function AdminProducts(props) {
       let p = { ...e };
       if (index == selectedIndex && checked) {
         p.show = true;
+        setCntShow(cnt + 1);
       } else if (index == selectedIndex && !checked) {
         p.show = false;
+        setCntShow(cnt - 1);
       }
       return p;
     });
@@ -499,7 +501,6 @@ export default function AdminProducts(props) {
         action={action}
         message={message}
         selectedEntity={selectedEntity}
-        flagToggleButton={flagToggleButton}
         filteredList={filteredProductList}
         mainList={productList}
         showInList={showInList}
@@ -519,6 +520,7 @@ export default function AdminProducts(props) {
       {action == "list" && filteredProductList.length != 0 && (
         <CheckBoxHeaders
           showInList={showInList}
+          cntShow={cntShow}
           onListCheckBoxClick={handleListCheckBoxClick}
         />
       )}
@@ -544,6 +546,7 @@ export default function AdminProducts(props) {
             showInList={showInList}
             sortedField={sortedField}
             direction={direction}
+            cntShow={cntShow}
             onHeaderClick={handleHeaderClick}
           />
           <div className="col-1">&nbsp;</div>
@@ -578,6 +581,7 @@ export default function AdminProducts(props) {
             listSize={filteredProductList.length}
             selectedEntity={selectedEntity}
             showInList={showInList}
+            cntShow={cntShow}
             VITE_API_URL={import.meta.env.VITE_API_URL}
             onEditButtonClick={handleEditButtonClick}
             onDeleteButtonClick={handleDeleteButtonClick}

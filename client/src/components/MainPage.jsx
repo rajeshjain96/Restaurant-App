@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import SideBar from "./SideBar";
 import ContentPage from "./ContentPage";
 import HomePage from "./HomePage";
 import LoginSignupPage from "./LoginSignupPage";
 import axios from "axios";
 import { BeatLoader } from "react-spinners";
+import MenuBar from "./MenuBar";
 export default function MainPage() {
   let [selectedEntity, setSelectedEntity] = useState("");
-  let [flagToggleButton, setFlagToggleButton] = useState(false);
   let [user, setUser] = useState("");
-  let [view, setView] = useState("home");
+  let [view, setView] = useState("loginSignup");
   let [flagLoad, setFlagLoad] = useState(false);
   let [message, setMessage] = useState("");
   let [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
@@ -37,7 +36,6 @@ export default function MainPage() {
           isReady: true,
           accessLevel: "D",
         },
-
         {
           name: "Product Categories",
           singularName: "Category",
@@ -82,48 +80,24 @@ export default function MainPage() {
           singularName: "Activity",
           dbCollection: "activities",
           addFacility: false,
+          deleteFacility: true,
+          editFacility: true,
           accessLevel: "A",
         },
       ],
     },
   ];
-  useEffect(() => {
-    setSession();
-  }, []);
-  async function setSession() {
-    setFlagLoad(true);
-    try {
-      let response = await axios.get(
-        import.meta.env.VITE_API_URL + "/specials/welcome"
-      );
-      if (response.data.role != "new" && response.data.role != "guest") {
-        // user is alreay logged in and has refreshed the page
-        setUser(response.data);
-      }
-    } catch (error) {
-      showMessage("Something went wrong, refresh the page");
-    }
-    setFlagLoad(false);
-  }
-  function showMessage(message) {
-    setMessage(message);
-    window.setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
+  useEffect(() => {}, []);
   function handleEntityClick(selectedIndex) {
     // user clicked to same entity again, so unselect it
-    console.log(menus[selectedMenuIndex].entities[selectedIndex].name);
-
-    if (
-      selectedEntity.name ==
-      menus[selectedMenuIndex].entities[selectedIndex].name
-    ) {
-      setSelectedMenuIndex(-1);
-      setSelectedEntityIndex(-1);
-      setView("home");
-      return;
-    }
+    // if (
+    //   selectedEntity.name ==
+    //   menus[selectedMenuIndex].entities[selectedIndex].name
+    // ) {
+    //   setSelectedMenuIndex(-1);
+    //   setSelectedEntityIndex(-1);
+    //   return;
+    // }
     setSelectedEntityIndex(selectedIndex);
     setSelectedEntity(menus[selectedMenuIndex].entities[selectedIndex]);
     setView("content");
@@ -136,20 +110,13 @@ export default function MainPage() {
     }
     setSelectedEntityIndex(-1);
     setSelectedEntity("");
-    setView("home");
   }
-  function handleToggleSidebar() {
-    console.log(flagToggleButton);
-    let flag = flagToggleButton;
-    flag = !flag;
-    setFlagToggleButton(flag);
-  }
+  function handleToggleSidebar() {}
   function handleLogInSignupButtonClick() {
     setView("loginSignup");
   }
   async function setLoggedinUser(loggedinUser) {
-    console.log(loggedinUser);
-    setView("home");
+    setView("menuBar");
     // get access level of this user
     // let response = await axios.get(
     //   "http://localhost:3000/roles/" + loggedinUser.roleId
@@ -157,14 +124,19 @@ export default function MainPage() {
     // loggedinUser.level = response.data.level;
     setUser(loggedinUser);
   }
-  function handleSignoutClick() {
+  function handleLogoutClick() {
     setUser("");
-    setView("home");
+    setView("loginSignup");
     // remove jwt token from backend
     let response = axios.post(import.meta.env.VITE_API_URL + "/users/signout");
   }
   function handleCloseLoginSignupPageClose() {
     setView("home");
+  }
+  function handleBackClick() {
+    setView("menuBar");
+    // setSelectedMenuIndex(-1);
+    setSelectedEntityIndex(-1);
   }
   if (flagLoad) {
     return (
@@ -174,28 +146,25 @@ export default function MainPage() {
     );
   }
   return (
-    <>
+    <div className="mycontainer">
       <div className="row justify-content-center p-4">
-        {true && (
-          <div className="col-2 ">
-            <SideBar
+        {view == "menuBar" && (
+          <div className="col-12 ">
+            <MenuBar
               user={user}
               menus={menus}
-              flagToggleButton={flagToggleButton}
               selectedMenuIndex={selectedMenuIndex}
               selectedEntityIndex={selectedEntityIndex}
               onEntityClick={handleEntityClick}
               onSideBarMenuClick={handleSideBarMenuClick}
               onToggleSidebar={handleToggleSidebar}
               onLogInSignupButtonClick={handleLogInSignupButtonClick}
-              onSignoutClick={handleSignoutClick}
+              // onSignoutClick={handleSignoutClick}
+              onLogoutClick={handleLogoutClick}
             />
           </div>
         )}
-        {/* <div className="col-10 ">
-        <NavBar />
-      </div> */}
-        <div className={flagToggleButton ? "col-10" : "col-12"}>
+        <div className={"col-12"}>
           {message && (
             <div className="text-center bg-danger text-white w-50 mx-auto mb-2 p-1">
               {message.toUpperCase()}
@@ -209,10 +178,14 @@ export default function MainPage() {
             />
           )}
           {view == "content" && (
-            <ContentPage selectedEntity={selectedEntity} user={user} />
+            <ContentPage
+              selectedEntity={selectedEntity}
+              user={user}
+              onBackClick={handleBackClick}
+            />
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

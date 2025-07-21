@@ -13,22 +13,12 @@ body {
 .cntr {
   margin-top: 100px;
 }
-
-#root {
-  /* max-width: 1280px; */
-  /* margin: 0 auto; */
-  /* padding: 2rem; */
-  /* text-align: center; */
-}
-.btn-sidebar {
-  width: 100%;
-}
 .fileUpload-image {
   height: 100px;
   width: 150px;
 }
-.myborder {
-  border: 3px solid darkblue;
+.myb {
+  border: 3px solid black;
 }
 /* EComm*/
 .bigger-text {
@@ -124,7 +114,58 @@ a {
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-
+/* ============= */
+/*--------------Customized color light ----------------*/
+.btn-lightcolor {
+  padding: 5px;
+  background-color: rgb(180, 224, 243);
+  color: rgb(40, 22, 111);
+  border-radius: 5px;
+}
+.border-bottom-lightcolor {
+  border-bottom: 2px solid rgb(180, 224, 243);
+}
+.text-lightcolor {
+  color: rgb(180, 224, 243);
+}
+.bg-lightcolor {
+  background-color: rgb(180, 224, 243);
+}
+.bg-secondary {
+  background-color: #f2f1f8;
+}
+/*--------------Customized color primary ----------------*/
+.btn-primarycolor {
+  padding: 5px;
+  border: none;
+  background-color: rgb(40, 22, 111);
+  color: rgb(0, 147, 221);
+}
+.text-primarycolor {
+  color: rgb(40, 22, 111);
+}
+.bg-primarycolor {
+  background-color: rgb(40, 22, 111);
+}
+/*--------------Customized color dark ----------------*/
+.btn-darkcolor {
+  padding: 5px;
+  /* background-color: rgb(0, 147, 221); */
+  background-color: rgb(40, 22, 111);
+  color: white;
+  border-radius: 5px;
+}
+.btn-darkcolor:hover {
+  border: 2px solid rgb(40, 22, 111);
+}
+.text-darkcolor {
+  /* color: rgb(0, 147, 221); */
+  color: rgb(40, 22, 111);
+}
+.bg-darkcolor {
+  background-color: rgb(40, 22, 111);
+}
+/* =============== */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -147,6 +188,10 @@ a {
 .read-the-docs {
   color: #888;
 }
+.mycontainer {
+  margin-left: auto;
+  margin-right: auto;
+}
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 576px) {
   .mycontainer {
@@ -156,7 +201,6 @@ a {
     font-size: 0.7em;
   }
 }
-
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 576px) {
   .mycontainer {
@@ -176,7 +220,6 @@ a {
     font-size: 0.8em;
   }
 }
-
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
   .mycontainer {
@@ -190,6 +233,6 @@ a {
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
   .mycontainer {
-    width: 50%;
+    width: 80%;
   }
 }
