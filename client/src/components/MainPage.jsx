@@ -138,6 +138,9 @@ export default function MainPage() {
     // setSelectedMenuIndex(-1);
     setSelectedEntityIndex(-1);
   }
+  function handleLoginSignupClick() {
+    setView("loginSignup");
+  }
   if (flagLoad) {
     return (
       <div className="my-5 text-center">
@@ -170,7 +173,9 @@ export default function MainPage() {
               {message.toUpperCase()}
             </div>
           )}
-          {view == "home" && <HomePage user={user} />}
+          {view == "home" && (
+            <HomePage user={user} onLoginSignupClick={handleLoginSignupClick} />
+          )}{" "}
           {!user && view == "loginSignup" && (
             <LoginSignupPage
               setLoggedinUser={setLoggedinUser}

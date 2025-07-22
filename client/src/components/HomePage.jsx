@@ -16,10 +16,20 @@ export default function HomePage(props) {
     let fc = response.data.count;
     setFileCount(fc);
   }
+  function handleLoginSignupClick() {
+    props.onLoginSignupClick();
+  }
   return (
     <>
       {user && (
         <div className="text-center text-primary">Welcome {user.name}</div>
+      )}
+      {!user && (
+        <div className="text-center text-primary my-3">
+          <a href="#" onClick={handleLoginSignupClick}>
+            Login / Signup
+          </a>
+        </div>
       )}
       <div className="w-50 mx-auto my-1">
         <div

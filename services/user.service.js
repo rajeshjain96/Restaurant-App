@@ -42,25 +42,13 @@ async function checkUser(obj) {
     emailId: obj.emailId,
   });
   if (!userObj) {
-    // user is not registered
-    return { result: "na" };
-  } else if (
-    obj.password &&
-    userObj.password == ""
-  ) {
-    //First time signup by user, password is being set by the user
-    userObj.password = obj.password;
-    userObj.status="active";
-    userObj._id = userObj._id.toString();
-    await updateUser(userObj);
-    return { result: "signupSuccess" };
-  } else if (userObj.password == "") {
-    // first-time, ask user to set the password
-    return { result: "setPassword" };
+    // user is not registered, add to database with role as user
+    obj.role = "user";
+    addUser(obj);
+    return { result: "done" };
   } else {
-    return { result: "alreadySetPassword" };
+    return { result: "na" };
   }
-  // return userObj;
 }
 async function checkUserTryingToLogIn(obj) {
   const db = app.locals.db;
